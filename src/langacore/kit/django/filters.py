@@ -12,3 +12,7 @@ def numberify(obj, default=0):
 
 def nullify(obj):
     return obj if obj else None
+
+
+def strike_empty(obj):
+    return obj if obj else u"---"
