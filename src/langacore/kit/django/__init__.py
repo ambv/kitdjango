@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
 import os, os.path
 
-profile_support_path = os.sep.join((os.path.split(__file__)[0], 'profile_support.py',))
+def publish(path):
+    return os.sep.join((os.path.split(__file__)[0], path,))
+
+current_dir_support = publish('current_dir_support.py')
+profile_support = publish('profile_support.py')

@@ -19,7 +19,7 @@ setup (
     zip_safe = True,
     install_requires = [
         'setuptools',
-        'django',
+        'django>=1.1',
         'postmarkup',
         ],
     
