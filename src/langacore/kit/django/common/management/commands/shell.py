@@ -47,7 +47,7 @@ class Command(NoArgsCommand):
                 tmp.write("\n".join((('raise Warning, "%s"' if line.startswith("Failed") else 'print "%s"') % line for line in import_messages)))
                 tmp.close()
                 from bpython import cli
-                cli.main(args=['--interactive', tmp_name])
+                cli.main(args=['--interactive', tmp_name], locals_=imported_objects)
                 os.unlink(tmp_name)
             except ImportError:
                 import IPython
