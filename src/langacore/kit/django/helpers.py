@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.conf import settings
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 import django.shortcuts
@@ -19,13 +20,14 @@ def redirect(request, link='/', chain=False):
 
 
 def render(request, template_name, context, debug=False):
-    if 'user_profile' in context:
-        raise KeyError, "igocomment.common.helpers.render() doesn't accept contexts with 'user_profile'"
-    if 'other_user_profile' in context:
-        raise KeyError, "igocomment.common.helpers.render() doesn't accept contexts with 'other_user_profile'"
-
-    context['user_profile'] = request.user.get_profile() if request.user.is_authenticated() else None 
-    context['other_user_profile'] = context['other_user'].get_profile() if 'other_user' in context else None
+    if hasattr(settings, 'AUTH_PROFILE_MODULE'):
+        if 'user_profile' in context:
+            raise KeyError, "langacore.kit.django.helpers.render() doesn't accept contexts with 'user_profile'"
+        if 'other_user_profile' in context:
+            raise KeyError, "langacore.kit.django.helpers.render() doesn't accept contexts with 'other_user_profile'"
+    
+        context['user_profile'] = request.user.get_profile() if request.user.is_authenticated() else None 
+        context['other_user_profile'] = context['other_user'].get_profile() if 'other_user' in context else None
 
     if debug:
         for key in context:
