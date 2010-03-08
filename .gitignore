@@ -5,6 +5,8 @@
 *.bak
 /doc/_build
 /stare
+/build
+/dist
 .DS_Store
 *.swp
 django-src

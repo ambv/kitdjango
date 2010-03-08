@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 setup (
     name = 'langacore.kit.django',
     version = '0.1.0',
-    author = 'LangaCore, Łukasz Langa',
+    author = 'LangaCore, Lukasz Langa',
     author_email = 'support@langacore.org, lukasz@langa.pl',
     description = "Various common Django-related routines.",
     long_description = '',
