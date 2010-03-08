@@ -15,7 +15,7 @@ local_profile = os.environ.get('DJANGO_SETTINGS_PROFILE', 'local')
 if SETTINGS_PATH_MODE == 'flat': 
     local_settings = '%s-%s.py' % (SETTINGS_PATH_PREFIX, local_profile)
 elif SETTINGS_PATH_MODE == 'nested': 
-    local_settings = os.sep.join(SETTINGS_PATH_PREFIX, local_profile)
+    local_settings = os.path.join(SETTINGS_PATH_PREFIX, local_profile)
 else:
     raise ValueError, "Unsupported settings path mode '%s'" % SETTINGS_PATH_MODE
 
