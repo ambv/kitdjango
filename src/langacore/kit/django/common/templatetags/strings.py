@@ -13,7 +13,7 @@ def proper_title(text):
     return pattern.sub(cap, text + u'') #+ u'' to handle proxy objects
 
 @register.filter
-def transliterate(text, country_code):
+def transliterate(text, country_code, text_lang=''):
     from langacore.kit.i18n import translit
     
-    return translit.any(country_code, text)
+    return translit.any(country_code, text, input_lang=text_lang)
