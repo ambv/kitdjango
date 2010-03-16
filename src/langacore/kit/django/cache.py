@@ -12,10 +12,10 @@ from langacore.kit.concurrency import synchronized
 # be generated (in seconds)
 CACHE_MINT_DELAY = getattr(settings, 'CACHE_MINT_DELAY', 30)
 CACHE_DEFAULT_TIMEOUT = getattr(settings, 'CACHE_DEFAULT_TIMEOUT', 300)
-LOCK = RLock()
+CACHE_FILELOCK_PATH = getattr(settings, 'CACHE_FILELOCK_PATH', '/tmp/langacore_django_cache.lock')
 
 
-@synchronized(lock=LOCK)
+@synchronized(path=CACHE_FILELOCK_PATH)
 def get(key):
     packed_val = cache.get(key)
     if packed_val is None:
@@ -29,7 +29,7 @@ def get(key):
     return val
 
 
-@synchronized(lock=LOCK)
+@synchronized(path=CACHE_FILELOCK_PATH)
 def set(key, val, timeout=CACHE_DEFAULT_TIMEOUT, is_stale=False):
     refresh_time = timeout + time.time()
     # if not stale, add the mint delay to the actual refresh so we can have

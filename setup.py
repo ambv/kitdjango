@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup (
     name = 'langacore.kit.django',
-    version = '0.1.4',
+    version = '0.1.5',
     author = 'LangaCore, Lukasz Langa',
     author_email = 'support@langacore.org, lukasz@langa.pl',
     description = "Various common Django-related routines.",
@@ -19,7 +19,7 @@ setup (
     zip_safe = False, # because executing support extensions for settings.py
                       # requires actual files
     install_requires = [
-        'langacore.kit.common>=0.1.3',
+        'langacore.kit.common>=0.1.4',
         'setuptools',
         'django>=1.1',
         'postmarkup',
@@ -27,10 +27,17 @@ setup (
     
     classifiers = [
         'Development Status :: 3 - Alpha',
+        'Framework :: Django',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU General Public License (GPL)',
         'Natural Language :: English',
+        'Operating System :: POSIX',
+        'Operating System :: MacOS :: MacOS X',
+        'Operating System :: Microsoft :: Windows :: Windows NT/2000',       
         'Programming Language :: Python',
+        'Programming Language :: Python :: 2.5',
+        'Programming Language :: Python :: 2.6',
+        'Topic :: Internet :: WWW/HTTP',
         'Topic :: Software Development :: Libraries :: Python Modules',
         ]
     )
