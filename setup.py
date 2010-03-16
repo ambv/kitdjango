@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup (
     name = 'langacore.kit.django',
-    version = '0.1.2',
+    version = '0.1.3',
     author = 'LangaCore, Lukasz Langa',
     author_email = 'support@langacore.org, lukasz@langa.pl',
     description = "Various common Django-related routines.",
@@ -18,6 +18,7 @@ setup (
     namespace_packages = ['langacore', 'langacore.kit'],
     zip_safe = True,
     install_requires = [
+        'langacore.kit.common>=0.1.3',
         'setuptools',
         'django>=1.1',
         'postmarkup',
