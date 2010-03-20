@@ -1,16 +1,10 @@
-/virtualenv
 *.pyc
 *.db
 *.old
 *.bak
 /doc/_build
-/stare
 /build
 /dist
 .DS_Store
 *.swp
-django-src
 /src/langacore.kit.django.egg-info
-/src/django_extensions
-/src/debug_toolbar
-/src/django_evolution

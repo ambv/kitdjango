@@ -1,3 +1,7 @@
+""" Multiple inheritance for forms and model forms.
+
+Based on http://www.djangosnippets.org/snippets/703/ """
+
 import inspect, types, __builtin__
 
 ############## preliminary: two utility functions #####################

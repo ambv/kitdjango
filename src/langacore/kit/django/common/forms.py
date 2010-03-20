@@ -1,3 +1,7 @@
+"""
+Albeit useful, this module is still somewhat a mess in a really early state of development. Beware, there be dragons.
+"""
+
 import datetime
 import re
 

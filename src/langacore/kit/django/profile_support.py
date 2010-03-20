@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+### NOTE:
+### This snippet will be executed in the ``settings.py`` context and is not an actual
+### Python module that you would import in a traditional sense. When you do import its
+### name, you get the path to this file so you can ``execfile()`` it.
 
 if 'CURRENT_DIR' not in locals():
     raise ValueError, "langacore.kit.django.profile_support requires current_dir_support."
