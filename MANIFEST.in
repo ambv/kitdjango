@@ -1,0 +1,2 @@
+recursive-include doc *.py *.rst *.txt *.html *.css *.js *.png *.conf *.bat README LICENSE Makefile 
+prune doc/_build
