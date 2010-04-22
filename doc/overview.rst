@@ -55,6 +55,19 @@ specifying settings, e.g. a structure like that::
       ├── __init__.py
       └── ...
 
+.. _namespace-package-support:
+
+``namespace_package_support``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This extension monkey-patches [1]_ Django so that is supports namespace packages. Not all places are
+covered though so if you spot some feature where namespace packages still don't work, file an issue
+using our `issue tracker <http://github.com/LangaCore/kitdjango/issues>`_.
+
+Features supported:
+
+* custom commands for manage.py loaded correctly from apps within namespace packages; since 0.1.8
+
 ``profile_support``
 ~~~~~~~~~~~~~~~~~~~
 
@@ -67,7 +80,7 @@ but the most important ones are:
   by default
 
 * when global settings are kept separate, adding, deleting or editing entries doesn't cause
-  conflicts while using source code version control systems [1]_
+  conflicts while using source code version control systems [2]_
 
 So, how do you get to split your ``settings.py`` file? The simplest approach is to create a file
 with the local settings as a module and just import it at the end of the global one. This approach
@@ -118,6 +131,20 @@ files. In that case you might switch to package based configuration. Just make a
 ``settings``, move your existing ``settings.py`` to ``settings/__init__.py`` and your
 ``settings-*.py`` files to ``settings/*.py``. Then your project tree will look something like the
 one on the diagram in the ``current_dir_support`` description above. 
+
+Custom ``manage.py`` commands
+=============================
+
+By adding ``langacore.kit.django.common`` to your ``INSTALLED_APPS`` you get some additional
+second-level commands for ``manage.py``:
+
+* ``shell``: a version of the original `manage.py shell
+  <http://docs.djangoproject.com/en/dev/ref/django-admin/#shell>`_ command for lazy people: is using 
+  `bpython <http://bpython-interpreter.org/>`_ if installed and imports all models automatically
+
+.. note::
+  
+  These commands require :ref:`namespace-package-support`.
 
 Filters
 =======
@@ -176,4 +203,7 @@ For more detailed view on the modules, see the documentation below.
 Footnotes
 ~~~~~~~~~
 
-.. [1] May I kindly suggest `Git <http://git-scm.com/>`_ or `Mercurial <http://mercurial.selenic.com/>`_?
+.. [1] Yup, in the world of Python that's considered dangerous and a sign of bad design. Here it's
+  simply a sane way to overcome Django core development inertia. Go ahead and ask for namespace
+  package support in vanilla Django.
+.. [2] May I kindly suggest `Git <http://git-scm.com/>`_ or `Mercurial <http://mercurial.selenic.com/>`_?

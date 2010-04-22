@@ -5,9 +5,9 @@ from optparse import make_option
 class Command(NoArgsCommand):
     option_list = NoArgsCommand.option_list + (
         make_option('--plain', action='store_true', dest='plain',
-            help='Tells Django to use plain Python, not IPython.'),
+            help='Tells Django to use plain Python, not bpython/IPython.'),
     )
-    help = "Runs a Python interactive interpreter. Tries to use IPython, if it's available."
+    help = "Runs a Python interactive interpreter. Tries to use bpython or IPython, if it's available."
 
     requires_model_validation = False
 
@@ -60,7 +60,8 @@ class Command(NoArgsCommand):
             # Set up a dictionary to serve as the environment for the shell, so
             # that tab completion works on objects that are imported at runtime.
             # See ticket 5082.
-            imported_objects = {}
+            for msg in import_messages:
+                print msg
             try: # Try activating rlcompleter, because it's handy.
                 import readline
             except ImportError:
