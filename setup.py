@@ -23,6 +23,7 @@ setup (
     author_email = 'support@langacore.org, lukasz@langa.pl',
     description = "Various common Django-related routines.",
     long_description = '',
+    url = 'http://packages.python.org/langacore.kit.django/',
     keywords = '',
     platforms = ['any'],
     license = 'GPL v3', 
