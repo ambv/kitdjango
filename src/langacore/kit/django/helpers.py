@@ -46,12 +46,17 @@ class Choice(object):
 
 
 class Choices(list):
+    Choice = Choice
+
     def __init__(self):
         values = []
 
         for k, v in self.__class__.__dict__.items():
             if type(v) == Choice:
                  values.append(v)
+
+        if not values:
+            raise ValueError("Choices class declared with no actual choice fields.")
 
         values.sort(lambda x, y: x.global_id - y.global_id)
 
@@ -66,12 +71,19 @@ class Choices(list):
 
 if __name__ == '__main__':
     # crude test
-    class Test(Choices):
-        white = Choice("White")
-        yellow = Choice("Yellow")
-        red = Choice("Red")
-        green = Choice("Green")
-        black = Choice("Black")
+    class Colors(Choices):
+        _ = Choices.Choice
 
-    print Test()
-    print Test.white.id, Test.white.desc
+        white = _("White")
+        yellow = _("Yellow")
+        red = _("Red")
+        green = _("Green")
+        black = _("Black")
+
+    print Colors()
+    print Colors.white.id, Colors.white.desc
+
+    class NoChoice(Choices):
+        not_a_choice = "Not a Choice() object"
+
+    print NoChoice()
