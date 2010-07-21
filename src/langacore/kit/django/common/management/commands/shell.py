@@ -44,11 +44,17 @@ class Command(NoArgsCommand):
                 from tempfile import mkstemp
                 _, tmp_name = mkstemp(suffix='.py')
                 tmp = open(tmp_name, 'w')
-                tmp.write("\n".join((('raise Warning, "%s"' if line.startswith("Failed") else 'print "%s"') % line for line in import_messages)))
-                tmp.close()
-                from bpython import cli
-                cli.main(args=['--interactive', tmp_name], locals_=imported_objects)
-                os.unlink(tmp_name)
+                
+                try:
+                    tmp.write("\n".join((('raise Warning, "%s"' if line.startswith("Failed") else 'print "%s"') % line for line in import_messages)))
+                finally:
+                    tmp.close()
+                
+                try:
+                    from bpython import cli
+                    cli.main(args=['--interactive', tmp_name], locals_=imported_objects)
+                finally:
+                    os.unlink(tmp_name)
             except ImportError:
                 import IPython
                 # Explicitly pass an empty list as arguments, because otherwise IPython
