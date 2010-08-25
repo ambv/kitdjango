@@ -13,8 +13,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
+import sys
 from setuptools import setup, find_packages
-from doc.conf import release 
+
+assert sys.version_info >= (2, 7), "Python 2.7+ required."
+
+with open(os.path.join(os.path.dirname(__file__), 'README.rst')) as ld_file:
+    long_description = ld_file.read()
+
+from doc.conf import release
 
 setup (
     name = 'langacore.kit.django',
@@ -22,11 +30,11 @@ setup (
     author = 'LangaCore, Lukasz Langa',
     author_email = 'support@langacore.org, lukasz@langa.pl',
     description = "Various common Django-related routines.",
-    long_description = '',
+    long_description = long_description,
     url = 'http://packages.python.org/langacore.kit.django/',
     keywords = '',
     platforms = ['any'],
-    license = 'GPL v3', 
+    license = 'GPL v3',
     packages = find_packages('src'),
     include_package_data = True,
     package_dir = {'':'src'},
@@ -34,13 +42,13 @@ setup (
     zip_safe = False, # because executing support extensions for settings.py
                       # requires actual files
     install_requires = [
-        'langacore.kit.common==0.1.6',
-        'langacore.kit.i18n==0.1.4',
+        'langacore.kit.common',
+        'langacore.kit.i18n',
         'setuptools',
-        'django>=1.1',
+        'django>=1.2',
         'postmarkup',
         ],
-    
+
     classifiers = [
         'Development Status :: 3 - Alpha',
         'Framework :: Django',
@@ -49,10 +57,9 @@ setup (
         'Natural Language :: English',
         'Operating System :: POSIX',
         'Operating System :: MacOS :: MacOS X',
-        'Operating System :: Microsoft :: Windows :: Windows NT/2000',       
+        'Operating System :: Microsoft :: Windows :: Windows NT/2000',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2.5',
-        'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python :: 2.7',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Software Development :: Libraries :: Python Modules',
         ]
