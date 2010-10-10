@@ -55,6 +55,11 @@ specifying settings, e.g. a structure like that::
       ├── __init__.py
       └── ...
 
+To enable this extension, import and execute it in the ``settings.py`` context
+(**at the very beginning** of the config file is recommended since
+``CURRENT_DIR`` is available only after the extension's initialization).
+
+
 .. _namespace-package-support:
 
 ``namespace_package_support``
@@ -63,6 +68,12 @@ specifying settings, e.g. a structure like that::
 This extension monkey-patches [1]_ Django so that is supports namespace packages. Not all places are
 covered though so if you spot some feature where namespace packages still don't work, file an issue
 using our `issue tracker <http://github.com/LangaCore/kitdjango/issues>`_.
+
+To enable this extension, import and execute it in the ``settings.py`` context
+(anywhere within the config file is fine)::
+
+  from langacore.kit.django import namespace_package_support 
+  execfile(namespace_package_support)
 
 Features supported:
 
@@ -98,8 +109,8 @@ things like::
   MEDIA_ROOT = CURRENT_DIR + 'static'
 
 where you add the debug toolbar to the active apps (notice the ``+=`` operator) and ``CURRENT_DIR``
-is the one calculated by enabling ``current_dir_support``. To enable profiles, just add these lines
-at the very end of your ``settings.py`` file::
+is the one calculated by enabling ``current_dir_support``. To enable profiles,
+just add these lines **at the very end** of your ``settings.py`` file::
 
   from langacore.kit.django import profile_support
   execfile(profile_support)
