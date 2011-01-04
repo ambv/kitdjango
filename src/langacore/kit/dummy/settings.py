@@ -81,5 +81,5 @@ INSTALLED_APPS = (
     'langacore.kit.django.common',
 )
 
-from langacore.kit.django import profile_support 
+from langacore.kit.django import profile_support
 execfile(profile_support)

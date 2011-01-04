@@ -9,7 +9,6 @@ from __future__ import absolute_import
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from functools import partial
 import re
 
 from django.conf import settings
@@ -21,7 +20,6 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext
 
 
-unset = object()
 
 DOTS_REGEX = re.compile(r'\.\s+')
 
@@ -118,113 +116,3 @@ def cut(text, length=40, trailing=" (...)"):
     if len(text) <= length:
         trailing = ""
     return text[:length] + trailing
-
-
-class ChoicesEntry(object):
-    global_id = 0
-
-    def __init__(self, description, id, name=None):
-        self.id = id
-        self.desc = ugettext(description)
-        self.raw = description
-        self.global_id = Choice.global_id
-        self.name = name
-        ChoicesEntry.global_id += 1
-
-
-class ChoiceGroup(ChoicesEntry):
-    def __init__(self, id):
-        super(ChoiceGroup, self).__init__('', id=id)
-        self.choices = []
-
-
-class Choice(ChoicesEntry):
-    def __init__(self, description):
-        super(Choice, self).__init__(description, id=-255)
-        self.group = None
-
-
-def _reverse_impl(cls, id, found=lambda id, k, v: False,
-                    getter=lambda id, k, v: None, fallback=unset):
-    """Unless fallback is set, raises ValueError if name not present."""
-    for k, v in cls.__dict__.items():
-        if isinstance(v, ChoicesEntry) and found(id, k, v):
-            return getter(id, k, v)
-    if fallback is unset:
-        raise ValueError("Nothing found for '{}'.".format(id))
-    else:
-        return fallback
-
-
-class Choices(list):
-    Choice = Choice
-    Group = ChoiceGroup
-
-    def __init__(self):
-        values = []
-
-        for k, v in self.__class__.__dict__.items():
-            if isinstance(v, ChoicesEntry):
-                v.name = k
-                values.append(v)
-
-        if not values:
-            raise ValueError("Choices class declared with no actual "
-                             "choice fields.")
-
-        values.sort(lambda x, y: x.global_id - y.global_id)
-
-        last_choice_id = 0
-        group = None
-        for choice in values:
-            if isinstance(choice, ChoiceGroup):
-                last_choice_id = choice.id
-                group = choice
-            else:
-                if group:
-                    group.choices.append(choice)
-                    choice.group = group
-                if choice.id == -255:
-                    last_choice_id += 1
-                    choice.id = last_choice_id
-                last_choice_id = choice.id
-                self.append((choice.id, choice.desc))
-
-    IDFromName = classmethod(partial(_reverse_impl,
-        found=lambda id, k, v: k == id,
-        getter=lambda id, k, v: v.id))
-
-    DescFromName = classmethod(partial(_reverse_impl,
-        found=lambda id, k, v: k == id,
-        getter=lambda id, k, v: v.desc))
-
-    RawFromName = classmethod(partial(_reverse_impl,
-        found=lambda id, k, v: k == id,
-        getter=lambda id, k, v: v.raw))
-
-    FromName = classmethod(partial(_reverse_impl,
-        found=lambda id, k, v: k == id,
-        getter=lambda id, k, v: v))
-
-    NameFromID = classmethod(partial(_reverse_impl,
-        found=lambda id, k, v: v.id == id,
-        getter=lambda id, k, v: k))
-
-    DescFromID = classmethod(partial(_reverse_impl,
-        found=lambda id, k, v: v.id == id,
-        getter=lambda id, k, v: v.desc))
-
-    RawFromID = classmethod(partial(_reverse_impl,
-        found=lambda id, k, v: v.id == id,
-        getter=lambda id, k, v: v.raw))
-
-    FromID = classmethod(partial(_reverse_impl,
-        found=lambda id, k, v: v.id == id,
-        getter=lambda id, k, v: v))
-
-    @staticmethod
-    def ToIDs(func):
-        """Converts a sequence of choices to a sequence of choice IDs."""
-        def wrapper(self):
-            return (elem.id for elem in func(self))
-        return wrapper
