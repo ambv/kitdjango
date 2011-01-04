@@ -126,6 +126,7 @@ class ChoicesEntry(object):
     def __init__(self, description, id, name=None):
         self.id = id
         self.desc = ugettext(description)
+        self.raw = description
         self.global_id = Choice.global_id
         self.name = name
         ChoicesEntry.global_id += 1
@@ -197,6 +198,10 @@ class Choices(list):
         found=lambda id, k, v: k == id,
         getter=lambda id, k, v: v.desc))
 
+    RawFromName = classmethod(partial(_reverse_impl,
+        found=lambda id, k, v: k == id,
+        getter=lambda id, k, v: v.raw))
+
     FromName = classmethod(partial(_reverse_impl,
         found=lambda id, k, v: k == id,
         getter=lambda id, k, v: v))
@@ -208,6 +213,10 @@ class Choices(list):
     DescFromID = classmethod(partial(_reverse_impl,
         found=lambda id, k, v: v.id == id,
         getter=lambda id, k, v: v.desc))
+
+    RawFromID = classmethod(partial(_reverse_impl,
+        found=lambda id, k, v: v.id == id,
+        getter=lambda id, k, v: v.raw))
 
     FromID = classmethod(partial(_reverse_impl,
         found=lambda id, k, v: v.id == id,

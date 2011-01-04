@@ -49,45 +49,55 @@ def test_choices_basic():
     assert Colors.FromID(1) == Colors.white
     assert Colors.NameFromID(1) == Colors.white.name
     assert Colors.DescFromID(1) == Colors.white.desc
+    assert Colors.RawFromID(1) == Colors.white.raw
     assert Colors.FromName("white") == Colors.white
     assert Colors.IDFromName("white") == Colors.white.id
     assert Colors.DescFromName("white") == Colors.white.desc
+    assert Colors.RawFromName("white") == Colors.white.raw
     assert Colors.yellow.id == 2
     assert Colors.yellow.desc == "Yellow"
     assert Colors.yellow.name == "yellow"
     assert Colors.FromID(2) == Colors.yellow
     assert Colors.NameFromID(2) == Colors.yellow.name
     assert Colors.DescFromID(2) == Colors.yellow.desc
+    assert Colors.RawFromID(2) == Colors.yellow.raw
     assert Colors.FromName("yellow") == Colors.yellow
     assert Colors.IDFromName("yellow") == Colors.yellow.id
     assert Colors.DescFromName("yellow") == Colors.yellow.desc
+    assert Colors.RawFromName("yellow") == Colors.yellow.raw
     assert Colors.red.id == 3
     assert Colors.red.desc == "Red"
     assert Colors.red.name == "red"
     assert Colors.FromID(3) == Colors.red
     assert Colors.NameFromID(3) == Colors.red.name
     assert Colors.DescFromID(3) == Colors.red.desc
+    assert Colors.RawFromID(3) == Colors.red.raw
     assert Colors.FromName("red") == Colors.red
     assert Colors.IDFromName("red") == Colors.red.id
     assert Colors.DescFromName("red") == Colors.red.desc
+    assert Colors.RawFromName("red") == Colors.red.raw
     assert Colors.green.id == 4
     assert Colors.green.desc == "Green"
     assert Colors.green.name == "green"
     assert Colors.FromID(4) == Colors.green
     assert Colors.NameFromID(4) == Colors.green.name
     assert Colors.DescFromID(4) == Colors.green.desc
+    assert Colors.RawFromID(4) == Colors.green.raw
     assert Colors.FromName("green") == Colors.green
     assert Colors.IDFromName("green") == Colors.green.id
     assert Colors.DescFromName("green") == Colors.green.desc
+    assert Colors.RawFromName("green") == Colors.green.raw
     assert Colors.black.id == 5
     assert Colors.black.desc == "Black"
     assert Colors.black.name == "black"
     assert Colors.FromID(5) == Colors.black
     assert Colors.NameFromID(5) == Colors.black.name
     assert Colors.DescFromID(5) == Colors.black.desc
+    assert Colors.RawFromID(5) == Colors.black.raw
     assert Colors.FromName("black") == Colors.black
     assert Colors.IDFromName("black") == Colors.black.id
     assert Colors.DescFromName("black") == Colors.black.desc
+    assert Colors.RawFromName("black") == Colors.black.raw
 
 def test_choices_groups():
     from langacore.kit.django.helpers import Choices
