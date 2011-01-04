@@ -1,0 +1,9 @@
+# This is part of my automation procedure for simplifying
+# the development process. It's specific to my machine.
+# You don't need it.
+
+cd ../langacore-kit-venv27
+source bin/activate
+cd ../langacore-kit-django/src/langacore/kit/django
+lt 1
+todo-list --python --html --rest
