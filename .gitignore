@@ -8,3 +8,4 @@
 .DS_Store
 *.swp
 /src/langacore.kit.django.egg-info
+/src/langacore/kit/django/common/choices.py
