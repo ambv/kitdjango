@@ -1,26 +1,53 @@
-"""A drop-in substitute for the default ``django.core.cache`` object. This implementation
-is using a modified mint cache approach based on http://www.djangosnippets.org/snippets/793/.
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-This implementation does not support specifying fallback values for the ``get()`` function since
-it would not be possible to otherwise reliably communicate that the value is *stale* and has
+# Copyright (C) 2010 Łukasz Langa
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3 of the License.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+"""A drop-in substitute for the default ``django.core.cache`` object. This
+implementation is using a modified mint cache approach based on
+http://www.djangosnippets.org/snippets/793/.
+
+This implementation does not support specifying fallback values for the
+``get()`` function since it would not be possible to otherwise reliably
+communicate that the value is *stale* and has
 to be updated.
 
 Configured by three values in ``settings.py``:
 
-* ``CACHE_DEFAULT_TIMEOUT`` - how long a set value should be considered valid (in seconds).
-                              After this period the value is considered *stale*, a single request
-                              starts to update it, and subsequent requests get the old value until
-                              the value gets updated. **Default**: 300 seconds.
+* ``CACHE_DEFAULT_TIMEOUT`` - how long a set value should be considered valid
+  (in seconds). After this period the value is considered *stale*, a single
+  request starts to update it, and subsequent requests get the old value until
+  the value gets updated. **Default**: 300 seconds.
 
-* ``CACHE_FILELOCK_PATH`` - path to a non-existant file which will work as an interprocess lock to
-                            make cache access atomic. **Default**: ``/tmp/langacore_django_cache.lock``
+* ``CACHE_FILELOCK_PATH`` - path to a non-existant file which will work as an
+  interprocess lock to make cache access atomic. **Default**:
+  ``/tmp/langacore_django_cache.lock``
 
-* ``CACHE_MINT_DELAY`` - an upper bound on how long a value should take to be generated (in seconds).
-                         This value is used for *stale* keys and is the real time after which the
-                         key is completely removed from the cache. **Default**: 30 seconds.
+* ``CACHE_MINT_DELAY`` - an upper bound on how long a value should take to be
+  generated (in seconds). This value is used for *stale* keys and is the real
+  time after which the key is completely removed from the cache. **Default**:
+  30 seconds.
 """
 
-# More info in the documentation at http://packages.python.org/langacore.kit.django/
+# More info in the documentation at 
+# http://packages.python.org/langacore.kit.django/
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
 
 import time
 from threading import RLock
@@ -32,13 +59,13 @@ from langacore.kit.concurrency import synchronized
 
 CACHE_MINT_DELAY = getattr(settings, 'CACHE_MINT_DELAY', 30)
 CACHE_DEFAULT_TIMEOUT = getattr(settings, 'CACHE_DEFAULT_TIMEOUT', 300)
-CACHE_FILELOCK_PATH = getattr(settings, 'CACHE_FILELOCK_PATH', '/tmp/langacore_django_cache.lock')
+CACHE_FILELOCK_PATH = getattr(settings, 'CACHE_FILELOCK_PATH',
+    '/tmp/langacore_django_cache.lock')
 
 
 @synchronized(path=CACHE_FILELOCK_PATH)
 def get(key):
-    """
-    Get a value from the cache. 
+    """Get a value from the cache.
 
     :param key: the key for which to return the value
     """
@@ -57,16 +84,17 @@ def get(key):
 
 @synchronized(path=CACHE_FILELOCK_PATH)
 def set(key, val, timeout=CACHE_DEFAULT_TIMEOUT, _is_stale=False):
-    """
-    Set a value in the cache.
+    """Set a value in the cache.
 
     :param key: the key under which to set the value
 
     :param val: the value to set
 
-    :param timeout: how long should this value be valid, by default CACHE_DEFAULT_TIMEOUT
+    :param timeout: how long should this value be valid, by default
+                    CACHE_DEFAULT_TIMEOUT
 
-    :param _is_stale: boolean, used internally to set a stale value in the cache back-end. Don't use on your own. 
+    :param _is_stale: boolean, used internally to set a stale value in the
+                      cache back-end. Don't use on your own.
     """
     refresh_time = timeout + time.time()
     # if not stale, add the mint delay to the actual refresh so we can have
@@ -78,8 +106,7 @@ def set(key, val, timeout=CACHE_DEFAULT_TIMEOUT, _is_stale=False):
 
 @synchronized(path=CACHE_FILELOCK_PATH)
 def delete(key):
-    """
-    Removes a value from the cache.
+    """Removes a value from the cache.
 
     :param key: the key to delete from the cache
     """

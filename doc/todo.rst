@@ -6,11 +6,9 @@ TODO
 
 Code
 ----
-* Cleanup of helpers, forms and models would be great
+* Cleanup of forms and models would be great
   
-* There are no unit tests
-
-* Working ``--profile`` instead of the old school environment variable
+* There are not enough unit tests
 
 * No examples in the code
 
@@ -26,10 +24,6 @@ Docs
 
 Community
 ---------
-* There is no ``README.rst`` file for `GitHub <http://www.github.com/>`_ needs
-
-* There is no ``long_description`` for `PyPI <http://pypi.python.org/>`_
-
 * There is no community
 
 * Some publicity would be helpful

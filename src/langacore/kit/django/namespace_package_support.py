@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 ### NOTE:
-### This snippet will be executed in the ``settings.py`` context and is not an actual
-### Python module that you would import in a traditional sense. When you do import its
-### name, you get the path to this file so you can ``execfile()`` it.
+### This snippet will be executed in the ``settings.py`` context and is not an
+### actual Python module that you would import in a traditional sense. When you
+### do import its name, you get the path to this file so you can ``execfile()``
+### it.
 
 import django.core.management
 
- 
+
 def django_core_management__find_management_module(app_name):
     """
     Determines the path to the management module for the given app_name,
@@ -18,7 +19,7 @@ def django_core_management__find_management_module(app_name):
     """
     import sys
     import os.path
-    
+
     parts = app_name.split('.')
     parts.append('management')
 
@@ -31,4 +32,5 @@ def django_core_management__find_management_module(app_name):
     return path
 
 
-django.core.management.find_management_module = django_core_management__find_management_module
+django.core.management.find_management_module = \
+    django_core_management__find_management_module

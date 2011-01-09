@@ -18,13 +18,22 @@
 """Choices - an enum implementation for Django models."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
 from functools import partial
 
 
-unset = object()
+class _Unset(object):
+    def __unicode__(self):
+        return "unset"
+
+    def __repr__(self):
+        return self.__unicode__()
+
+
+unset = _Unset()
 ugettext = unset
 
 
@@ -45,34 +54,51 @@ class ChoicesEntry(object):
             from django.utils.translation import ugettext
         return ugettext(self.raw)
 
+    def __unicode__(self):
+        return "<{}: {} (id: {})>".format(self.__class__.__name__,
+            self.name, self.id)
+
+    def __repr__(self):
+        return unicode(self)
+
 
 class ChoiceGroup(ChoicesEntry):
+    """A group of choices."""
+
     def __init__(self, id):
         super(ChoiceGroup, self).__init__('', id=id)
         self.choices = []
 
 
 class Choice(ChoicesEntry):
+    """A single choice."""
+
     def __init__(self, description):
         super(Choice, self).__init__(description, id=-255)
         self.group = None
 
 
-def _reverse_impl(cls, id, found=lambda id, k, v: False,
-                    getter=lambda id, k, v: None, fallback=unset):
-    """Unless fallback is set, raises ValueError if name not present."""
-    for k, v in cls.__dict__.items():
-        if isinstance(v, ChoicesEntry) and found(id, k, v):
-            return getter(id, k, v)
-    if fallback is unset:
-        raise ValueError("Nothing found for '{}'.".format(id))
-    else:
-        return fallback
+def _getter(name, given, returns, found, getter):
+    def impl(cls, id, found=lambda id, k, v: False,
+                        getter=lambda id, k, v: None, fallback=unset):
+        """Unless `fallback` is set, raises ValueError if name not present."""
+        for k, v in cls.__dict__.items():
+            if isinstance(v, ChoicesEntry) and found(id, k, v):
+                return getter(id, k, v)
+        if fallback is unset:
+            raise ValueError("Nothing found for '{}'.".format(id))
+        else:
+            return fallback
+    function = partial(impl, found=found, getter=getter)
+    function.__name__ = name
+    function.__doc__ = ("Choices.{name}({given}, fallback=unset) -> {returns}"
+        "\n\nGiven the `{given}`, returns the `{returns}`. {impl_doc}"
+        "".format(name=name, given=given, returns=returns,
+            impl_doc=impl.__doc__))
+    return classmethod(function)
 
 
 class Choices(list):
-    Choice = Choice
-    Group = ChoiceGroup
 
     def __init__(self, filter=(unset,), pair=unset):
         """Creates a list of pairs from the specified Choices class.
@@ -121,37 +147,53 @@ class Choices(list):
                 if choice.name in filter:
                     self.append(pair(choice))
 
-    IDFromName = classmethod(partial(_reverse_impl,
+    FromName = _getter("FromName",
+        given="name",
+        returns="choice object",
         found=lambda id, k, v: k == id,
-        getter=lambda id, k, v: v.id))
+        getter=lambda id, k, v: v)
 
-    DescFromName = classmethod(partial(_reverse_impl,
+    IDFromName = _getter("IDFromName",
+        given="name",
+        returns="id",
         found=lambda id, k, v: k == id,
-        getter=lambda id, k, v: v.desc))
+        getter=lambda id, k, v: v.id)
 
-    RawFromName = classmethod(partial(_reverse_impl,
+    DescFromName = _getter("DescFromName",
+        given="name",
+        returns="localized description string",
         found=lambda id, k, v: k == id,
-        getter=lambda id, k, v: v.raw))
+        getter=lambda id, k, v: v.desc)
 
-    FromName = classmethod(partial(_reverse_impl,
+    RawFromName = _getter("RawFromName",
+        given="name",
+        returns="raw description string",
         found=lambda id, k, v: k == id,
-        getter=lambda id, k, v: v))
+        getter=lambda id, k, v: v.raw)
 
-    NameFromID = classmethod(partial(_reverse_impl,
+    FromID = _getter("FromID",
+        given="id",
+        returns="choice object",
         found=lambda id, k, v: v.id == id,
-        getter=lambda id, k, v: k))
+        getter=lambda id, k, v: v)
 
-    DescFromID = classmethod(partial(_reverse_impl,
+    NameFromID = _getter("NameFromID",
+        given="id",
+        returns="attribute name",
         found=lambda id, k, v: v.id == id,
-        getter=lambda id, k, v: v.desc))
+        getter=lambda id, k, v: k)
 
-    RawFromID = classmethod(partial(_reverse_impl,
+    DescFromID = _getter("DescFromID",
+        given="id",
+        returns="localized description string",
         found=lambda id, k, v: v.id == id,
-        getter=lambda id, k, v: v.raw))
+        getter=lambda id, k, v: v.desc)
 
-    FromID = classmethod(partial(_reverse_impl,
+    RawFromID = _getter("RawFromID",
+        given="id",
+        returns="raw description string",
         found=lambda id, k, v: v.id == id,
-        getter=lambda id, k, v: v))
+        getter=lambda id, k, v: v.raw)
 
     @staticmethod
     def ToIDs(func):
@@ -160,15 +202,21 @@ class Choices(list):
             return (elem.id for elem in func(self))
         return wrapper
 
+    Choice = Choice
+    Group = ChoiceGroup
 
 #
 # commonly used choices
 #
 
 class Country(Choices):
+    """Specifies a set for all countries of the world (as of January 2011),
+    including unions, parts of United Kingdom and unrecognized states."""
     _ = Choices.Choice
 
     COUNTRIES = Choices.Group(0)
+    """Officially recognized states, as of January 2011."""
+
     af = _("Afghanistan")
     al = _("Albania")
     dz = _("Algeria")
@@ -386,20 +434,25 @@ class Country(Choices):
     zw = _("Zimbabwe")
 
     UNITED_KINGDOM = Choices.Group(300)
+    """Parts of United Kingdom."""
+
     england = _("England")
     northern_ireland = _("Northern Ireland")
     wales = _("Wales")
     scotland = _("Scotland")
 
     UNRECOGNIZED_STATES = Choices.Group(600)
+    """De facto countries that are not globally recognized."""
     cy_northern = _("Northern Cyprus")
     palestine = _("Palestine")
     somaliland = _("Somaliland")
 
     UNIONS = Choices.Group(900)
+    """Commonly referred unions and associations."""
+
     african_union = _("African Union")
     arab_league = _("Arab League")
-    associacion_of_southeast_asian_nations = \
+    association_of_southeast_asian_nations = \
             _("Association of Southeast Asian Nations")
     caricom = _("Caricom")
     commonwealth_of_independent_states = \
@@ -415,6 +468,9 @@ class Country(Choices):
 
 
 class Language(Choices):
+    """Specifies a broad set of languages. Uses a superset of values found in
+    Django and Firefox sources."""
+
     _ = Choices.Choice
 
     aa = _("Afar")
