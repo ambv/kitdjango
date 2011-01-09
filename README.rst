@@ -15,16 +15,7 @@ the behaviour of the framework:
 
 Complete documentation for the package can be found here:
 
- * http://packages.python.org/langacore.kit.django/
-
-I believe these routines could successfully be a part of the actual Django
-distribution. However, in its current shape the library is too early in the
-development state to seriously consider that as an option. Hence it's available
-separately. Just as with `langacore.kit.common
-<http://packages.python.org/langacore.kit.common/>`_, each bit of functionality
-is probably too small to have an entire PyPI package of its own. Together
-however, this library represents a Swiss army knife for everyday Django needs
-(YMMV).
+ http://packages.python.org/langacore.kit.django/
 
 The latest version can be installed via `PyPI
 <http://pypi.python.org/pypi/langacore.kit.django/>`_::
