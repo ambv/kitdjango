@@ -7,7 +7,8 @@ class Command(NoArgsCommand):
         make_option('--plain', action='store_true', dest='plain',
             help='Tells Django to use plain Python, not bpython/IPython.'),
     )
-    help = "Runs a Python interactive interpreter. Tries to use bpython or IPython, if it's available."
+    help = ("Runs a Python interactive interpreter. Tries to use bpython or "
+            "IPython, if it's available.")
 
     requires_model_validation = False
 
@@ -21,46 +22,65 @@ class Command(NoArgsCommand):
 
         from django.conf import settings
         imported_objects = {'settings': settings}
-        
+
         import_messages = []
         for app_mod in get_apps():
             app_models = get_models(app_mod)
             if not app_models:
                 continue
             model_labels = ", ".join([model.__name__ for model in app_models])
-            import_messages.append("Models from '%s': %s" % (app_mod.__name__.split('.')[-2], model_labels))
+            import_messages.append("Models from '%s': %s"
+                "" % (app_mod.__name__.split('.')[-2], model_labels))
             for model in app_models:
                 try:
-                    imported_objects[model.__name__] = getattr(__import__(app_mod.__name__, {}, {}, model.__name__), model.__name__)
+                    imported_objects[model.__name__] = \
+                        getattr(__import__(app_mod.__name__, {}, {},
+                            model.__name__), model.__name__)
                 except AttributeError, e:
-                    import_messages.append("Failed to import '%s' from '%s': %s" % (model.__name__, app_mod.__name__.split('.')[-2], str(e)))
+                    import_messages.append("Failed to import '%s' from '%s': "
+                        "%s" % (model.__name__,
+                            app_mod.__name__.split('.')[-2], str(e)))
                     continue
 
         try:
             if use_plain:
-                # Don't bother loading IPython, because the user wants plain Python.
+                # Don't bother loading IPython, because the user wants plain
+                # Python.
                 raise ImportError
             try:
                 from tempfile import mkstemp
                 _, tmp_name = mkstemp(suffix='.py')
                 tmp = open(tmp_name, 'w')
-                
+
                 try:
-                    tmp.write("\n".join((('raise Warning, "%s"' if line.startswith("Failed") else 'print "%s"') % line for line in import_messages)))
+                    tmp.write("\n".join((('raise Warning, "%s"' if
+                        line.startswith("Failed") else 'print "%s"') % line for
+                        line in import_messages)))
                 finally:
                     tmp.close()
-                
+
                 try:
                     from bpython import cli
-                    cli.main(args=['--interactive', tmp_name], locals_=imported_objects)
+                    cli.main(args=['--interactive', tmp_name],
+                        locals_=imported_objects)
                 finally:
                     os.unlink(tmp_name)
             except ImportError:
-                import IPython
-                # Explicitly pass an empty list as arguments, because otherwise IPython
-                # would use sys.argv from this script.
-                shell = IPython.Shell.IPShell(argv=[])
-                shell.mainloop()
+                try:
+                    from IPython.frontend.terminal.embed import TerminalInteractiveShell
+                    shell = TerminalInteractiveShell()
+                    shell.mainloop()
+                except ImportError:
+                    # IPython < 0.11
+                    # Explicitly pass an empty list as arguments, because otherwise
+                    # IPython would use sys.argv from this script.
+                    try:
+                        from IPython.Shell import IPShell
+                        shell = IPShell(argv=[])
+                        shell.mainloop()
+                    except ImportError:
+                        # IPython not found at all, raise ImportError
+                        raise
         except ImportError:
             import code
             # Set up a dictionary to serve as the environment for the shell, so
@@ -76,17 +96,18 @@ class Command(NoArgsCommand):
                 # We don't have to wrap the following import in a 'try', because
                 # we already know 'readline' was imported successfully.
                 import rlcompleter
-                readline.set_completer(rlcompleter.Completer(imported_objects).complete)
+                readline.set_completer(
+                    rlcompleter.Completer(imported_objects).complete)
                 readline.parse_and_bind("tab:complete")
 
-            # We want to honor both $PYTHONSTARTUP and .pythonrc.py, so follow system
-            # conventions and get $PYTHONSTARTUP first then import user.
-            if not use_plain: 
-                pythonrc = os.environ.get("PYTHONSTARTUP") 
-                if pythonrc and os.path.isfile(pythonrc): 
-                    try: 
-                        execfile(pythonrc) 
-                    except NameError: 
+            # We want to honor both $PYTHONSTARTUP and .pythonrc.py, so follow
+            # system conventions and get $PYTHONSTARTUP first then import user.
+            if not use_plain:
+                pythonrc = os.environ.get("PYTHONSTARTUP")
+                if pythonrc and os.path.isfile(pythonrc):
+                    try:
+                        execfile(pythonrc)
+                    except NameError:
                         pass
                 # This will import .pythonrc.py as a side-effect
                 import user
