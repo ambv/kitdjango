@@ -172,12 +172,12 @@ class MassMailer(Thread):
         self.force = force
 
     def run(self):
-        print "Mailer subprocess started (%d)." % os.getpid()
+        print("Mailer subprocess started (%d)." % os.getpid())
         for profile in self.profiles:
             mail = profile.user.email
             # FIXME: check privacy
             send_mail(self.subject, self.content, None, [mail])
-            print "Mailer subprocess (%d): sent mail to %s." % (os.getpid(), mail)
+            print("Mailer subprocess (%d): sent mail to %s." % (os.getpid(), mail))
             sleep(self.interval)
 
 # NO CODE BEYOND THIS POINT
