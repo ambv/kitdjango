@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-"""Choices - an enum implementation for Django models."""
+"""Choices - an enum implementation for Django forms and models."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -49,17 +49,22 @@ class ChoicesEntry(object):
 
     @property
     def desc(self):
+        if not self.raw:
+            return self.raw
         global ugettext
         if ugettext is unset:
             from django.utils.translation import ugettext
         return ugettext(self.raw)
 
-    def __unicode__(self):
+    def __unicode__(self, raw=False):
+        name = self.name
+        if raw:
+            name = "{!r}".format(name)[2:-1]
         return "<{}: {} (id: {})>".format(self.__class__.__name__,
-            self.name, self.id)
+            name, self.id)
 
     def __repr__(self):
-        return unicode(self)
+        return self.__unicode__(raw=True)
 
 
 class ChoiceGroup(ChoicesEntry):
@@ -76,6 +81,15 @@ class Choice(ChoicesEntry):
     def __init__(self, description):
         super(Choice, self).__init__(description, id=-255)
         self.group = None
+
+    def __unicode__(self, raw=False):
+        name = self.name
+        rawval = self.raw
+        if raw:
+            name = "{!r}".format(name)[2:-1]
+            rawval = "{!r}".format(rawval)[2:-1]
+        return "<{}: {} (id: {}, name: {})>".format(self.__class__.__name__,
+            rawval, self.id, name)
 
 
 def _getter(name, given, returns, found, getter):
@@ -98,38 +112,14 @@ def _getter(name, given, returns, found, getter):
     return classmethod(function)
 
 
-class Choices(list):
-
-    def __init__(self, filter=(unset,), pair=unset):
-        """Creates a list of pairs from the specified Choices class.
-        By default, each pair consists of a numeric ID and the translated
-        description. If `use_ids` is False, the name of the attribute
-        is used instead of the numeric ID.
-
-        If `filter` is specified, it's a set or sequence of attribute
-        names that should be included in the list. Note that the numeric
-        IDs are the same regardless of the filtering. This is useful
-        for predefining a large set of possible values and filtering to
-        only the ones which are currently implemented."""
+class _ChoicesMeta(type):
+    def __new__(meta, classname, bases, classDict):
         values = []
-
-        filter = set(filter)
-        for k, v in self.__class__.__dict__.items():
+        for k, v in classDict.items():
             if isinstance(v, ChoicesEntry):
                 v.name = k.strip('_')
                 values.append(v)
-                if unset in filter:
-                    filter.add(v.name)
-
-        if not values:
-            raise ValueError("Choices class declared with no actual "
-                             "choice fields.")
-
         values.sort(lambda x, y: x.global_id - y.global_id)
-
-        if pair is unset:
-            pair = lambda choice: (choice.id, choice.desc)
-
         last_choice_id = 0
         group = None
         for choice in values:
@@ -144,8 +134,35 @@ class Choices(list):
                     last_choice_id += 1
                     choice.id = last_choice_id
                 last_choice_id = choice.id
-                if choice.name in filter:
-                    self.append(pair(choice))
+        classDict['__choices__'] = values
+        return type.__new__(meta, classname, bases, classDict)
+
+
+class Choices(list):
+    __metaclass__ = _ChoicesMeta
+
+    def __init__(self, filter=(unset,), pair=unset):
+        """Creates a list of pairs from the specified Choices class.
+        By default, each pair consists of a numeric ID and the translated
+        description. If `use_ids` is False, the name of the attribute
+        is used instead of the numeric ID.
+
+        If `filter` is specified, it's a set or sequence of attribute
+        names that should be included in the list. Note that the numeric
+        IDs are the same regardless of the filtering. This is useful
+        for predefining a large set of possible values and filtering to
+        only the ones which are currently implemented."""
+        if not self.__choices__:
+            raise ValueError("Choices class declared with no actual "
+                             "choice fields.")
+        if pair is unset:
+            pair = lambda choice: (choice.id, choice.desc)
+
+        filter = set(filter)
+        for choice in self.__choices__:
+            if choice.name in filter or (unset in filter and
+                                         isinstance(choice, Choice)):
+                self.append(pair(choice))
 
     FromName = _getter("FromName",
         given="name",
