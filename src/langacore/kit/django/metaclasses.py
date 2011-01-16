@@ -43,7 +43,7 @@ def get_noconflict_metaclass(bases, left_metas, right_metas):
     elif len(needed_metas) == 1: # another trivial case
        meta = needed_metas[0]
     # check for recursion, can happen i.e. for Zope ExtensionClasses
-    elif needed_metas == bases: 
+    elif needed_metas == bases:
         raise TypeError("Incompatible root metatypes", needed_metas)
     else: # gotta work ...
         metaname = '_' + ''.join([m.__name__ for m in needed_metas])
