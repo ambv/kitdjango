@@ -25,11 +25,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import os, os.path
+import os
 
-def publish(path):
-    return os.sep.join((os.path.split(__file__)[0], path,))
-
-current_dir_support = publish('current_dir_support.py')
-namespace_package_support = publish('namespace_package_support.py')
-profile_support = publish('profile_support.py')
+for path in ('current_dir_support', 'namespace_package_support',
+             'profile_support'):
+    globals()[path] = os.sep.join((os.path.split(__file__)[0], path + '.py',))
