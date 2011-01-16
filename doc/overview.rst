@@ -63,6 +63,9 @@ several features which support the DRY principle:
  * Metadata (e.g. attribute name, raw and localized description, numeric ID) of
    each attribute is accessible.
 
+ * Choices which are suffixed by ``_`` to avoid clashing with Python keywords
+   have this suffix automatically removed in their ``.name`` attributes
+
  * Lookup functions are available to help getting attributes or their metadata.
 
 .. note::   

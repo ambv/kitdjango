@@ -23,7 +23,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from functools import partial
-
+from textwrap import dedent
 
 class _Unset(object):
     def __unicode__(self):
@@ -484,6 +484,33 @@ class Country(Choices):
     united_nations = _("United Nations")
 
 
+def _language_lookup_getter(overrides, getter):
+    def impl(cls, name, getter=lambda choice: choice, fallback=unset):
+        """
+        If the given `name` has ``-`` characters, they are converted to
+        ``_`` for lookup purposes. If no language is found, a more generic
+        language lookup is tried (e.g. for ``"pl-pl"`` also ``"pl"`` will be
+        attempted) before raising ValueError or returning the fallback value.
+        """
+        name = name.replace("-", "_")
+        name_generic = name.split("_")[0]
+        if name_generic == name:
+            name_generic = None
+        for k, v in cls.__dict__.items():
+            exact_match = k == name
+            generic_match = name_generic and k == name_generic
+            if isinstance(v, ChoicesEntry) and exact_match or generic_match:
+                return getter(v)
+        if fallback is unset:
+            raise ValueError("Nothing found for '{}'.".format(id))
+        else:
+            return fallback
+    function = partial(impl, getter=getter)
+    function.__name__ = overrides.__name__
+    function.__doc__ = overrides.__doc__ + " " + dedent(impl.__doc__)
+    return classmethod(function)
+
+
 class Language(Choices):
     """Specifies a broad set of languages. Uses a superset of values found in
     Django and Firefox sources."""
@@ -690,10 +717,22 @@ class Language(Choices):
     zh_tw = _("Traditional Chinese")
     zu = _("Zulu")
 
+    FromName = _language_lookup_getter(overrides=Choices.FromName,
+        getter=lambda choice: choice)
+
+    IDFromName = _language_lookup_getter(overrides=Choices.IDFromName,
+        getter=lambda choice: choice.id)
+
+    DescFromName = _language_lookup_getter(overrides=Choices.DescFromName,
+        getter=lambda choice: choice.desc)
+
+    RawFromName = _language_lookup_getter(overrides=Choices.RawFromName,
+        getter=lambda choice: choice.raw)
+
 
 class Gender(Choices):
     _ = Choices.Choice
 
-    fename = _("female")
+    female = _("female")
     male = _("male")
     unspecified = _("unspecified")
