@@ -28,9 +28,13 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from datetime import datetime
+
+from django.conf import settings
+from django.core.mail import send_mail
 from django.db import models as db
 from django.utils.translation import ugettext_lazy as _
-from django.core.mail import send_mail
+
+from langacore.kit.django.choices import Language
 
 
 class Named(db.Model):
@@ -86,6 +90,19 @@ class TimeTrackable(db.Model):
     def save(self):
         self.modified = datetime.now()
         super(TimeTrackable, self).save()
+
+
+class Localized(db.Model):
+    """Describes an abstract model which holds data in a specified
+    ``language``. The language is chosen from the Language choices class
+    but only from those specified in settings.LANGUAGES. The default value
+    is settings.LANGUAGE_CODE."""
+    language = db.PositiveIntegerField(verbose_name=_("language"),
+        choices=Language(filter=set([lang[0] for lang in settings.LANGUAGES])),
+            default=Language.IDFromName(settings.LANGUAGE_CODE))
+
+    class Meta:
+        abstract = True
 
 
 class DisplayCounter(db.Model):
