@@ -20,6 +20,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from datetime import datetime
+
 from django.conf import settings
 from django.utils import translation
 
@@ -33,3 +35,20 @@ class AdminForceLanguageCodeMiddleware:
             request.LANG = settings.LANGUAGE_CODE
             translation.activate(request.LANG)
             request.LANGUAGE_CODE = request.LANG
+
+class ActivityMiddleware(object):
+    """Updates the `last_active` profile field for every logged in user with
+    the current timestamp. It pragmatically stores a new value every 40 seconds
+    (one third of the seconds specified ``CURRENTLY_ONLINE_INTERVAL`` setting).
+    """
+
+    def process_request(self, request):
+        if not request.user.is_authenticated():
+            return
+        now = datetime.now()
+        seconds = getattr(settings, 'CURRENTLY_ONLINE_INTERVAL', 120)
+        profile = request.user.get_profile()
+        last_active = profile.last_active
+        if not last_active or (now - last_active).seconds > seconds:
+            profile.last_active = now
+            profile.save()
