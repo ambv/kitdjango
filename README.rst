@@ -31,6 +31,21 @@ The `source code repository <http://github.com/LangaCore/kitdjango>`_ and `issue
 tracker <http://github.com/LangaCore/kitdjango/issues>`_ are maintained on
 `GitHub <http://github.com/LangaCore/kitdjango>`_.
 
+This package bundles some royalty free static images that are useful in almost
+every Django project:
+
+ * `Silk icons 1.3 by FamFamFam <http://www.famfamfam.com/lab/icons/silk/>`_
+   - requires attributing the author
+
+ * `Silk Companion 1 by Damien Guard
+   <http://damieng.com/creative/icons/silk-companion-1-icons>`_ - requires
+   attributing the author
+
+ * `Country Flags by SenojFlags.com <http://www.senojflags.com>`_ - requires
+   using the following HTML::
+
+    <a href="http://www.senojflags.com">Country flag</a> image from <a href="http://www.senojflags.com">Flags of all Countries</a>
+
 **Note:**  Since 0.2.0 ``langacore.kit.django`` requires **Python 2.7** because
 it's using the ``absolute_imports``, ``division``, ``print_function`` and
 ``unicode_literals`` futures. One of the virtues in the creation of this library
