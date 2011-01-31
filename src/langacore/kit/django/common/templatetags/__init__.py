@@ -58,7 +58,7 @@ class DynamicNode(Node):
         `prefix`, `suffix` and `load` attributes are ignored.
         """
         if text:
-            load = ['{{%load{}%}}'.format(l) for l in load]
+            load = ['{{%load {}%}}'.format(l) for l in load]
             if prefix:
                 load.append(prefix)
             load.append(text)
