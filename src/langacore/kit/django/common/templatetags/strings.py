@@ -26,6 +26,7 @@ from __future__ import unicode_literals
 import re
 from django.template import Library
 from django.template.defaultfilters import slugify as crippled_slugify
+from django.utils.safestring import mark_safe
 
 from langacore.kit.i18n import translit
 
@@ -80,3 +81,13 @@ def strike_empty(obj):
     """
 
     return obj if obj else "---"
+
+
+@register.filter
+def nbsp(obj):
+    """Converts spaces to nbsp entities.
+
+    Template tag available in ``common`` app's ``strings`` library.
+    """
+
+    return mark_safe(re.sub(r"\s+", "&nbsp;", obj))
