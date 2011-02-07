@@ -108,7 +108,7 @@ class Localized(db.Model):
 class MonitoredActivity(db.Model):
     """Describes an abstract model which holds the timestamp of last user
     activity on the site. Activity is logged using the ActivityMiddleware."""
-    last_active = db.DateTimeField(verbose_name=_("last_active"),
+    last_active = db.DateTimeField(verbose_name=_("last active"),
         blank=True, null=True, default=None)
 
     _is_online_secs = getattr(settings, 'CURRENTLY_ONLINE_INTERVAL', 120)
