@@ -73,7 +73,7 @@ def redirect(request, link='/', override_request=False):
 
 
 def typical_handler(request, form_class, template, initial={},
-                    initial_kwargs={}):
+                    initial_kwargs={}, context={}):
     """A handler for a typical form workflow:
 
     1. Initialize a form object.
@@ -106,7 +106,9 @@ def typical_handler(request, form_class, template, initial={},
                                    len(DOTS_REGEX.findall(error))-1)
             form.error_summary = mark_safe(error)
             del error
-    return render(request, template, locals())
+    ctx = dict(context)
+    ctx.update(locals())
+    return render(request, template, ctx)
 
 
 def cut(text, length=40, trailing=" (...)"):
