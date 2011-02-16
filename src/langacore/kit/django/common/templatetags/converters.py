@@ -221,16 +221,16 @@ def timediff(timestamp, language='pl'):
     tense = 'present'
     now = datetime.now()
     delta = now - timestamp
-    if delta.seconds < -10:
+    if delta.total_seconds < -10:
         tense = 'future'
-    elif delta.seconds > 10:
+    elif delta.total_seconds > 10:
         tense = 'past'
     delta = abs(delta)
     days = delta.days
     weeks = days // 7
     if weeks >= 4:
         years = int((days + 1) // 365.25)
-        months = 12 * (years + 1) + now.month - timestamp.month
+        months = 12 * years + now.month - timestamp.month
         if timestamp.day > now.day:
             months -= 1
     else:
