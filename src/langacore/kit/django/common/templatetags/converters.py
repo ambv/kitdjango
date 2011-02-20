@@ -82,6 +82,7 @@ _time_forms = {
             1: 'one minute',
         }),
         ('__now__', ('moments ago', 'just now', 'in a moment')),
+        ('__never__', ('never', 'never', 'never')),
         ('', {
             'prefixes': ('', '', 'in'),
             'suffixes': ('ago', '', ''),
@@ -149,6 +150,7 @@ _time_forms = {
             14: '',
         }),
         ('__now__', ('przed chwilą', 'teraz', 'za chwilę')),
+        ('__never__', ('nigdy', 'nigdy', 'nigdy')),
         ('', {
             'prefixes': ('', '', 'za'),
             'suffixes': ('temu', '', ''),
@@ -218,27 +220,29 @@ def timediff(timestamp, language='pl'):
 
     The output rounds up to a single most significant value: years, months,
     weeks, days, hours or minutes."""
-    tense = 'present'
-    now = datetime.now()
-    delta = now - timestamp
-    if delta.total_seconds < -10:
-        tense = 'future'
-    elif delta.total_seconds > 10:
-        tense = 'past'
-    delta = abs(delta)
-    days = delta.days
-    weeks = days // 7
-    if weeks >= 4:
-        years = int((days + 1) // 365.25)
-        months = 12 * years + now.month - timestamp.month
-        if timestamp.day > now.day:
-            months -= 1
-    else:
-        years, months = 0, 0
-    hours = delta.seconds//3600
-    minutes = delta.seconds%3600//60
     forms = _time_forms[language]
-    for interval in forms:
-        if interval in locals() and locals()[interval]:
-            return timediff_format(locals()[interval], forms[interval], tense)
-    return forms['__now__'][_tenses[tense]]
+    tense = 'present'
+    if timestamp:
+        now = datetime.now()
+        delta = now - timestamp
+        if delta.total_seconds < -10:
+            tense = 'future'
+        elif delta.total_seconds > 10:
+            tense = 'past'
+        delta = abs(delta)
+        days = delta.days
+        weeks = days // 7
+        if weeks >= 4:
+            years = int((days + 1) // 365.25)
+            months = 12 * years + now.month - timestamp.month
+            if timestamp.day > now.day:
+                months -= 1
+        else:
+            years, months = 0, 0
+        hours = delta.seconds//3600
+        minutes = delta.seconds%3600//60
+        for interval in forms:
+            if interval in locals() and locals()[interval]:
+                return timediff_format(locals()[interval], forms[interval], tense)
+        return forms['__now__'][_tenses[tense]]
+    return forms['__never__'][_tenses[tense]]
