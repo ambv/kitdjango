@@ -2,7 +2,7 @@
 # the development process. It's specific to my machine.
 # You don't need it.
 
-cd ../langacore-kit-venv27
+cd ../lck-virtualenv
 source bin/activate
 cd ../langacore-kit-django/src/langacore/kit/django
 lt 1
