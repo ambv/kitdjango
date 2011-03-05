@@ -47,6 +47,7 @@ setup (
         'setuptools',
         'django>=1.2',
         'postmarkup',
+        'PIL>=1.1.7',
         ],
 
     classifiers = [
