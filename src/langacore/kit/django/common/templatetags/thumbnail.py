@@ -83,8 +83,8 @@ def thumbnail(image, size):
             width = height * image.width / image.height
     else:
         width, height = size.split("x")
-        width = int(width)
-        height = int(height)
+    width = int(round(width))
+    height = int(round(height))
 
     file = image.file.name
     basename, format = file.rsplit('.', 1)
