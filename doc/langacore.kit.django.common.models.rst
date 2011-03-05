@@ -13,7 +13,27 @@ Classes
    :members:
    
 
+.. autoclass:: Titled
+   :show-inheritance:
+   :members:
+   
+
+.. autoclass:: Slugged
+   :show-inheritance:
+   :members:
+   
+
 .. autoclass:: TimeTrackable
+   :show-inheritance:
+   :members:
+   
+
+.. autoclass:: Localized
+   :show-inheritance:
+   :members:
+   
+
+.. autoclass:: MonitoredActivity
    :show-inheritance:
    :members:
    

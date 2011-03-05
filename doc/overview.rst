@@ -422,10 +422,12 @@ For more detailed view on the modules, see the documentation below.
   choices
   filters
   common.forms
+  common.middleware
   common.models
   common.templatetags.bbcode
   common.templatetags.converters
   common.templatetags.strings
+  profile.models
 
 Footnotes
 ~~~~~~~~~
