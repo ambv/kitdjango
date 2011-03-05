@@ -26,7 +26,7 @@ from django.conf import settings
 from django.core.cache import cache
 from django.utils import translation
 
-class AdminForceLanguageCodeMiddleware:
+class AdminForceLanguageCodeMiddleware(object):
     """Add this middleware to force the admin to always use the language
     specified in ``settings.LANGUAGE_CODE`` instead of sniffing it from
     the user agent."""
