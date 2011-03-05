@@ -8,6 +8,8 @@
 Functions
 ----------
 
+.. autofunction:: nbsp
+
 .. autofunction:: nullify
 
 .. autofunction:: numberify
@@ -15,6 +17,10 @@ Functions
 .. autofunction:: slugify
 
 .. autofunction:: strike_empty
+
+.. autofunction:: thumbnail
+
+.. autofunction:: timediff
 
 .. autofunction:: title
 

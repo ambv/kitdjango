@@ -379,10 +379,13 @@ as templatetags as well:
 
 .. autosummary::
 
+  nbsp
   numberify
   nullify
   slugify
   strike_empty
+  thumbnail
+  timediff
   title
   transliterate
 
@@ -426,7 +429,9 @@ For more detailed view on the modules, see the documentation below.
   common.models
   common.templatetags.bbcode
   common.templatetags.converters
+  common.templatetags.cycle_filter
   common.templatetags.strings
+  common.templatetags.thumbnail
   profile.models
 
 Footnotes

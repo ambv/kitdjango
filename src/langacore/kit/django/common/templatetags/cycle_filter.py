@@ -3,7 +3,7 @@
 
 # Copyright (C) 2010 Łukasz Langa
 
-"""The thumbnail filter."""
+"""The cycle filter."""
 
 from __future__ import absolute_import
 from __future__ import division

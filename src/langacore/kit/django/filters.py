@@ -23,7 +23,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from langacore.kit.django.common.templatetags.converters import (numberify,
-                                                                nullify)
+    nullify, timediff)
 from langacore.kit.django.common.templatetags.strings import (strike_empty,
-                                                              slugify, title,
-                                                              transliterate)
+    slugify, title, transliterate, nbsp)
+from langacore.kit.django.common.templatetags.thumbnail import thumbnail
