@@ -141,7 +141,7 @@ class _ChoicesMeta(type):
 class Choices(list):
     __metaclass__ = _ChoicesMeta
 
-    def __init__(self, filter=(unset,), pair=unset):
+    def __init__(self, filter=(unset,), item=unset, pair=unset):
         """Creates a list of pairs from the specified Choices class.
         By default, each pair consists of a numeric ID and the translated
         description. If `use_ids` is False, the name of the attribute
@@ -155,14 +155,21 @@ class Choices(list):
         if not self.__choices__:
             raise ValueError("Choices class declared with no actual "
                              "choice fields.")
-        if pair is unset:
-            pair = lambda choice: (choice.id, choice.desc)
+        if pair is not unset:
+            import warnings
+            warnings.warn("`pair` was a poor name choice and is therefore "
+                          "deprecated. It will be removed in 0.4. Please "
+                          "use `item` instead.", DeprecationWarning)
+            item = pair
+
+        if item is unset:
+            item = lambda choice: (choice.id, choice.desc)
 
         filter = set(filter)
         for choice in self.__choices__:
             if choice.name in filter or (unset in filter and
                                          isinstance(choice, Choice)):
-                self.append(pair(choice))
+                self.append(item(choice))
 
     FromName = _getter("FromName",
         given="name",
