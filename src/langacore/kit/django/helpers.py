@@ -65,14 +65,29 @@ def render_json(obj):
 
 
 def redirect(request, link='/', override_request=False):
-    """A smarter redirect which takes the redirection target from
-    GET['redirect_to'] or falls back to the URL from the `link` param.
-    If `override_request` is True, `link` is always followed."""
+    """redirect(request, [link, override_request]) -> HttpResponseRedirect
 
-    if not override_request \
-       and request.method == 'GET' \
-       and 'redirect_to' in request.GET:
-        link = request.GET['redirect_to']
+    A smarter redirect which takes the redirection target from a given param.
+    The lookup for the redirection target is as follows:
+
+    * 'redirect_to' in GET or POST (in that order)
+
+    * 'next' in GET or POST (in that order)
+
+    * the `link` fallback argument ('/' if not given)
+
+    If `override_request` is ``True``, `link` is always followed."""
+
+    if not override_request:
+        link_from_param = None
+        for varname in 'redirect_to', 'next':
+            for container in request.GET, request.POST:
+                if varname in container:
+                    link_from_param = container[varname]
+                    break
+            if link_from_param:
+                link = link_from_param
+                break
     return HttpResponseRedirect(link)
 
 
