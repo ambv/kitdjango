@@ -2,11 +2,11 @@
 TODO
 ====
   
-  Things that would be great to have but we haven't gotten to do them yet
+  Things that would be great to have but I haven't gotten to do them yet.
 
 Code
 ----
-* Cleanup of forms and models would be great
+* Cleanup of forms would be great
   
 * There are not enough unit tests
 
@@ -14,9 +14,8 @@ Code
 
 Docs
 ----
-* Helpers are not mentioned in the docs
 
-* Forms and models are only by means of API, no proper introduction
+* Forms are only by means of API, no proper introduction
 
 * There is no clear roadmap of where this project is heading
 

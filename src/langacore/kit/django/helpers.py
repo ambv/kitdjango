@@ -26,7 +26,9 @@ DOTS_REGEX = re.compile(r'\.\s+')
 
 
 def render(request, template_name, context, debug=False, mimetype=None):
-    """Renders the `context` within for a `request` using a template named
+    """render(request, template_name, context, [debug, mimetype]) -> HttpResponse
+
+    Renders the `context` within for a `request` using a template named
     `template_name` returning the required `mimetype`."""
 
     if hasattr(settings, 'AUTH_PROFILE_MODULE'):
@@ -53,7 +55,9 @@ def render(request, template_name, context, debug=False, mimetype=None):
 
 
 def render_json(obj):
-    """Dumps the object in the `obj` param to a JSON string and returns it
+    """render_json(obj) -> HttpResponse
+
+    Dumps the object in the `obj` param to a JSON string and returns it
     via HTTP using the application/json mimetype."""
 
     return HttpResponse(simplejson.dumps(obj),
@@ -77,9 +81,11 @@ def typical_handler(request, form_class, template, initial={},
     """A handler for a typical form workflow:
 
     1. Initialize a form object.
-       a.  if there are POSTed data, use them
-       b.  otherwise use `initial` as initial data and `initial_kwargs` as
-           keyword arguments for the form object constructor.
+
+       a. if there are POSTed data, use them
+       b. otherwise use `initial` as initial data and `initial_kwargs` as \
+          keyword arguments for the form object constructor.
+
     2. If the form validates, save it and override the template name with
        a version using the "_complete.html" suffix.
     3. If there are errors on the form, prepare an additional `error_summary`

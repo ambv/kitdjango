@@ -424,6 +424,7 @@ For more detailed view on the modules, see the documentation below.
   cache
   choices
   filters
+  helpers
   common.forms
   common.middleware
   common.models
