@@ -25,15 +25,8 @@ from __future__ import unicode_literals
 from functools import partial
 from textwrap import dedent
 
-class _Unset(object):
-    def __unicode__(self):
-        return "unset"
+from langacore.kit.lang import unset
 
-    def __repr__(self):
-        return self.__unicode__()
-
-
-unset = _Unset()
 ugettext = unset
 
 

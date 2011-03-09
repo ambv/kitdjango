@@ -39,39 +39,46 @@ from django.utils.translation import ugettext_lazy as _
 
 from langacore.kit.django.choices import Choice
 from langacore.kit.django.common.models import Named, Localized
+from langacore.kit.lang import unset
+
+
+def _tag_get_user(author, default=unset):
+    if isinstance(author, User):
+        return author
+    elif hasattr(author, 'user'):
+        return author.user
+    elif default is not unset:
+        return default
+    raise ValueError("The given author is neither of type "
+        "`django.contrib.auth.models.User` nor has a `user`"
+        "attribute.")
+
+def _tag_get_language(language, default=unset):
+    if isinstance(language, int):
+        return language
+    elif isinstance(language, Choice):
+        return language.id
+    elif default is not unset:
+        return default
+    raise ValueError("The given language is neither an int nor "
+        "a `Choice`.")
 
 
 class Taggable(db.Model):
     """Provides the `tags` generic relation to prettify the API."""
     tags = GenericRelation("Tag")
 
-    def _tag_get_user(self, author):
-        if isinstance(author, User):
-            return author
-        elif hasattr(author, 'user'):
-            return author.user
-        raise ValueError("The given author is neither of type "
-            "`django.contrib.auth.models.User` nor has a `user`"
-            "attribute.")
-
-    def _tag_get_language(self, language):
-        if isinstance(language, int):
-            return language
-        elif isinstance(language, Choice):
-            return language.id
-        raise ValueError("The given language is neither an int nor "
-            "a `Choice`.")
 
     def tag(self, name, language, author):
-        author = self._tag_get_user(author)
-        language = self._tag_get_language(language)
+        author = _tag_get_user(author)
+        language = _tag_get_language(language)
         tag = Tag(name=name, language=language, author=author,
             content_object=self)
         tag.save()
 
     def untag(self, name, language, author):
-        author = self._tag_get_user(author)
-        language = self._tag_get_language(language)
+        author = _tag_get_user(author)
+        language = _tag_get_language(language)
         try:
             tag = Tag.objects.get(name=name, language=language, author=author,
                 content_object=self)
@@ -126,10 +133,16 @@ class Tag(Named.NU, Localized):
     content_object = GenericForeignKey()
 
     @classmethod
-    def stems_for(cls, model, instance=None, official=False, by_author=None):
-        """Returns a list of distinct tag stems for the given `model`,
+    def stems_for(cls, model, instance=None, official=False, author=None,
+        language=None):
+        """Returns a QuerySet of distinct tag stems for the given `model`,
         optionally for a specific `instance` which can be filtered only to
-        `official` tags and tags by a specific `author`."""
+        `official` tags and tags by a specific `author`.
+
+        The QuerySet can be further filtered for instance to sort by `name` or
+        `-tag_count`."""
+        author = _tag_get_user(author, default=None)
+        language = _tag_get_language(language, default=None)
         ct = ContentType.objects.get_for_model(model)
         relname = cls._meta.get_field_by_name('stem')[0].rel.related_name
         kwargs = {"{}__content_type".format(relname): ct}
@@ -137,8 +150,10 @@ class Tag(Named.NU, Localized):
             kwargs["{}__object_id".format(relname)] = instance.pk
         if official:
             kwargs["{}__official".format(relname)] = True
-        if by_author:
-            kwargs["{}__author_id".format(relname)] = by_author.id
+        if author:
+            kwargs["{}__author".format(relname)] = author
+        if language:
+            kwargs["{}__language".format(relname)] = language
         return TagStem.objects.filter(**kwargs).distinct()
 
     def update_stem(self):

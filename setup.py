@@ -42,7 +42,7 @@ setup (
     zip_safe = False, # because executing support extensions for settings.py
                       # requires actual files
     install_requires = [
-        'langacore.kit.common',
+        'langacore.kit.common>=0.2.4',
         'langacore.kit.i18n',
         'setuptools',
         'django>=1.2',
