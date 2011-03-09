@@ -6,6 +6,7 @@
 ### ``execfile()`` it.
 
 import os.path
+import tempfile
 
 def _get_settings_path_mode(path):
     if os.path.isdir(path):
@@ -16,6 +17,7 @@ def _get_settings_path_mode(path):
         return None
 
 
+TEMP_DIR = tempfile.gettempdir() + os.path.sep
 CURRENT_DIR = os.path.realpath(os.path.dirname(__file__)) + os.path.sep
 _django_settings_dir = os.environ.get('DJANGO_SETTINGS_DIR', CURRENT_DIR)
 
