@@ -2,84 +2,108 @@
 from langacore.kit.django import current_dir_support
 execfile(current_dir_support)
 
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
+from langacore.kit.django import namespace_package_support
+execfile(namespace_package_support)
+
+#
+# common stuff for each install
+#
 
 ADMINS = (
-    # ('Your Name', 'your_email@domain.com'),
+    ('Lukasz Langa', 'lukasz@langa.pl'),
 )
-
 MANAGERS = ADMINS
-
-DATABASE_ENGINE = ''           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-DATABASE_NAME = ''             # Or path to database file if using sqlite3.
-DATABASE_USER = ''             # Not used with sqlite3.
-DATABASE_PASSWORD = ''         # Not used with sqlite3.
-DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
-DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
-
-# Local time zone for this installation. Choices can be found here:
-# http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
-# although not all choices may be available on all operating systems.
-# If running in a Windows environment this must be set to the same as your
-# system time zone.
-TIME_ZONE = 'America/Chicago'
-
-# Language code for this installation. All choices can be found here:
-# http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'en-us'
-
+DEFAULT_FROM_EMAIL = 'lukasz@langa.pl'
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
+TIME_ZONE = 'Europe/Warsaw'
+LANGUAGE_CODE = 'pl-pl'
 SITE_ID = 1
-
-# If you set this to False, Django will make some optimizations so as not
-# to load the internationalization machinery.
 USE_I18N = True
-
-# Absolute path to the directory that holds media.
-# Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = ''
-
-# URL that handles the media served from MEDIA_ROOT. Make sure to use a
-# trailing slash if there is a path component (optional in other cases).
-# Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = ''
-
-# URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
-# trailing slash.
-# Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = '/media/'
-
-# Make this unique, and don't share it with anybody.
-SECRET_KEY = 'u*pk)&+kxuyj+rgb&z%!*c4$drco@zs=pob3ugey0#fa@m@c4w'
-
-# List of callables that know how to import templates from various sources.
+USE_L10N = True #FIXME: breaks contents of localized date fields on form reload
+MEDIA_ROOT = CURRENT_DIR + 'uploads'
+MEDIA_URL = '/uploads/'
+STATIC_ROOT = CURRENT_DIR + 'static'
+STATIC_URL = '/static/'
+ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
+FILE_UPLOAD_TEMP_DIR = CURRENT_DIR + 'uploads-part'
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.load_template_source',
     'django.template.loaders.app_directories.load_template_source',
-#     'django.template.loaders.eggs.load_template_source',
 )
-
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
+    'langacore.kit.django.common.middleware.ActivityMiddleware',
+    'langacore.kit.django.common.middleware.AdminForceLanguageCodeMiddleware',
 )
-
 ROOT_URLCONF = 'dummy.urls'
-
-TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-)
-
+TEMPLATE_DIRS = (CURRENT_DIR + "templates",)
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
+    'django.contrib.messages',
+    'django.contrib.admin',
+    'django.contrib.admindocs',
+    'django.contrib.comments',
+    'django.contrib.flatpages',
     'langacore.kit.django.common',
+    'langacore.kit.django.profile',
+    'langacore.kit.django.tags',
 )
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.debug',
+    'django.core.context_processors.i18n',
+    'django.core.context_processors.media',
+    'django.contrib.messages.context_processors.messages',
+)
+FORCE_SCRIPT_NAME = ''
+# django.contrib.auth settings
+# AUTH_PROFILE_MODULE = 'account.Profile'
+# LOGIN_REDIRECT_URL = '/pl/'
+# LOGIN_URL = '/pl/auth/login/'
+# LOGOUT_URL = '/pl/auth/logout/'
+# django.contrib.messages settings
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+# django-staticfiles settings
+STATICFILES_FINDERS = (
+                  ('staticfiles.finders.FileSystemFinder',
+                   'staticfiles.finders.AppDirectoriesFinder',
+                   'staticfiles.finders.LegacyAppDirectoriesFinder',
+                  ))
+STATICFILES_DIRS = (
+    CURRENT_DIR + 'media',
+)
+# activity middleware settings
+CURRENTLY_ONLINE_INTERVAL = 120
+RECENTLY_ONLINE_INTERVAL = 300
+
+#
+# stuff that should be customized in settings_local.py
+#
+SECRET_KEY = 'u*pk)&+kxuyj+rgb&z%!*c4$drco@zs=pob3ugey0#fa@m@c4w'
+DEBUG = True
+TEMPLATE_DEBUG = DEBUG
+DUMMY_SEND_MAIL = DEBUG
+SEND_BROKEN_LINK_EMAILS = DEBUG
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': TEMP_DIR + 'development.db',
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': '',
+        'PORT': '',
+        'OPTIONS': {'timeout': 30},
+    }
+}
 
 from langacore.kit.django import profile_support
 execfile(profile_support)
