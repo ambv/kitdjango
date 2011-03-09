@@ -135,6 +135,11 @@ class Localized(db.Model):
         choices=Language(filter=set([lang[0] for lang in settings.LANGUAGES])),
             default=Language.IDFromName(settings.LANGUAGE_CODE))
 
+    @property
+    def lang(self):
+        l = Language.FromID(self.language)
+        return (l.name, l.desc)
+
     class Meta:
         abstract = True
 
