@@ -79,9 +79,10 @@ class Taggable(db.Model):
     def untag(self, name, language, author):
         author = _tag_get_user(author)
         language = _tag_get_language(language)
+        ct = ContentType.objects.get_for_model(self.__class__)
         try:
             tag = Tag.objects.get(name=name, language=language, author=author,
-                content_object=self)
+                content_type=ct, object_id=self.id)
             tag.delete()
         except Tag.DoesNotExist:
             pass # okay, successfully "untagged".
@@ -96,7 +97,7 @@ class TagStem(Named.NU, Localized, Taggable):
     tag_count = db.PositiveIntegerField(verbose_name=_("Tag count"), default=0)
 
     def __unicode__(self):
-        return self.name
+        return "{} ({})".format(self.name, self.get_language_display())
 
     def inc_count(self):
         """Increases the reported tag count."""
@@ -122,7 +123,7 @@ class Tag(Named.NU, Localized):
     an `author`. If the `author` is a staff member, the tag is
     `official`."""
     stem = db.ForeignKey(TagStem, verbose_name=_("Tag stem"),
-        related_name="fast_tags", editable=False, blank=True, null=True)
+        related_name="related_tags", editable=False, blank=True, null=True)
     author = db.ForeignKey(User, verbose_name=_("tag author"))
     official = db.BooleanField(verbose_name=_("is tag official?"),
         default=False)
@@ -131,6 +132,9 @@ class Tag(Named.NU, Localized):
     object_id = db.IntegerField(verbose_name=_("Content type instance id"),
         db_index=True)
     content_object = GenericForeignKey()
+
+    def __unicode__(self):
+        return "{} ({})".format(self.name, self.get_language_display())
 
     @classmethod
     def stems_for(cls, model, instance=None, official=False, author=None,
