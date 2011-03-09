@@ -38,7 +38,7 @@ from langacore.kit.django.choices import Language
 
 
 class Named(db.Model):
-    """Describes an abstract model with a ``name`` field."""
+    """Describes an abstract model with a unique ``name`` field."""
 
     name = db.CharField(verbose_name=_("name"), max_length=50, unique=True)
 
@@ -48,9 +48,20 @@ class Named(db.Model):
     def __unicode__(self):
         return self.name
 
+    class NU(db.Model):
+        """Describes an abstract model with a non-unique ``name`` field."""
+
+        name = db.CharField(verbose_name=_("name"), max_length=50)
+
+        class Meta:
+            abstract = True
+
+        def __unicode__(self):
+            return self.name
+
 
 class Titled(db.Model):
-    """Describes an abstract model with a ``title`` field."""
+    """Describes an abstract model with a unique ``title`` field."""
 
     title = db.CharField(verbose_name=_("title"), max_length=100, unique=True)
 
@@ -60,9 +71,21 @@ class Titled(db.Model):
     def __unicode__(self):
         return self.title
 
+    class NU(db.Model):
+        """Describes an abstract model with a non-unique ``title`` field."""
+
+        title = db.CharField(verbose_name=_("title"), max_length=100)
+
+        class Meta:
+            abstract = True
+
+        def __unicode__(self):
+            return self.title
+
+
 
 class Slugged(db.Model):
-    """Describes an abstract model with a ``slug`` field."""
+    """Describes an abstract model with a unique ``slug`` field."""
 
     slug = db.SlugField(verbose_name=_("permalink"), unique=True)
 
@@ -71,6 +94,17 @@ class Slugged(db.Model):
 
     def __unicode__(self):
         return self.slug
+
+    class NU(db.Model):
+        """Describes an abstract model with a non-unique ``slug`` field."""
+
+        slug = db.SlugField(verbose_name=_("permalink"))
+
+        class Meta:
+            abstract = True
+
+        def __unicode__(self):
+            return self.slug
 
 
 class TimeTrackable(db.Model):
