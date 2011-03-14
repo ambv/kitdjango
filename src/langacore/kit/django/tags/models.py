@@ -92,6 +92,12 @@ class TaggableBase(db.Model):
     tags = GenericRelation("Tag")
 
     def tag(self, name, language, author):
+        """Tags this object using a `name` in a specific `language`. The tag
+        will be marked as authored by `author`.
+
+        The `name` can be a list of comma-separated tags. Double quotes can be
+        used to escape values with spaces or commas. One special case: if there
+        are no commas in the input, spaces are treated as tag delimiters."""
         author = _tag_get_user(author)
         language = _tag_get_language(language)
         tags = parse_tag_input(name)
@@ -101,6 +107,12 @@ class TaggableBase(db.Model):
             tag.save()
 
     def untag(self, name, language, author):
+        """Untags this object from tags in a specific `language`, authored by
+        `author`.
+
+        The `name` can be a list of comma-separated tags. Double quotes can be
+        used to escape values with spaces or commas. One special case: if there
+        are no commas in the input, spaces are treated as tag delimiters."""
         author = _tag_get_user(author)
         language = _tag_get_language(language)
         ct = ContentType.objects.get_for_model(self.__class__)
@@ -114,12 +126,16 @@ class TaggableBase(db.Model):
                 pass # okay, successfully "untagged".
 
     def untag_all(self, name=None, language=None, author=None):
+        """untag_all([name], [language], [author])
+
+        Untags this object from all tags in a specific `language` or authored
+        by `author`."""
         author = _tag_get_user(author, default=None)
         language = _tag_get_language(language, default=None)
         ct = ContentType.objects.get_for_model(self.__class__)
         kwargs = dict(content_type=ct, object_id=self.id)
         if name is not None:
-            kwargs['name'] = name
+            kwargs['name__in'] = parse_tag_input(name)
         if language is not None:
             kwargs['language'] = language
         if author is not None:
