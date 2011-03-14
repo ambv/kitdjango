@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-02-06 19:55+0100\n"
+"POT-Creation-Date: 2011-03-14 16:57+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1818,38 +1818,38 @@ msgstr ""
 msgid "Ignore privacy"
 msgstr ""
 
-#: models.py:43
+#: models.py:43 models.py:54
 msgid "name"
 msgstr ""
 
-#: models.py:55
+#: models.py:66 models.py:77
 msgid "title"
 msgstr ""
 
-#: models.py:67
+#: models.py:90 models.py:101
 msgid "permalink"
 msgstr ""
 
-#: models.py:82
+#: models.py:116
 msgid "date created"
 msgstr ""
 
-#: models.py:84
+#: models.py:118
 msgid "last modified"
 msgstr ""
 
-#: models.py:100
+#: models.py:134
 msgid "language"
 msgstr ""
 
-#: models.py:111
+#: models.py:150
 msgid "last active"
 msgstr ""
 
-#: models.py:141
+#: models.py:180
 msgid "display count"
 msgstr ""
 
-#: models.py:174
+#: models.py:213
 msgid "deleted"
 msgstr ""

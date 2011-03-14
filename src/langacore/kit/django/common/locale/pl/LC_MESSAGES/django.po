@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-02-06 19:55+0100\n"
+"POT-Creation-Date: 2011-03-14 16:57+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -809,11 +809,11 @@ msgstr ""
 
 #: choices.py:434
 msgid "Tuvalu"
-msgstr ""
+msgstr "Tuvalu"
 
 #: choices.py:435
 msgid "Uganda"
-msgstr ""
+msgstr "Uganda"
 
 #: choices.py:436
 msgid "Ukraine"
@@ -841,7 +841,7 @@ msgstr "Uzbekistan"
 
 #: choices.py:442
 msgid "Vanuatu"
-msgstr ""
+msgstr "Vanuatu"
 
 #: choices.py:443
 msgid "Vatican City"
@@ -989,7 +989,7 @@ msgstr ""
 
 #: choices.py:527
 msgid "Arabic"
-msgstr ""
+msgstr "arabski"
 
 #: choices.py:528
 msgid "Assamese"
@@ -1017,11 +1017,11 @@ msgstr ""
 
 #: choices.py:534
 msgid "Belarusian"
-msgstr ""
+msgstr "białoruski"
 
 #: choices.py:535
 msgid "Bulgarian"
-msgstr ""
+msgstr "bułgarski"
 
 #: choices.py:536
 msgid "Bihari"
@@ -1041,15 +1041,15 @@ msgstr ""
 
 #: choices.py:540
 msgid "Tibetan"
-msgstr ""
+msgstr "tybetański"
 
 #: choices.py:541
 msgid "Breton"
-msgstr ""
+msgstr "bretoński"
 
 #: choices.py:542
 msgid "Bosnian"
-msgstr ""
+msgstr "bośniacki"
 
 #: choices.py:543
 msgid "Catalan"
@@ -1065,7 +1065,7 @@ msgstr ""
 
 #: choices.py:546
 msgid "Corsican"
-msgstr ""
+msgstr "korsycki"
 
 #: choices.py:547
 msgid "Cree"
@@ -1073,7 +1073,7 @@ msgstr ""
 
 #: choices.py:548
 msgid "Czech"
-msgstr ""
+msgstr "czeski"
 
 #: choices.py:549
 msgid "Church Slavic"
@@ -1085,15 +1085,15 @@ msgstr ""
 
 #: choices.py:551
 msgid "Welsh"
-msgstr ""
+msgstr "walijski"
 
 #: choices.py:552
 msgid "Danish"
-msgstr ""
+msgstr "duński"
 
 #: choices.py:553
 msgid "German"
-msgstr ""
+msgstr "niemiecki"
 
 #: choices.py:554
 msgid "Divehi"
@@ -1109,7 +1109,7 @@ msgstr ""
 
 #: choices.py:557
 msgid "Greek"
-msgstr ""
+msgstr "grecki"
 
 #: choices.py:558
 msgid "English"
@@ -1141,7 +1141,7 @@ msgstr "estoński"
 
 #: choices.py:565
 msgid "Basque"
-msgstr ""
+msgstr "baskijski"
 
 #: choices.py:566
 msgid "Persian"
@@ -1209,7 +1209,7 @@ msgstr "hebrajski"
 
 #: choices.py:582
 msgid "Hindi"
-msgstr ""
+msgstr "hindi"
 
 #: choices.py:583
 msgid "Hiri Motu"
@@ -1225,7 +1225,7 @@ msgstr ""
 
 #: choices.py:586
 msgid "Haitian"
-msgstr ""
+msgstr "haitański"
 
 #: choices.py:587
 msgid "Hungarian"
@@ -1241,7 +1241,7 @@ msgstr ""
 
 #: choices.py:590
 msgid "Interlingua"
-msgstr ""
+msgstr "Interlingua"
 
 #: choices.py:591
 msgid "Indonesian"
@@ -1249,7 +1249,7 @@ msgstr "indonezyjski"
 
 #: choices.py:592
 msgid "Interlingue"
-msgstr ""
+msgstr "Interlingue"
 
 #: choices.py:593
 msgid "Igbo"
@@ -1285,7 +1285,7 @@ msgstr "japoński"
 
 #: choices.py:601
 msgid "Javanese"
-msgstr ""
+msgstr "jawajski"
 
 #: choices.py:602
 msgid "Georgian"
@@ -1425,7 +1425,7 @@ msgstr "maltański"
 
 #: choices.py:636
 msgid "Burmese"
-msgstr ""
+msgstr "birmański"
 
 #: choices.py:638
 msgid "Norwegian Bokm\\u00e5l"
@@ -1793,15 +1793,15 @@ msgstr ""
 
 #: forms.py:84
 msgid "Gender"
-msgstr ""
+msgstr "Płeć"
 
 #: forms.py:85
 msgid "Game"
-msgstr ""
+msgstr "Gra"
 
 #: forms.py:86
 msgid "Account"
-msgstr ""
+msgstr "Konto"
 
 #: forms.py:86
 msgid ""
@@ -1820,38 +1820,38 @@ msgstr ""
 msgid "Ignore privacy"
 msgstr ""
 
-#: models.py:43
+#: models.py:43 models.py:54
 msgid "name"
 msgstr "nazwa"
 
-#: models.py:55
+#: models.py:66 models.py:77
 msgid "title"
 msgstr "tytuł"
 
-#: models.py:67
+#: models.py:90 models.py:101
 msgid "permalink"
 msgstr "trwały link"
 
-#: models.py:82
+#: models.py:116
 msgid "date created"
 msgstr "data i czas utworzenia"
 
-#: models.py:84
+#: models.py:118
 msgid "last modified"
 msgstr "data i czas ostatniej modyfikacji"
 
-#: models.py:100
+#: models.py:134
 msgid "language"
 msgstr "język"
 
-#: models.py:111
+#: models.py:150
 msgid "last active"
 msgstr "ostatnia aktywność"
 
-#: models.py:141
+#: models.py:180
 msgid "display count"
 msgstr "ilość wyświetleń"
 
-#: models.py:174
+#: models.py:213
 msgid "deleted"
 msgstr "wpis usunięty"
