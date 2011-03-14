@@ -48,7 +48,7 @@ class Named(db.Model):
     def __unicode__(self):
         return self.name
 
-    class NU(db.Model):
+    class NonUnique(db.Model):
         """Describes an abstract model with a non-unique ``name`` field."""
 
         name = db.CharField(verbose_name=_("name"), max_length=50)
@@ -71,7 +71,7 @@ class Titled(db.Model):
     def __unicode__(self):
         return self.title
 
-    class NU(db.Model):
+    class NonUnique(db.Model):
         """Describes an abstract model with a non-unique ``title`` field."""
 
         title = db.CharField(verbose_name=_("title"), max_length=100)
@@ -95,7 +95,7 @@ class Slugged(db.Model):
     def __unicode__(self):
         return self.slug
 
-    class NU(db.Model):
+    class NonUnique(db.Model):
         """Describes an abstract model with a non-unique ``slug`` field."""
 
         slug = db.SlugField(verbose_name=_("permalink"))
