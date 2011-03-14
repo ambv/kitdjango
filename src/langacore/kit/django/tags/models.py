@@ -34,26 +34,37 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.generic import (GenericForeignKey,
     GenericRelation)
 from django.contrib.auth.models import User
+from django.core.exceptions import ImproperlyConfigured
 from django.db import models as db
 from django.db.models.signals import post_delete
 from django.utils.translation import ugettext_lazy as _
 
-from langacore.kit.django.choices import Choice
+from langacore.kit.django.choices import Choice, Language
 from langacore.kit.django.common.models import Named, Localized, TimeTrackable
 from langacore.kit.lang import unset
+from langacore.kit.django.tags.forms import TagField, TagWidget
+from langacore.kit.django.tags.helpers import parse_tag_input
 
 TAG_AUTHOR_MODEL = getattr(settings, 'TAG_AUTHOR_MODEL', User)
 
+
 def _tag_get_user(author, default=unset):
-    if isinstance(author, User):
+    author_model = Tag.author.field.rel.to
+    if isinstance(author, author_model):
         return author
-    elif hasattr(author, 'user'):
+    elif isinstance(author, User) and isinstance(author.get_profile(),
+        author_model):
+        return author.get_profile()
+    elif hasattr(author, 'user') and isinstance(author.user, author_model):
         return author.user
+    elif hasattr(author, 'profile') and isinstance(author.profile,
+        author_model):
+        return author.profile
     elif default is not unset:
         return default
-    raise ValueError("The given author is neither of type "
-        "`django.contrib.auth.models.User` nor has a `user`"
-        "attribute.")
+    raise ValueError("The given author is neither of type `{}` nor has "
+        "a `user` or `profile` attribute of this type."
+        "".format(author_model))
 
 def _tag_get_language(language, default=unset):
     if isinstance(language, int):
@@ -76,27 +87,146 @@ def _tag_get_instance(instance, default=unset):
         "has a `pk` attribute.")
 
 
-class Taggable(db.Model):
+class TaggableBase(db.Model):
     """Provides the `tags` generic relation to prettify the API."""
     tags = GenericRelation("Tag")
 
     def tag(self, name, language, author):
         author = _tag_get_user(author)
         language = _tag_get_language(language)
-        tag = Tag(name=name, language=language, author=author,
-            content_object=self)
-        tag.save()
+        tags = parse_tag_input(name)
+        for tag_name in tags:
+            tag = Tag(name=tag_name, language=language, author=author,
+                content_object=self)
+            tag.save()
 
     def untag(self, name, language, author):
         author = _tag_get_user(author)
         language = _tag_get_language(language)
         ct = ContentType.objects.get_for_model(self.__class__)
-        try:
-            tag = Tag.objects.get(name=name, language=language, author=author,
-                content_type=ct, object_id=self.id)
-            tag.delete()
-        except Tag.DoesNotExist:
-            pass # okay, successfully "untagged".
+        tags = parse_tag_input(name)
+        for tag_name in tags:
+            try:
+                tag = Tag.objects.get(name=tag_name, language=language,
+                    author=author, content_type=ct, object_id=self.id)
+                tag.delete()
+            except Tag.DoesNotExist:
+                pass # okay, successfully "untagged".
+
+    def untag_all(self, name=None, language=None, author=None):
+        author = _tag_get_user(author, default=None)
+        language = _tag_get_language(language, default=None)
+        ct = ContentType.objects.get_for_model(self.__class__)
+        kwargs = dict(content_type=ct, object_id=self.id)
+        if name is not None:
+            kwargs['name'] = name
+        if language is not None:
+            kwargs['language'] = language
+        if author is not None:
+            kwargs['author'] = author
+        tags = Tag.objects.filter(**kwargs)
+        tags.delete()
+
+
+    def similar_objects(self, same_type=False, official=False):
+        """similar_objects([same_type, official]) -> [(obj, distance), (obj, distance), ...]
+
+        Returns a sorted list of similar objects in tuples (the object itself,
+        the distance to the `self` object). If there are no similar objects,
+        the list returned is empty. Searching for similar objects can be
+        constrained to the objects of the same type (if `same_type` is
+        True).
+
+        Objects are similar when they share the same tags. Distance is the
+        number of tags that are not shared by the two objects (specifically,
+        the object has distance 0 to itself). Distance calculation by default
+        uses all tags present on the object. If `official` is True, only the
+        official tags are taken into account.
+        """
+
+        if same_type:
+            stems = TagStem.objects.get_for_model(self.__class__,
+                official=official)
+        else:
+            stems = TagStem.objects.get_all(official=official)
+        distance = []
+        self_stems = stems[self]
+        del stems[self]
+        for obj, s in stems.iteritems():
+            if not s & self_stems:
+                # things without a single common tag are not similar at all
+                continue
+            distance.append((obj, len(s ^ self_stems)))
+        distance.sort(key=lambda elem: elem[1])
+        return distance
+
+    class Meta:
+        abstract = True
+
+
+class DefaultTags(db.CharField):
+    def __init__(self, *args, **kwargs):
+        defaults = dict(verbose_name=_("default tags"), max_length=1000,
+            blank=True, default="")
+        defaults.update(kwargs)
+        super(DefaultTags, self).__init__(*args, **defaults)
+
+
+class Taggable(TaggableBase):
+    """Provides the `tags` generic relation and default tags that can be edited
+    straight from the admin."""
+    _default_tags = DefaultTags()
+
+    # To be used like Named.NonUnique, etc.
+    NoDefaultTags = TaggableBase
+
+    def _get_default_tags_author(self):
+        allowed_author_type = Tag.author.field.rel.to
+        if hasattr(self, 'default_tags_author'):
+            author_lookup_fields = [getattr(self, 'default_tags_author')]
+        else:
+            author_lookup_fields = ['author', 'user', 'sender']
+        for field_name in author_lookup_fields:
+            try:
+                _author = getattr(self, field_name)
+                if isinstance(_author, allowed_author_type):
+                    return _author
+            except AttributeError:
+                continue
+        raise ImproperlyConfigured("No compatible author field found for "
+            "default tags.")
+
+    def _get_default_tags_language(self):
+        if hasattr(self, 'default_tags_language'):
+            language_lookup_fields = [getattr(self, self.default_tags_language)]
+        else:
+            language_lookup_fields = ['language', 'lang']
+        for field_name in language_lookup_fields:
+            try:
+                _language = getattr(self, field_name)
+                if isinstance(_language, tuple):
+                    _language = _language[0]
+                if isinstance(_language, int):
+                    return _language
+                elif isinstance(_language, basestring):
+                    return Language.IDFromName(_language)
+            except AttributeError:
+                continue
+        raise ImproperlyConfigured("No compatible language field found for "
+            "default tags.")
+
+    def save(self, *args, **kwargs):
+        tag_author = self._get_default_tags_author()
+        tag_lang = self._get_default_tags_language()
+        new = not bool(self.pk)
+        if not new:
+            # FIXME: this two-step approach may delete tags on tags
+            self.untag_all(author=tag_author)
+            self.tag(self._default_tags, tag_lang, tag_author)
+        super(Taggable, self).save(*args, **kwargs)
+        if new:
+            import pdb; pdb.set_trace()
+            self.tag(self._default_tags, tag_lang, tag_author)
 
     class Meta:
         abstract = True
@@ -194,7 +324,7 @@ class TagStemManager(db.Manager):
         return self.filter(**kwargs).distinct()
 
 
-class TagStem(Named.NU, Localized, Taggable):
+class TagStem(Named.NonUnique, Localized, Taggable.NoDefaultTags):
     """A taggable stem of an existing tag (just the `name` in a specific
     `language`)."""
     tag_count = db.PositiveIntegerField(verbose_name=_("Tag count"), default=0)
@@ -223,7 +353,7 @@ class TagStem(Named.NU, Localized, Taggable):
         verbose_name_plural = _("Tag stems")
 
 
-class Tag(Named.NU, Localized, TimeTrackable):
+class Tag(Named.NonUnique, Localized, TimeTrackable):
     """A tag to a generic object done by
     an `author`. If the `author` is a staff member, the tag is
     `official`."""
