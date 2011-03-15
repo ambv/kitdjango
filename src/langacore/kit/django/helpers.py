@@ -21,9 +21,9 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext
 
 
-
 DOTS_REGEX = re.compile(r'\.\s+')
-
+INTERNAL_IPS = getattr(settings, 'INTERNAL_IPS', set(('127.0.0.1', '::1',
+    'localhost')))
 
 def render(request, template_name, context, debug=False, mimetype=None):
     """render(request, template_name, context, [debug, mimetype]) -> HttpResponse
@@ -140,3 +140,17 @@ def cut(text, length=40, trailing=" (...)"):
     if len(text) <= length:
         trailing = ""
     return text[:length] + trailing
+
+
+def remote_addr(request):
+    """If the remote address in request is a localhost, check for
+    X_FORWADED_FOR. Which addresses are considered local is defined by the
+    ``INTERNAL_IPS`` list in `settings.py`, by default these are 127.0.0.1,
+    ::1 and "localhost"."""
+    result = request.META['REMOTE_ADDR']
+    if result in INTERNAL_IPS:
+        try:
+            result = request.META['HTTP_X_FORWARDED_FOR'].split(',')[0].strip()
+        except (KeyError, IndexError):
+            pass
+    return result
