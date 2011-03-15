@@ -27,6 +27,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from datetime import date
+from hashlib import md5
 import re
 
 from django.contrib.auth.models import User
@@ -106,9 +108,6 @@ class ActivationSupport(db.Model):
 
     class Meta:
         abstract = True
-
-    def save(self, *args, **kwargs):
-        super(ActivationSupport, self).save(*args, **kwargs)
 
 
 class GravatarSupport(db.Model):

@@ -28,8 +28,11 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from datetime import datetime
+from hashlib import sha256
 
 from django.conf import settings
+from django.core.cache import cache
+from django.core.exceptions import ImproperlyConfigured
 from django.core.mail import send_mail
 from django.db import models as db
 from django.utils.translation import ugettext_lazy as _
@@ -121,9 +124,10 @@ class TimeTrackable(db.Model):
     class Meta:
         abstract = True
 
-    def save(self):
-        self.modified = datetime.now()
-        super(TimeTrackable, self).save()
+    def save(self, update_modified=True, *args, **kwargs):
+        if update_modified:
+            self.modified = datetime.now()
+        super(TimeTrackable, self).save(*args, **kwargs)
 
 
 class Localized(db.Model):
@@ -171,21 +175,36 @@ class MonitoredActivity(db.Model):
 
 
 class DisplayCounter(db.Model):
-    """Describes an abstract model which display count can be incremented by
-    calling ``bump()``. Models inheriting from ``DisplayCounter`` can define
-    a special ``bump_save()`` method which is called instead of the default
-    ``save()`` on each ``bump()`` (for instance to circumvent updating the
-    ``modified`` field if the model is also ``TimeTrackable``.
+    """Describes an abstract model which `display_count` can be incremented by
+    calling ``bump()``.
+
+    If ``bump()`` is called with some `unique_id` as its argument, Django's
+    cache will be used to ensure subsequent invocations with the same
+    `unique_id` won't bump the display count. This functionality requires
+    `get_absolute_url()` to be defined for the model.
+
+    If the model is also ``TimeTrackable``, bumps won't update the `modified`
+    field.
     """
     display_count = db.PositiveIntegerField(verbose_name=_("display count"),
         default=0, editable=False)
 
-    def bump(self):
-        self.display_count += 1
-        if not 'bump_save' in dir(self):
-            self.save()
-        else:
-            self.bump_save()
+    def bump(self, unique_id=None):
+        should_update = True
+        if unique_id:
+            if not hasattr(self, 'get_absolute_url'):
+                raise ImproperlyConfigured("{} model doesn't define "
+                    "get_absolute_url() required for DisplayCounter.bump() "
+                    "to work with a `unique_id` argument.")
+            url = self.get_absolute_url()
+            hash = sha256(url).hexdigest()
+            unique_id = sha256(str(unique_id)).hexdigest()
+            key = "displaycounter::bump::{}::{}".format(hash, unique_id)
+            should_update = not bool(cache.get(key))
+            cache.set(key, True, 60*60)
+        if should_update:
+            self.display_count += 1
+            self.save(update_modified=False)
 
     class Meta:
         abstract = True
