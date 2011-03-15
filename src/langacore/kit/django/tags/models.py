@@ -234,6 +234,7 @@ class Taggable(TaggableBase):
     def save(self, *args, **kwargs):
         tag_author = self._get_default_tags_author()
         tag_lang = self._get_default_tags_language()
+        self._default_tags = ", ".join(parse_tag_input(self._default_tags))
         new = not bool(self.pk)
         if not new:
             # FIXME: this two-step approach may delete tags on tags
@@ -241,7 +242,6 @@ class Taggable(TaggableBase):
             self.tag(self._default_tags, tag_lang, tag_author)
         super(Taggable, self).save(*args, **kwargs)
         if new:
-            import pdb; pdb.set_trace()
             self.tag(self._default_tags, tag_lang, tag_author)
 
     class Meta:
@@ -410,6 +410,10 @@ class Tag(Named.NonUnique, Localized, TimeTrackable):
             self.official = True
         self.update_stem()
         return super(Tag, self).save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = _("Tag")
+        verbose_name_plural = _("Tags")
 
 
 def clean_stems(sender, instance, **kwargs):

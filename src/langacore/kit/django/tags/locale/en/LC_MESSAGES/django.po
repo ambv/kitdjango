@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-14 16:46+0100\n"
+"POT-Creation-Date: 2011-03-14 17:22+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,34 +17,42 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: models.py:169
+#: models.py:185
 msgid "default tags"
 msgstr ""
 
-#: models.py:330
+#: models.py:346
 msgid "Tag count"
 msgstr ""
 
-#: models.py:352 models.py:360
+#: models.py:368 models.py:376
 msgid "Tag stem"
 msgstr ""
 
-#: models.py:353
+#: models.py:369
 msgid "Tag stems"
 msgstr ""
 
-#: models.py:362
+#: models.py:378
 msgid "tag author"
 msgstr ""
 
-#: models.py:363
+#: models.py:379
 msgid "is tag official?"
 msgstr ""
 
-#: models.py:365
+#: models.py:381
 msgid "Content type"
 msgstr ""
 
-#: models.py:367
+#: models.py:383
 msgid "Content type instance id"
+msgstr ""
+
+#: models.py:415
+msgid "Tag"
+msgstr ""
+
+#: models.py:416
+msgid "Tags"
 msgstr ""
