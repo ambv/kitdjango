@@ -10,6 +10,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from functools import wraps
 import re
 
 from django.conf import settings
@@ -53,6 +54,20 @@ def render(request, template_name, context, debug=False, mimetype=None):
                                RequestContext(request, context),
                                mimetype=mimetype)
 
+def render_decorator(func):
+    """render_decorator(func) -> HttpResponse
+
+    Wraps a view function returning `context` (most conveniently: locals()).
+    Renders the `context` for a context['request'] using a template named
+    context['template'] returning the required context['mimetype']."""
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        context = func(*args, **kwargs)
+        return _render_to_response(context['template'],
+                                   RequestContext(context['request'], context),
+                                   mimetype=context.get('mimetype', None))
+    return wrapper
 
 def render_json(obj):
     """render_json(obj) -> HttpResponse
