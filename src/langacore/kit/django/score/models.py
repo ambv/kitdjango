@@ -58,13 +58,14 @@ class TotalScore(db.Model):
             self.object_id, self.value)
 
     @classmethod
-    def get_value(cls, object, voter=None):
-        """TotalScore.get_value(object, [voter]) -> int
+    def get_value(cls, object, voter=None, ct=None):
+        """TotalScore.get_value(object, [voter, ct]) -> int
 
         Returns the current score for the specific `object` or 0 if no-one
         voted for it yet. Optionally gets value for a specific `voter`."""
         try:
-            ct = ContentType.objects.get_for_model(object.__class__)
+            if not ct:
+                ct = ContentType.objects.get_for_model(object.__class__)
             score = cls.objects.get(content_type=ct, object_id=object.id)
             if voter:
                 score = Vote.objects.get(total_score=score, voter=voter)
@@ -73,8 +74,8 @@ class TotalScore(db.Model):
             return 0
 
     @classmethod
-    def update(cls, object, voter, value, reason=""):
-        """TotalScore.update(object, voter, value, [reason]) -> int
+    def update(cls, object, voter, value, reason="", ct=None):
+        """TotalScore.update(object, voter, value, [reason, ct]) -> int
 
         Updates the score on `object` by voting the specific integer `value`
         as user `voter`. Optionally, a `reason` can be added to the vote.
@@ -85,12 +86,15 @@ class TotalScore(db.Model):
 
         Conveniently returns the updated total score for the given object."""
         try:
-            ct = ContentType.objects.get_for_model(object.__class__)
+            if not ct:
+                ct = ContentType.objects.get_for_model(object.__class__)
             total_score = cls.objects.get(content_type=ct, object_id=object.id)
         except cls.DoesNotExist:
             # no-one voted before for that object
             total_score = cls(content_object=object)
             total_score.save()
+        if isinstance(voter, int):
+            voter = Vote.voter.field.rel.to.objects.get(pk=voter)
         # TotalScore values in the database are updated automatically on
         # vote creation, modification and deletion but the `total_score`
         # instance we have will not. To avert returning a stale value we
