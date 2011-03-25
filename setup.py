@@ -45,7 +45,7 @@ setup (
         'langacore.kit.common>=0.2.4',
         'langacore.kit.i18n',
         'setuptools',
-        'django>=1.2',
+        'django>=1.3',
         'postmarkup',
         'PIL>=1.1.7',
         ],

@@ -52,3 +52,7 @@ it's using the ``absolute_imports``, ``division``, ``print_function`` and
 is to make the code beautiful. These switches give us a useful transitional
 state between the old Python 2.x and the new Python 3.x. You should use them as
 well.
+
+**Note:**  Since 0.3.4 ``langacore.kit.django`` requires **Django 1.3** because
+it makes my monkey-patching efforts much easier. Moreover, 1.3 nicely deprecates
+behaviour which I consider ugly.
