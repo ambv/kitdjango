@@ -25,25 +25,25 @@ with open(os.path.join(os.path.dirname(__file__), 'README.rst')) as ld_file:
 from doc.conf import release
 
 setup (
-    name = 'langacore.kit.django',
+    name = 'lck.django',
     version = release,
-    author = 'LangaCore, Lukasz Langa',
-    author_email = 'support@langacore.org, lukasz@langa.pl',
+    author = 'Lukasz Langa',
+    author_email = 'lukasz@langa.pl',
     description = "Various common Django-related routines.",
     long_description = long_description,
-    url = 'http://packages.python.org/langacore.kit.django/',
+    url = 'http://packages.python.org/lck.django/',
     keywords = '',
     platforms = ['any'],
     license = 'GPL v3',
     packages = find_packages('src'),
     include_package_data = True,
     package_dir = {'':'src'},
-    namespace_packages = ['langacore', 'langacore.kit'],
+    namespace_packages = ['lck'],
     zip_safe = False, # because executing support extensions for settings.py
                       # requires actual files
     install_requires = [
-        'langacore.kit.common>=0.2.4',
-        'langacore.kit.i18n',
+        'lck.common>=0.4.0',
+        'lck.i18n>=0.3.0',
         'setuptools',
         'django>=1.3',
         'postmarkup',
@@ -51,10 +51,10 @@ setup (
         ],
 
     classifiers = [
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Framework :: Django',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: GNU General Public License (GPL)',
+        'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
         'Operating System :: POSIX',
         'Operating System :: MacOS :: MacOS X',

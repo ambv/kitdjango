@@ -7,5 +7,5 @@
 /dist
 .DS_Store
 *.swp
-/src/langacore.kit.django.egg-info
-/src/langacore/kit/django/common/choices.py
+/src/lck.django.egg-info
+/src/lck/django/common/choices.py
