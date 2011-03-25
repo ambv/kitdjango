@@ -1,8 +1,8 @@
-:mod:`langacore.kit.django.common.templatetags.strings`
-=======================================================
+:mod:`lck.django.common.templatetags.strings`
+=============================================
 
 
-.. automodule:: langacore.kit.django.common.templatetags.strings
+.. automodule:: lck.django.common.templatetags.strings
 
 
 Functions

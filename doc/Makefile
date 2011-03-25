@@ -31,33 +31,33 @@ clean:
 	-rm -rf $(BUILDDIR)/*
 
 html:
-	DJANGO_SETTINGS_MODULE="langacore.kit.dummy.settings" $(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
+	DJANGO_SETTINGS_MODULE="lck.dummy.settings" $(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
 
 dirhtml:
-	DJANGO_SETTINGS_MODULE="langacore.kit.dummy.settings" $(SPHINXBUILD) -b dirhtml $(ALLSPHINXOPTS) $(BUILDDIR)/dirhtml
+	DJANGO_SETTINGS_MODULE="lck.dummy.settings" $(SPHINXBUILD) -b dirhtml $(ALLSPHINXOPTS) $(BUILDDIR)/dirhtml
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/dirhtml."
 
 pickle:
-	DJANGO_SETTINGS_MODULE="langacore.kit.dummy.settings" $(SPHINXBUILD) -b pickle $(ALLSPHINXOPTS) $(BUILDDIR)/pickle
+	DJANGO_SETTINGS_MODULE="lck.dummy.settings" $(SPHINXBUILD) -b pickle $(ALLSPHINXOPTS) $(BUILDDIR)/pickle
 	@echo
 	@echo "Build finished; now you can process the pickle files."
 
 json:
-	DJANGO_SETTINGS_MODULE="langacore.kit.dummy.settings" $(SPHINXBUILD) -b json $(ALLSPHINXOPTS) $(BUILDDIR)/json
+	DJANGO_SETTINGS_MODULE="lck.dummy.settings" $(SPHINXBUILD) -b json $(ALLSPHINXOPTS) $(BUILDDIR)/json
 	@echo
 	@echo "Build finished; now you can process the JSON files."
 
 htmlhelp:
-	DJANGO_SETTINGS_MODULE="langacore.kit.dummy.settings" $(SPHINXBUILD) -b htmlhelp $(ALLSPHINXOPTS) $(BUILDDIR)/htmlhelp
+	DJANGO_SETTINGS_MODULE="lck.dummy.settings" $(SPHINXBUILD) -b htmlhelp $(ALLSPHINXOPTS) $(BUILDDIR)/htmlhelp
 	@echo
 	@echo "Build finished; now you can run HTML Help Workshop with the" \
 	      ".hhp project file in $(BUILDDIR)/htmlhelp."
 
 qthelp:
-	DJANGO_SETTINGS_MODULE="langacore.kit.dummy.settings" $(SPHINXBUILD) -b qthelp $(ALLSPHINXOPTS) $(BUILDDIR)/qthelp
+	DJANGO_SETTINGS_MODULE="lck.dummy.settings" $(SPHINXBUILD) -b qthelp $(ALLSPHINXOPTS) $(BUILDDIR)/qthelp
 	@echo
 	@echo "Build finished; now you can run "qcollectiongenerator" with the" \
 	      ".qhcp project file in $(BUILDDIR)/qthelp, like this:"
@@ -66,25 +66,25 @@ qthelp:
 	@echo "# assistant -collectionFile $(BUILDDIR)/qthelp/langacorekitdjango.qhc"
 
 latex:
-	DJANGO_SETTINGS_MODULE="langacore.kit.dummy.settings" $(SPHINXBUILD) -b latex $(ALLSPHINXOPTS) $(BUILDDIR)/latex
+	DJANGO_SETTINGS_MODULE="lck.dummy.settings" $(SPHINXBUILD) -b latex $(ALLSPHINXOPTS) $(BUILDDIR)/latex
 	@echo
 	@echo "Build finished; the LaTeX files are in $(BUILDDIR)/latex."
 	@echo "Run \`make all-pdf' or \`make all-ps' in that directory to" \
 	      "run these through (pdf)latex."
 
 changes:
-	DJANGO_SETTINGS_MODULE="langacore.kit.dummy.settings" $(SPHINXBUILD) -b changes $(ALLSPHINXOPTS) $(BUILDDIR)/changes
+	DJANGO_SETTINGS_MODULE="lck.dummy.settings" $(SPHINXBUILD) -b changes $(ALLSPHINXOPTS) $(BUILDDIR)/changes
 	@echo
 	@echo "The overview file is in $(BUILDDIR)/changes."
 
 linkcheck:
-	DJANGO_SETTINGS_MODULE="langacore.kit.dummy.settings" $(SPHINXBUILD) -b linkcheck $(ALLSPHINXOPTS) $(BUILDDIR)/linkcheck
+	DJANGO_SETTINGS_MODULE="lck.dummy.settings" $(SPHINXBUILD) -b linkcheck $(ALLSPHINXOPTS) $(BUILDDIR)/linkcheck
 	@echo
 	@echo "Link check complete; look for any errors in the above output " \
 	      "or in $(BUILDDIR)/linkcheck/output.txt."
 
 doctest:
-	DJANGO_SETTINGS_MODULE="langacore.kit.dummy.settings" $(SPHINXBUILD) -b doctest $(ALLSPHINXOPTS) $(BUILDDIR)/doctest
+	DJANGO_SETTINGS_MODULE="lck.dummy.settings" $(SPHINXBUILD) -b doctest $(ALLSPHINXOPTS) $(BUILDDIR)/doctest
 	@echo "Testing of doctests in the sources finished, look at the " \
 	      "results in $(BUILDDIR)/doctest/output.txt."
 

@@ -1,8 +1,8 @@
-:mod:`langacore.kit.django.common.templatetags.converters`
-==========================================================
+:mod:`lck.django.common.templatetags.converters`
+================================================
 
 
-.. automodule:: langacore.kit.django.common.templatetags.converters
+.. automodule:: lck.django.common.templatetags.converters
 
 
 Functions

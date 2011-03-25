@@ -7,10 +7,6 @@ TODO
 Code
 ----
 
-* Migrate from the overly verbose ``langacore.kit.django`` namespace to
-  a shorter one (``lck.django`` looks nice. ``lckd`` would be even shorter
-  but I'd like to be consistent with the rest of the ``langacore.kit`` packages)
-
 * Cleanup of forms would be great
   
 * There are not enough unit tests
@@ -44,7 +40,5 @@ Community
 ---------
 
 * There is no community
-
-* Migrate to the MIT license
 
 * Some publicity would be helpful

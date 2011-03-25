@@ -27,9 +27,9 @@ or::
   $ easy_install lck.django
 
 
-The `source code repository <http://github.com/lckdjango>`_ and `issue
-tracker <http://github.com/lckdjango/issues>`_ are maintained on
-`GitHub <http://github.com/lckdjango>`_.
+The `source code repository <http://github.com/LangaCore/kitdjango>`_ and `issue
+tracker <http://github.com/LangaCore/kitdjango/issues>`_ are maintained on
+`GitHub <http://github.com/LangaCore/kitdjango>`_.
 
 This package bundles some royalty free static images that are useful in almost
 every Django project:
@@ -66,7 +66,7 @@ Change Log
 0.5.0
 ~~~~~
 
-* migrated to the ``lck`` namespace from ``lck``
+* migrated to the ``lck`` namespace from ``langacore.kit``
 
 * migrated licensing from GPL 3 to MIT
 

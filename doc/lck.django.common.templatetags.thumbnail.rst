@@ -1,4 +1,4 @@
-:mod:`langacore.kit.django.common.templatetags.thumbnail`
-=========================================================
+:mod:`lck.django.common.templatetags.thumbnail`
+===============================================
 
-.. automodule:: langacore.kit.django.common.templatetags.thumbnail
+.. automodule:: lck.django.common.templatetags.thumbnail

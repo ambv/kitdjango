@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# langacore.kit.django documentation build configuration file, created by
+# lck.django documentation build configuration file, created by
 # sphinx-quickstart on Tue Mar 16 23:16:32 2010.
 #
 # This file is execfile()d with the current directory set to its containing dir.
@@ -37,7 +37,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'langacore.kit.django'
+project = u'lck.django'
 copyright = u'2010, Łukasz Langa, LangaCore'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -158,7 +158,7 @@ html_show_sourcelink = True
 #html_file_suffix = ''
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'langacorekitdjangodoc'
+htmlhelp_basename = 'lckdjangodoc'
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -172,8 +172,8 @@ htmlhelp_basename = 'langacorekitdjangodoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'langacorekitdjango.tex', u'langacore.kit.django Documentation',
-   u'Łukasz Langa, LangaCore', 'manual'),
+  ('index', 'lckdjango.tex', u'lck.django Documentation',
+   u'Łukasz Langa', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
