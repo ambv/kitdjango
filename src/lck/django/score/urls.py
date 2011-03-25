@@ -28,7 +28,7 @@ from __future__ import unicode_literals
 
 from django.conf.urls.defaults import *
 
-urlpatterns = patterns('langacore.kit.django.score.views',
+urlpatterns = patterns('lck.django.score.views',
     url(r'^(?P<content_type>\d+)/(?P<object_id>\d+)/$', 'show_score', name='show'),
     url(r'^(?P<content_type>\d+)/(?P<object_id>\d+)/(?P<value>-?\d+)/$', 'update_score', name='update'),
 )
