@@ -1,4 +1,4 @@
-:mod:`langacore.kit.django.common.templatetags.cycle_filter`
-============================================================
+:mod:`lck.django.common.templatetags.cycle_filter`
+==================================================
 
-.. automodule:: langacore.kit.django.common.templatetags.cycle_filter
+.. automodule:: lck.django.common.templatetags.cycle_filter

@@ -1,7 +1,7 @@
 .. include:: ../README.rst
 
 This documentation
-==================
+------------------
 
 .. toctree::
    :maxdepth: 2
@@ -11,7 +11,7 @@ This documentation
    todo
 
 Indices and tables
-==================
+------------------
 
 * :ref:`genindex`
 * :ref:`modindex`

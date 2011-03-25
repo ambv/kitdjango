@@ -11,7 +11,7 @@ Choices objects
 This is a much clearer way to specify choices for fields in models and forms.
 A basic example::
 
-    >>> from langacore.kit.django.choices import Choices
+    >>> from lck.django.choices import Choices
     >>> class Gender(Choices):
     ...   _ = Choices.Choice
     ...   
@@ -198,7 +198,7 @@ Predefined choices
 There are several classes of choices which are very common in web applications
 so they are provided already:
 
-.. currentmodule:: langacore.kit.django.choices
+.. currentmodule:: lck.django.choices
 
 .. autosummary::
 
@@ -214,7 +214,7 @@ To ease the process and protect against possible mistakes when doing the same
 exact modification for the n-th time, a set of extensions for ``settings.py``
 was developed. The extensions are activated by importing them and executing::
 
-  from langacore.kit.django import current_dir_support
+  from lck.django import current_dir_support
   execfile(current_dir_support)
 
 This is done so to enable the extensions access to the current local namespace
@@ -230,7 +230,7 @@ context means the root of the project ("current" because most of the time this
 is the same dir where ``settings.py`` resides). An additional feature is that it
 is always ending with ``os.sep`` so it's perfectly safe to do something like::
 
-  from langacore.kit.django import current_dir_support
+  from lck.django import current_dir_support
   execfile(current_dir_support)
 
   (...)
@@ -271,12 +271,12 @@ To enable this extension, import and execute it in the ``settings.py`` context
 This extension monkey-patches [1]_ Django so that is supports namespace
 packages. Not all places are covered though so if you spot some feature where
 namespace packages still don't work, file an issue using our `issue tracker
-<http://github.com/LangaCore/kitdjango/issues>`_.
+<http://github.com/lckdjango/issues>`_.
 
 To enable this extension, import and execute it in the ``settings.py`` context
 (anywhere within the config file is fine)::
 
-  from langacore.kit.django import namespace_package_support 
+  from lck.django import namespace_package_support 
   execfile(namespace_package_support)
 
 Features supported:
@@ -319,7 +319,7 @@ and ``CURRENT_DIR`` is the one calculated by enabling ``current_dir_support``.
 To enable profiles, just add these lines **at the very end** of your
 ``settings.py`` file::
 
-  from langacore.kit.django import profile_support
+  from lck.django import profile_support
   execfile(profile_support)
 
 By default, this enables loading settings found in ``settings-local.py``. There
@@ -357,7 +357,7 @@ the diagram in the ``current_dir_support`` description above.
 Custom ``manage.py`` commands
 =============================
 
-By adding ``langacore.kit.django.common`` to your ``INSTALLED_APPS`` you get
+By adding ``lck.django.common`` to your ``INSTALLED_APPS`` you get
 some additional second-level commands for ``manage.py``:
 
 * ``shell``: a version of the original `manage.py shell
@@ -375,7 +375,7 @@ Filters
 The filters below are usable directly from pure Python code and obviously work
 as templatetags as well:
 
-.. currentmodule:: langacore.kit.django.filters
+.. currentmodule:: lck.django.filters
 
 .. autosummary::
 
@@ -390,8 +390,8 @@ as templatetags as well:
   transliterate
 
 To use these filters in your source code, simply import them from
-``langacore.kit.django.filters``.  To use them as templatetags, add the
-``langacore.kit.django.common`` app to ``INSTALLED_APPS`` within your
+``lck.django.filters``.  To use them as templatetags, add the
+``lck.django.common`` app to ``INSTALLED_APPS`` within your
 ``settings.py`` and in the specific template use::
 
   {%load LIB_NAME%}
@@ -405,7 +405,7 @@ where ``LIB_NAME`` is the templatetag library name for the specific filter
 There are more filters whose implementation makes them useful only as
 templatetags. These include:
   
-.. currentmodule:: langacore.kit.django.common.templatetags
+.. currentmodule:: lck.django.common.templatetags
 
 .. autosummary::
   
@@ -416,7 +416,7 @@ Module details
 ==============
 For more detailed view on the modules, see the documentation below.
 
-.. currentmodule:: langacore.kit.django
+.. currentmodule:: lck.django
 
 .. autosummary::
   :toctree:

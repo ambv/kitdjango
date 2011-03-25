@@ -1,8 +1,8 @@
-:mod:`langacore.kit.django.filters`
-===================================
+:mod:`lck.django.filters`
+=========================
 
 
-.. automodule:: langacore.kit.django.filters
+.. automodule:: lck.django.filters
 
 
 Functions

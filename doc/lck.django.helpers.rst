@@ -1,7 +1,7 @@
-:mod:`langacore.kit.django.helpers`
-===================================
+:mod:`lck.django.helpers`
+=========================
 
-.. automodule:: langacore.kit.django.helpers
+.. automodule:: lck.django.helpers
 
 
 Functions

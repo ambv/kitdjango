@@ -1,7 +1,7 @@
-:mod:`langacore.kit.django.profile.models`
-==========================================
+:mod:`lck.django.profile.models`
+================================
 
-.. automodule:: langacore.kit.django.profile.models
+.. automodule:: lck.django.profile.models
 
 Classes
 -------
