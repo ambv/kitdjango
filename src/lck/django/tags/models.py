@@ -47,9 +47,9 @@ from django.utils.translation import ugettext_lazy as _
 
 from lck.django.choices import Choice, Language
 from lck.django.common.models import Named, Localized, TimeTrackable
-from lck.lang import unset
 from lck.django.tags.forms import TagField, TagWidget
 from lck.django.tags.helpers import parse_tag_input
+from lck.lang import unset
 
 TAG_AUTHOR_MODEL = getattr(settings, 'TAG_AUTHOR_MODEL', User)
 
@@ -258,7 +258,8 @@ class TagStemManager(db.Manager):
     """A regular manager but with a couple additional methods for easier
     stems discovery."""
 
-    def get_all(self, official=False, author=None, language=None):
+    def get_all(self, stem=None, stems=None, official=False, author=None,
+        language=None):
         """Returns a dictionary of all tagged objects with values being
         sets of stems for the specified object.
 
@@ -272,6 +273,10 @@ class TagStemManager(db.Manager):
         author = _tag_get_user(author, default=None)
         language = _tag_get_language(language, default=None)
         kwargs = {}
+        if stem:
+            kwargs["stem"] = stem
+        if stems:
+            kwargs["stem__in"] = stems
         if official:
             kwargs["official"] = True
         if author is not None:
