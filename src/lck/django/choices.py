@@ -65,6 +65,36 @@ class ChoicesEntry(object):
     def __repr__(self):
         return self.__unicode__(raw=True)
 
+    def __lshift__(self, other):
+        """Unholy method for adding custom attributes to choices
+        at declaration time. While this will cringe purists, it really
+        works well when you really need it. For example::
+
+            class Color(Choices):
+                _ = Choices.Choice
+
+                red = _("red") << {'html': '#ff0000'}
+                green = _("green") << {'html': '#00ff00'}
+                blue = _("blue") << {'html': '#0000ff'}
+
+        Later on you can use the defined attribute directly::
+
+            >>> Color.red.html
+            '#ff0000'
+    
+        or with choices received using the getters::
+
+            >>> Color.FromName(request.POST['color']).html
+            '#00ff00'
+
+        If you have an idea for an API which is more pure but at the same time
+        comparably concise, to the point and declarative on both sides (e.g.
+        while defining choices and while using them), please let me know.
+        """
+        for key, value in other.iteritems():
+            setattr(self, key, value)
+        return self
+
 
 class ChoiceGroup(ChoicesEntry):
     """A group of choices."""
