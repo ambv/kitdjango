@@ -7,6 +7,10 @@ TODO
 Code
 ----
 
+* Migrate configuration of lck.django.cache to 1.3
+
+* Migrate `django-admin.py shell` to 1.3
+
 * Cleanup of forms would be great
   
 * There are not enough unit tests
