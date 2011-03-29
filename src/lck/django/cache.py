@@ -23,12 +23,32 @@
 
 """A drop-in substitute for the default ``django.core.cache`` object. This
 implementation is using a modified mint cache approach based on
-http://www.djangosnippets.org/snippets/793/.
+http://www.djangosnippets.org/snippets/793/. Mint caching enables you to
+mitigate the so-called dogpile effect (also known as the thundering herd
+problem).
 
-This implementation does not support specifying fallback values for the
-``get()`` function since it would not be possible to otherwise reliably
-communicate that the value is *stale* and has
-to be updated.
+In short, it appears when generating a cached value takes long. In that
+situation the first request that encounters a cache miss, starts regenerating
+the value. Before it manages to finish and put the new value in the cache
+backend, other requests come in and also start the costly regeneration process
+(because they all saw a cache miss). This is a considerable waste of server
+resources and increases the amount of users affected by cache misses.
+
+The solution implemented by this module is to notify a single request of the
+cache miss and then to keep serving stale values to subsequent requests until
+the notified request finishes updating the value.
+
+.. note::
+
+    This implementation stores additional data along every cached value to
+    enable the functionality described above. This means that trying to access
+    those values using the regular ``django.core.cache`` will return a tuple
+    instead of a bare value.
+
+    This implementation does not support specifying fallback values for the
+    ``get()`` function since it would not notify client code that a value is
+    stale and has to be updated. Consequently, the dogile effect would occur
+    anyway.
 
 Configured by three values in ``settings.py``:
 
