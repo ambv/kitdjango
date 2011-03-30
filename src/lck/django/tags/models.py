@@ -166,14 +166,19 @@ class TaggableBase(db.Model):
         official tags are taken into account.
         """
 
+        kwargs = {"official": official}
         if same_type:
-            stems = TagStem.objects.get_for_model(self.__class__,
-                official=official)
-        else:
-            stems = TagStem.objects.get_all(official=official)
+            kwargs['model'] = self.__class__
+        stems = TagStem.objects.get_dictionary(**kwargs)
         distance = []
-        self_stems = stems[self]
-        del stems[self]
+        if self in stems:
+            self_stems = stems[self]
+            del stems[self]
+        else:
+            # may happen if this object is not available through Model.objects,
+            # e.g. the model has a custom manager which filters it out
+            self_stems = set(TagStem.objects.get_queryset_for_model(self.__class__,
+                self))
         for obj, s in stems.iteritems():
             if not s & self_stems:
                 # things without a single common tag are not similar at all
@@ -258,24 +263,45 @@ class TagStemManager(db.Manager):
     """A regular manager but with a couple additional methods for easier
     stems discovery."""
 
-    def get_all(self, stem=None, stems=None, official=False, author=None,
-        language=None):
+    def get_dictionary(self, model=None, content_type=None, stem=None,
+        stems=None, official=False, author=None, language=None):
         """Returns a dictionary of all tagged objects with values being
         sets of stems for the specified object.
 
         This is basically an overly complex implementation that avoids
         duplicating SQL queries. A straight forward version would be::
 
-            {obj: set(Tag.stems_for(obj.__class__, obj))
+            {obj: set(TagStem.objects.get_queryset_for_model(obj.__class__, obj))
                 for obj in {t.content_object for t in Tag.objects.all()}
             }
         """
+        tagged_objects = self.get_content_objects(model=model,
+            content_type=content_type, stem=stem, stems=stems,
+            official=official, author=author, language=language)
+        return {obj: set(self.get_queryset_for_model(obj.__class__,
+            instance=obj, official=official, author=author, language=language))
+            for obj in tagged_objects}
+
+    def get_content_objects(self, model=None, content_type=None, stem=None,
+        stems=None, official=False, author=None, language=None):
+        """Returns a set of tagged objects."""
         author = _tag_get_user(author, default=None)
         language = _tag_get_language(language, default=None)
         kwargs = {}
+        if model:
+            if content_type:
+                raise ValueError("Both `model` and `content_type` arguments "
+                    "specified. Use one.")
+            content_type = ContentType.objects.get_for_model(model)
+        if content_type:
+            kwargs["content_type"] = content_type
+            tagged_models = {content_type.id: content_type.model_class()}
         if stem:
             kwargs["stem"] = stem
         if stems:
+            if stem:
+                raise ValueError("Both `stem` and `stems` arguments specified."
+                    " Use one.")
             kwargs["stem__in"] = stems
         if official:
             kwargs["official"] = True
@@ -283,49 +309,14 @@ class TagStemManager(db.Manager):
             kwargs["author"] = author
         if language is not None:
             kwargs["language"] = language
-
         tagged_cts_oids = set((t.content_type_id, t.object_id)
             for t in Tag.objects.filter(**kwargs))
-        tagged_cts = {id for id, _ in tagged_cts_oids}
-        tagged_models = {id: ContentType.objects.get(pk=id).model_class()
-            for id in tagged_cts}
-        tagged_objects = set(tagged_models[ctid].objects.get(pk=oid)
-            for ctid, oid in tagged_cts_oids)
-        return {obj: set(self.get_queryset_for_model(obj.__class__,
-            instance=obj, official=official, author=author, language=language))
-            for obj in tagged_objects}
-
-    def get_for_contenttype(self, content_type, official=False, author=None,
-        language=None):
-        """Returns a dictionary of all tagged objects of a given `content_type`
-        with values being sets of stems for the specified object."""
-        model = content_type.model_class()
-        author = _tag_get_user(author, default=None)
-        language = _tag_get_language(language, default=None)
-        kwargs = {"content_type": content_type}
-        if official:
-            kwargs["official"] = True
-        if author is not None:
-            kwargs["author"] = author
-        if language is not None:
-            kwargs["language"] = language
-        tagged_oids = set(t.object_id
-            for t in Tag.objects.filter(**kwargs))
-        tagged_objects = set(model.objects.get(pk=oid)
-            for oid in tagged_oids)
-        return {obj: set(self.get_queryset_for_model(obj.__class__,
-            instance=obj, official=official, author=author, language=language))
-            for obj in tagged_objects}
-
-    def get_for_model(self, model, official=False, author=None, language=None):
-        """Returns a dictionary of all tagged objects of a given `model` with
-        values being sets of stems for the specified object. The values
-        returned can be cut down to only those which are `official` or made by
-        a specific `author` or given in a specific `language`.
-        """
-        ct = ContentType.objects.get_for_model(model)
-        return self.get_for_contenttype(ct, official=official,
-            author=author, language=language)
+        if not content_type:
+            tagged_cts = {id for id, _ in tagged_cts_oids}
+            tagged_models = {id: ContentType.objects.get(pk=id).model_class()
+                for id in tagged_cts}
+        return set(self._yield_objects_that_exist(tagged_cts_oids,
+            tagged_models))
 
     def get_queryset_for_model(self, model, instance=None, official=False,
         author=None, language=None):
@@ -349,6 +340,19 @@ class TagStemManager(db.Manager):
         if language is not None:
             kwargs["{}__language".format(relname)] = language
         return self.filter(**kwargs).distinct()
+
+    @staticmethod
+    def _yield_objects_that_exist(cts_oids, model_table):
+        """For models that implement a custom manager to filter out some
+        objects (for instance to hide articles which should not be published
+        yet) it may be possible that asking for an object that exist
+        in the database (and has tags on it) raises DoesNotExist instead.
+        Here we silently ignore those."""
+        for ctid, oid in cts_oids:
+            try:
+                yield model_table[ctid].objects.get(pk=oid)
+            except model_table[ctid].DoesNotExist:
+                continue
 
 
 class TagStem(Named.NonUnique, Localized, Taggable.NoDefaultTags):
