@@ -41,6 +41,7 @@ from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
 from django.core.mail import send_mail
 from django.db import models as db
+from django.template.defaultfilters import urlencode
 from django.utils.translation import ugettext_lazy as _
 
 from lck.django.choices import Language
@@ -57,6 +58,11 @@ class Named(db.Model):
     def __unicode__(self):
         return self.name
 
+    @property
+    def name_urlencoded(self):
+        """Useful as in {%url some-link argument.name_urlencoded%}."""
+        return urlencode(self.name, safe="")
+
     class NonUnique(db.Model):
         """Describes an abstract model with a non-unique ``name`` field."""
 
@@ -67,6 +73,11 @@ class Named(db.Model):
 
         def __unicode__(self):
             return self.name
+
+        @property
+        def name_urlencoded(self):
+            """Useful as in {%url some-link argument.name_urlencoded%}."""
+            return urlencode(self.name, safe="")
 
 
 class Titled(db.Model):
@@ -80,6 +91,10 @@ class Titled(db.Model):
     def __unicode__(self):
         return self.title
 
+    @property
+    def title_urlencoded(self):
+        return urlencode(self.title, safe="")
+
     class NonUnique(db.Model):
         """Describes an abstract model with a non-unique ``title`` field."""
 
@@ -91,6 +106,9 @@ class Titled(db.Model):
         def __unicode__(self):
             return self.title
 
+        @property
+        def title_urlencoded(self):
+            return urlencode(self.title, safe="")
 
 
 class Slugged(db.Model):
