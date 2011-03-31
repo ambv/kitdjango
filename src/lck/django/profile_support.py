@@ -33,12 +33,12 @@ if os.path.exists(local_settings):
 elif local_profile != 'local':
     raise ValueError, "%s does not exist." % local_settings
 
-if not hasattr(BaseCommand, '_langacore_patched'):
+if not hasattr(BaseCommand, '_lck_patched'):
     BaseCommand.option_list = (BaseCommand.option_list +
         (make_option('--profile', help='Name of a settings module, e.g. '
             '"debug", "syncdb", etc. If this isn\'t provided, "local" profile '
             'is assumed.'),))
-    BaseCommand._langacore_patched = True
+    BaseCommand._lck_patched = True
 
     def handle_default_options(options):
         if options.profile:

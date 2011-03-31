@@ -68,7 +68,7 @@ class ChoicesEntry(object):
     def __lshift__(self, other):
         """Unholy method for adding custom attributes to choices
         at declaration time. While this will cringe purists, it really
-        works well when you really need it. For example::
+        works well when you need it. For example::
 
             class Color(Choices):
                 _ = Choices.Choice

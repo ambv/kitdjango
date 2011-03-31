@@ -32,5 +32,8 @@ def django_core_management__find_management_module(app_name):
     return path
 
 
+# PATCH: a more generic find_management_module that supports namespace
+# packages.
+# COMPATIBILITY: Django 1.1.0 - 1.3.0
 django.core.management.find_management_module = \
     django_core_management__find_management_module

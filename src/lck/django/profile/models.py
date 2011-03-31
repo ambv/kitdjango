@@ -87,7 +87,6 @@ class BasicInfo(db.Model):
         if name in PROXIED_FIELDS:
             return getattr(User.objects.get(id=self.__dict__['user_id']), name)
         return super(BasicInfo, self).__getattr__(name)
-    db.Model.__getattr__ = db.Model.__getattribute__
 
     def age(self):
         if not self.birth_date:

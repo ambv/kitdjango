@@ -47,7 +47,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from lck.django.choices import Choice, Language
 from lck.django.common.models import Named, Localized, TimeTrackable
-from lck.django.tags.forms import TagField, TagWidget
 from lck.django.tags.helpers import parse_tag_input
 from lck.lang import unset
 

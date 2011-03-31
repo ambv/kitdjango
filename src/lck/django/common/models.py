@@ -45,6 +45,7 @@ from django.template.defaultfilters import urlencode
 from django.utils.translation import ugettext_lazy as _
 
 from lck.django.choices import Language
+from lck.django.common import monkeys
 
 
 class Named(db.Model):
@@ -235,7 +236,7 @@ class DisplayCounter(db.Model):
 
 
 class ViewableSoftDeletableManager(db.Manager):
-    """An objet manager to automatically hide objects that were soft deleted
+    """An object manager to automatically hide objects that were soft deleted
     for models inheriting ``SoftDeletable``."""
 
     def get_query_set(self):
