@@ -116,8 +116,11 @@ class ScoreNode(template.Node):
         return ''
 
     def get_score_value(self, ctype, object_pk):
-        return self.model.objects.get(content_type=ctype,
-            object_id=smart_unicode(object_pk)).value
+        try:
+            return self.model.objects.get(content_type=ctype,
+                object_id=smart_unicode(object_pk)).value
+        except self.model.DoesNotExist:
+            return 0
 
 
 class GetScoreValueNode(ScoreNode):
