@@ -34,6 +34,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from datetime import date
+from functools import partial
 from hashlib import md5
 import re
 
@@ -42,6 +43,7 @@ from django.db import models as db
 from django.utils.translation import ugettext_lazy as _
 
 from lck.django.choices import Country, Gender
+from lck.django.common.templatetags.thumbnail import thumbnail
 
 PROXIED_FIELDS = (set([field.name for field in User._meta.fields]) |
                   set(['get_full_name']))
@@ -56,6 +58,8 @@ TZ_CHOICES = [(float(x[0]), x[1]) for x in (
     (9, '+09'), (9.5, '+09.5'), (10, '+10'), (10.5, '+10.5'), (11, '+11'),
     (11.5, '+11.5'), (12, '+12'), (13, '+13'), (14, '+14'),
 )]
+
+AVATAR_ATTR_REGEX = re.compile(r"^avatar_([whm])(\d+)$")
 
 
 class BasicInfo(db.Model):
@@ -115,18 +119,43 @@ class ActivationSupport(db.Model):
         abstract = True
 
 
-class GravatarSupport(db.Model):
-    _GRAVATAR_ATTR_REGEX = re.compile(r"^gravatar(\d+)$")
+class AvatarSupport(db.Model):
+    """When inheriting, create a new `avatar` field like this::
 
-    def gravatar(self, size):
+         avatar = AvatarSupport.avatar_field(upload_to='upload_directory')
+
+       To have gravatar fallback, specify `GravatarSupport` **after**
+       `AvatarSupport` in your model inheritance list.
+    """
+    avatar_height = db.PositiveIntegerField(verbose_name=_("height"),
+        default=None, blank=True, null=True, editable=False)
+    avatar_width = db.PositiveIntegerField(verbose_name=_("width"),
+        default=None, blank=True, null=True, editable=False)
+    avatar_field = partial(db.ImageField, verbose_name=_("custom avatar"),
+        height_field='avatar_height', width_field='avatar_width',
+        null=True, blank=True, max_length=255)
+
+    def __getattr__(self, name):
+        m = AVATAR_ATTR_REGEX.match(name)
+        if m and self.avatar:
+            mode_size = "{}{}".format(m.group(1), m.group(2))
+            return thumbnail(self.avatar, mode_size)
+        return super(AvatarSupport, self).__getattr__(name)
+
+    class Meta:
+        abstract = True
+
+
+class GravatarSupport(db.Model):
+    def get_gravatar(self, size):
         return "http://www.gravatar.com/avatar/%s.jpg?d=identicon&s=%d" % (
             md5(self.user.email).hexdigest(), size)
 
     def __getattr__(self, name):
-        m = self._GRAVATAR_ATTR_REGEX.match(name)
+        m = AVATAR_ATTR_REGEX.match(name)
         if m:
-            size = int(m.group(1))
-            return self.gravatar(size)
+            size = int(m.group(2))
+            return self.get_gravatar(size)
         return super(GravatarSupport, self).__getattr__(name)
 
     class Meta:
