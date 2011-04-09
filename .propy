@@ -4,6 +4,6 @@
 
 cd ../lck-virtualenv
 source bin/activate
-cd ../langacore-kit-django/src/langacore/kit/django
+cd ../langacore-kit-django/src/lck/django
 lt 1
 todo-list --python --html --rest
