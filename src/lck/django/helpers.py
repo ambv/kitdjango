@@ -133,7 +133,7 @@ def typical_handler(request, form_class, template, initial={},
 
     1. Initialize a form object.
 
-       a. if there are POSTed data, use them
+       a. if there are POSTed data and/or files, use them
        b. otherwise use `initial` as initial data and `initial_kwargs` as \
           keyword arguments for the form object constructor.
 
@@ -146,6 +146,7 @@ def typical_handler(request, form_class, template, initial={},
     if request.method == 'POST':
         _kwargs = dict(initial_kwargs)
         _kwargs['data'] = request.POST
+        _kwargs['files'] = request.FILES
     else:
         _kwargs = dict(initial_kwargs)
         _kwargs['initial'] = initial
