@@ -7,12 +7,19 @@ TODO
 Code
 ----
 
+* future date filter for the admin
+
+* create some ingenious hack which allows Profile-based inlines in User
+  ModelAdmins
+
 * Migrate configuration of lck.django.cache to 1.3
 
 * Migrate `django-admin.py shell` to 1.3
 
 * Cleanup of forms would be great
   
+* Deprecate execfile()-based settings hacking
+
 * There are not enough unit tests
 
   * in particular, ``py.test`` is used for the existing tests which makes proper
