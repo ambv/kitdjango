@@ -44,6 +44,7 @@ class ChoicesEntry(object):
         self.raw = description
         self.global_id = Choice.global_id
         self.name = name
+        self.__shifted__ = []
         ChoicesEntry.global_id += 1
 
     @property
@@ -92,6 +93,7 @@ class ChoicesEntry(object):
         while defining choices and while using them), please let me know.
         """
         for key, value in other.iteritems():
+            self.__shifted__.append(key)
             setattr(self, key, value)
         return self
 
@@ -159,6 +161,9 @@ class _ChoicesMeta(type):
                 if group:
                     group.choices.append(choice)
                     choice.group = group
+                    for shifted in group.__shifted__:
+                        if not hasattr(choice, shifted):
+                            setattr(choice, shifted, getattr(group, shifted))
                 if choice.id == -255:
                     last_choice_id += 1
                     choice.id = last_choice_id

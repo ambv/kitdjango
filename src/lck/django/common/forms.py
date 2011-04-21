@@ -13,35 +13,9 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 
-GENDER_CHOICES = ((1, _("Female")),
-                  (2, _("Male")),
-                  (3, _("any")),
-                 )
-
-ANY_GENDER = 3
-
-
-SEARCH_GAME_CHOICES = (('cs16', _("Counter-Strike 1.6")),
-                       ('cod4', _("Call of Duty 4")),
-                       ('any', _("any")),
-                      )
-
-
-ANY_GAME = 'any'
-
-
-ACCOUNT_CHOICES = ((1, _("complete")),
-                   (2, _("incomplete")),
-                   (3, _("any account")),
-                  )
-
-
-ANY_ACCOUNT = 3
-COMPLETE_ACCOUNT = 1
-INCOMPLETE_ACCOUNT = 2
-
 class PolishSelectDateWidget(SelectDateWidget):
-    def __init__(self, attrs=None, years=None):
+    def __init__(self, attrs=None, years=None, reverse_years=False):
+        self.reverse_years = reverse_years
         super(PolishSelectDateWidget, self).__init__(attrs, years)
 
     def render(self, name, value, attrs=None):
@@ -74,18 +48,10 @@ class PolishSelectDateWidget(SelectDateWidget):
 
         year_choices = [(i, i) for i in self.years]
         local_attrs['id'] = self.year_field % id_
+        if self.reverse_years:
+            year_choices.reverse()
         select_html = Select(choices=year_choices).render(self.year_field % name, year_val, local_attrs)
         output.append(select_html)
 
+
         return mark_safe(u'\n'.join(output))
-
-
-class MassMailingForm(forms.Form):
-    gender = forms.ChoiceField(label=_("Gender"), choices=GENDER_CHOICES, initial=ANY_GENDER)
-    game = forms.ChoiceField(label=_("Game"), choices=SEARCH_GAME_CHOICES, initial=ANY_GAME)
-    account = forms.ChoiceField(label=_("Account"), choices=ACCOUNT_CHOICES, initial=ANY_ACCOUNT, help_text=_("Incomplete accounts don't have Allegro login or Steam ID/PB GUID filled."))
-    subject = forms.CharField(label=_("Subject"), max_length=150, required=False)
-    content = forms.CharField(label=_("Content"), widget=forms.Textarea)
-    force_privacy = forms.BooleanField(label=_("Ignore privacy"), initial=False, required=False)
-
-MassMailingForm.base_fields['force_privacy'].reverse = True

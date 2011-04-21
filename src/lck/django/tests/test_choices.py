@@ -164,3 +164,42 @@ def test_choices_filter():
     assert len(Country()) == 235
     assert Country(filter=("pl", "gb", "de")) == [(73, u'Germany'),
         (153, u'Poland'), (202, u'United Kingdom')]
+
+def test_shifted_basic():
+    from lck.django.choices import Choices
+
+    class InvitationStatus(Choices):
+        _ = Choices.Choice
+
+        blocked = _("Blocked") << {'first_letter': 'b'}
+        rejected = _("Rejected") << {'first_letter': 'r'}
+        pending = _("Pending") << {'first_letter': 'p'}
+        accepted = _("Accepted") << {'first_letter': 'a'}
+
+    assert InvitationStatus.blocked.first_letter == 'b'
+    assert InvitationStatus.rejected.first_letter == 'r'
+    assert InvitationStatus.pending.first_letter == 'p'
+    assert InvitationStatus.accepted.first_letter == 'a'
+
+def test_shifted_group_inheritance():
+    from lck.django.choices import Choices
+
+    class Colors(Choices):
+        _ = Choices.Choice
+
+        NICE = Choices.Group(0) << {'comment': 'Nice!'}
+        blue = _("Blue")
+        green = _("Green") << {'comment': 'This is it.'}
+        brown = _("Brown")
+
+        UGLY = Choices.Group(10) << {'comment': 'Ugly!'}
+        pink = _("Pink")
+        red = _("Red")
+        toxic_waste_green = _("Toxic waste green") << {'comment': 'Yuk!'}
+
+    assert Colors.blue.comment == 'Nice!'
+    assert Colors.green.comment == 'This is it.'
+    assert Colors.brown.comment == 'Nice!'
+    assert Colors.pink.comment == 'Ugly!'
+    assert Colors.red.comment == 'Ugly!'
+    assert Colors.toxic_waste_green.comment == 'Yuk!'
