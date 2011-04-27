@@ -63,6 +63,59 @@ behaviour which I consider ugly.
 Change Log
 ----------
 
+0.5.6
+~~~~~
+
+* in the thumbnail filter, support for automatic cropping to square introduced
+
+* minor translation updates
+
+0.5.5
+~~~~~
+
+* group members inherit shifted attributes
+
+0.5.4
+~~~~~
+
+* minor updates to ``PolishDateWidget``
+
+0.5.3
+~~~~~ 
+
+* ``AvatarSupport`` abstract model for custom avatars. ``GravatarSupport`` can
+  be used as fallback or independently.
+
+* ``typical_handler`` now properly supports file uploads
+
+* bugfixes: objects without any score don't cause exceptions anymore
+  
+* leftovers from namespace changes cleaned up
+
+0.5.2
+~~~~~
+
+* monkey patches of core Django annotated and regrouped for easier management in
+  the future (yup, more to come)
+
+* a stats calculator
+
+* minor bugfixes
+
+0.5.1
+~~~~~
+
+* tags now support models with custom managers
+
+* for Named and Titled models a read-only ``name_urlencoded`` and
+  ``title_urlencoded`` properties were introduced. Useful as arguments in
+  template tags.
+
+* support for setting additional attributes on choices using an unholy ``<<``
+  operator overload
+
+* in tags, support for getting objects marked with specific stems
+
 0.5.0
 ~~~~~
 
