@@ -6,11 +6,6 @@
 Classes
 --------
 
-.. autoclass:: MassMailingForm
-   :show-inheritance:
-   :members:
-   
-
 .. autoclass:: PolishSelectDateWidget
    :show-inheritance:
    :members:
