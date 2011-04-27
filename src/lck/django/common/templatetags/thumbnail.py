@@ -75,6 +75,10 @@ def thumbnail(image, size):
                     Example: "m50" would scale an 80x50 image to 50x31, and
                     an 40x120 image to 17x50.
 
+    * s{max_size} - cuts a square from the image and scales it to the value
+                    given. Example: "s48" would scale a 50x80 image to 48x48
+                    based on the top 50x50 square.
+
     The thumbnails are kept next to the original images with a `_{size}` suffix
     added to the name. If a thumbnail exists and is newer than the original
     image, it is reused on subsequent calls."""
@@ -85,6 +89,7 @@ def thumbnail(image, size):
         else:
             return None
 
+    shift = None
     if size.startswith("h"):
         height = int(size[1:])
         width = height * image.width / image.height
@@ -99,6 +104,12 @@ def thumbnail(image, size):
         else:
             height = max
             width = height * image.width / image.height
+    elif size.startswith("s"):
+        width = height = int(size[1:])
+        if image.width > image.height:
+            shift = (image.width - image.height) / 2
+        else:
+            shift = 0
     else:
         width, height = size.split("x")
     width = int(round(width))
@@ -122,7 +133,10 @@ def thumbnail(image, size):
 
     if create_new:
         pil_image = Image.open(file)
-        pil_image.thumbnail([width, height], Image.ANTIALIAS)
+        if shift is not None:
+            shorter = min(image.width, image.height)
+            pil_image = pil_image.crop((shift, 0, shorter, shorter))
+        pil_image.thumbnail((width, height), Image.ANTIALIAS)
         pil_image.save(thumb_filename, pil_image.format)
 
     return thumb_url
