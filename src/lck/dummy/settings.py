@@ -56,6 +56,7 @@ INSTALLED_APPS = (
     'django.contrib.flatpages',
     'lck.django.common',
     'lck.django.profile',
+    'lck.django.score',
     'lck.django.tags',
 )
 TEMPLATE_CONTEXT_PROCESSORS = (
