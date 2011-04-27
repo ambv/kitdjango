@@ -59,14 +59,14 @@ TZ_CHOICES = [(float(x[0]), x[1]) for x in (
     (11.5, '+11.5'), (12, '+12'), (13, '+13'), (14, '+14'),
 )]
 
-AVATAR_ATTR_REGEX = re.compile(r"^avatar_([whm])(\d+)$")
+AVATAR_ATTR_REGEX = re.compile(r"^avatar_([whms])(\d+)$")
 
 
 class BasicInfo(db.Model):
     user = db.OneToOneField(User)
     nick = db.CharField(verbose_name=_("visible nick"), blank=True, default='',
         max_length=30, help_text=_("Fill this field if you wish to change "
-            "your visible nick. You can use Unicode characters and spaces."
+            "your visible nick. You can use Unicode characters and spaces. "
             "Keep in mind that your original username (the one you use to "
             "log into the site) will remain unchanged."))
     birth_date = db.DateField(verbose_name=_("birth date"), blank=True,
@@ -148,8 +148,9 @@ class AvatarSupport(db.Model):
 
 class GravatarSupport(db.Model):
     def get_gravatar(self, size):
+        email = self.email if hasattr(self, 'email') else self.user.email
         return "http://www.gravatar.com/avatar/%s.jpg?d=identicon&s=%d" % (
-            md5(self.user.email).hexdigest(), size)
+            md5(email).hexdigest(), size)
 
     def __getattr__(self, name):
         m = AVATAR_ATTR_REGEX.match(name)
