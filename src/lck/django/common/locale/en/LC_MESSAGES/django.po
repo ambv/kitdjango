@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-14 16:57+0100\n"
+"POT-Creation-Date: 2011-05-11 19:40+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,1839 +17,1782 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: choices.py:237
-msgid "Afghanistan"
-msgstr ""
-
-#: choices.py:238
-msgid "Albania"
-msgstr ""
-
-#: choices.py:239
-msgid "Algeria"
-msgstr ""
-
-#: choices.py:240
-msgid "American Samoa"
-msgstr ""
-
-#: choices.py:241
-msgid "Andorra"
-msgstr ""
-
-#: choices.py:242
-msgid "Angola"
-msgstr ""
-
-#: choices.py:243
-msgid "Anguilla"
-msgstr ""
-
-#: choices.py:244
-msgid "Antarctica"
-msgstr ""
-
-#: choices.py:245
-msgid "Antigua and Barbuda"
-msgstr ""
-
-#: choices.py:246
-msgid "Argentina"
-msgstr ""
-
-#: choices.py:247
-msgid "Armenia"
-msgstr ""
-
-#: choices.py:248
-msgid "Aruba"
-msgstr ""
-
-#: choices.py:249
-msgid "Australia"
-msgstr ""
-
-#: choices.py:250
-msgid "Austria"
-msgstr ""
-
-#: choices.py:251
-msgid "Azerbaijan"
-msgstr ""
-
-#: choices.py:252
-msgid "Bahamas"
-msgstr ""
-
-#: choices.py:253
-msgid "Bahrain"
-msgstr ""
-
-#: choices.py:254
-msgid "Bangladesh"
-msgstr ""
-
-#: choices.py:255
-msgid "Barbados"
-msgstr ""
-
-#: choices.py:256
-msgid "Belarus"
-msgstr ""
-
-#: choices.py:257
-msgid "Belgium"
-msgstr ""
-
-#: choices.py:258
-msgid "Belize"
-msgstr ""
-
-#: choices.py:259
-msgid "Benin"
-msgstr ""
-
-#: choices.py:260
-msgid "Bermuda"
-msgstr ""
-
-#: choices.py:261
-msgid "Bhutan"
-msgstr ""
-
-#: choices.py:262
-msgid "Bolivia"
-msgstr ""
-
-#: choices.py:263
-msgid "Bosnia and Herzegovina"
-msgstr ""
-
-#: choices.py:264
-msgid "Botswana"
-msgstr ""
-
-#: choices.py:265
-msgid "Brazil"
-msgstr ""
-
-#: choices.py:266
-msgid "Brunei"
-msgstr ""
-
-#: choices.py:267
-msgid "Bulgaria"
-msgstr ""
-
-#: choices.py:268
-msgid "Burkina Faso"
-msgstr ""
-
-#: choices.py:269
-msgid "Burundi"
-msgstr ""
-
-#: choices.py:270
-msgid "Cambodia"
-msgstr ""
-
-#: choices.py:271
-msgid "Cameroon"
-msgstr ""
-
-#: choices.py:272
-msgid "Canada"
-msgstr ""
-
-#: choices.py:273
-msgid "Cape Verde"
-msgstr ""
-
-#: choices.py:274
-msgid "Cayman Islands"
-msgstr ""
-
-#: choices.py:275
-msgid "Central African Republic"
-msgstr ""
-
-#: choices.py:276
-msgid "Chad"
-msgstr ""
-
-#: choices.py:277
-msgid "Chile"
+#: __init__.py:162
+msgid "Try again"
 msgstr ""
 
 #: choices.py:278
-msgid "China"
+msgid "Afghanistan"
 msgstr ""
 
 #: choices.py:279
-msgid "Colombia"
+msgid "Albania"
 msgstr ""
 
 #: choices.py:280
-msgid "Comoros"
+msgid "Algeria"
 msgstr ""
 
 #: choices.py:281
-msgid "Congo Brazzaville"
+msgid "American Samoa"
 msgstr ""
 
 #: choices.py:282
-msgid "Congo Kinshasa"
+msgid "Andorra"
 msgstr ""
 
 #: choices.py:283
-msgid "Cook Islands"
+msgid "Angola"
 msgstr ""
 
 #: choices.py:284
-msgid "Costa Rica"
+msgid "Anguilla"
 msgstr ""
 
 #: choices.py:285
-msgid "Cote Divoire"
+msgid "Antarctica"
 msgstr ""
 
 #: choices.py:286
-msgid "Croatia"
+msgid "Antigua and Barbuda"
 msgstr ""
 
 #: choices.py:287
-msgid "Cuba"
+msgid "Argentina"
 msgstr ""
 
 #: choices.py:288
-msgid "Cyprus"
+msgid "Armenia"
 msgstr ""
 
 #: choices.py:289
-msgid "Czech Republic"
+msgid "Aruba"
 msgstr ""
 
 #: choices.py:290
-msgid "Denmark"
+msgid "Australia"
 msgstr ""
 
 #: choices.py:291
-msgid "Djibouti"
+msgid "Austria"
 msgstr ""
 
 #: choices.py:292
-msgid "Dominica"
+msgid "Azerbaijan"
 msgstr ""
 
 #: choices.py:293
-msgid "Dominican Republic"
+msgid "Bahamas"
 msgstr ""
 
 #: choices.py:294
-msgid "Ecuador"
+msgid "Bahrain"
 msgstr ""
 
 #: choices.py:295
-msgid "Egypt"
+msgid "Bangladesh"
 msgstr ""
 
 #: choices.py:296
-msgid "El Salvador"
+msgid "Barbados"
 msgstr ""
 
 #: choices.py:297
-msgid "Equatorial Guinea"
+msgid "Belarus"
 msgstr ""
 
 #: choices.py:298
-msgid "Eritrea"
+msgid "Belgium"
 msgstr ""
 
 #: choices.py:299
-msgid "Estonia"
+msgid "Belize"
 msgstr ""
 
 #: choices.py:300
-msgid "Ethiopia"
+msgid "Benin"
 msgstr ""
 
 #: choices.py:301
-msgid "Faroe Islands"
+msgid "Bermuda"
 msgstr ""
 
 #: choices.py:302
-msgid "Fiji"
+msgid "Bhutan"
 msgstr ""
 
 #: choices.py:303
-msgid "Finland"
+msgid "Bolivia"
 msgstr ""
 
 #: choices.py:304
-msgid "France"
+msgid "Bosnia and Herzegovina"
 msgstr ""
 
 #: choices.py:305
-msgid "French Polynesia"
+msgid "Botswana"
 msgstr ""
 
 #: choices.py:306
-msgid "Gabon"
+msgid "Brazil"
 msgstr ""
 
 #: choices.py:307
-msgid "Gambia"
+msgid "Brunei"
 msgstr ""
 
 #: choices.py:308
-msgid "Georgia"
+msgid "Bulgaria"
 msgstr ""
 
 #: choices.py:309
-msgid "Germany"
+msgid "Burkina Faso"
 msgstr ""
 
 #: choices.py:310
-msgid "Ghana"
+msgid "Burundi"
 msgstr ""
 
 #: choices.py:311
-msgid "Gibraltar"
+msgid "Cambodia"
 msgstr ""
 
 #: choices.py:312
-msgid "Greece"
+msgid "Cameroon"
 msgstr ""
 
 #: choices.py:313
-msgid "Grenada"
+msgid "Canada"
 msgstr ""
 
 #: choices.py:314
-msgid "Guam"
+msgid "Cape Verde"
 msgstr ""
 
 #: choices.py:315
-msgid "Guatemala"
+msgid "Cayman Islands"
 msgstr ""
 
 #: choices.py:316
-msgid "Guinea Bissau"
+msgid "Central African Republic"
 msgstr ""
 
 #: choices.py:317
-msgid "Guinea"
+msgid "Chad"
 msgstr ""
 
 #: choices.py:318
-msgid "Guyana"
+msgid "Chile"
 msgstr ""
 
 #: choices.py:319
-msgid "Haiti"
+msgid "China"
 msgstr ""
 
 #: choices.py:320
-msgid "Honduras"
+msgid "Colombia"
 msgstr ""
 
 #: choices.py:321
-msgid "Hong Kong"
+msgid "Comoros"
 msgstr ""
 
 #: choices.py:322
-msgid "Hungary"
+msgid "Congo Brazzaville"
 msgstr ""
 
 #: choices.py:323
-msgid "Iceland"
+msgid "Congo Kinshasa"
 msgstr ""
 
 #: choices.py:324
-msgid "India"
+msgid "Cook Islands"
 msgstr ""
 
 #: choices.py:325
-msgid "Indonesia"
+msgid "Costa Rica"
 msgstr ""
 
 #: choices.py:326
-msgid "Iran"
+msgid "Cote Divoire"
 msgstr ""
 
 #: choices.py:327
-msgid "Iraq"
+msgid "Croatia"
 msgstr ""
 
 #: choices.py:328
-msgid "Ireland"
+msgid "Cuba"
 msgstr ""
 
 #: choices.py:329
-msgid "Israel"
+msgid "Cyprus"
 msgstr ""
 
 #: choices.py:330
-msgid "Italy"
+msgid "Czech Republic"
 msgstr ""
 
 #: choices.py:331
-msgid "Jamaica"
+msgid "Denmark"
 msgstr ""
 
 #: choices.py:332
-msgid "Japan"
+msgid "Djibouti"
 msgstr ""
 
 #: choices.py:333
-msgid "Jersey"
+msgid "Dominica"
 msgstr ""
 
 #: choices.py:334
-msgid "Jordan"
+msgid "Dominican Republic"
 msgstr ""
 
 #: choices.py:335
-msgid "Kazakhstan"
+msgid "Ecuador"
 msgstr ""
 
 #: choices.py:336
-msgid "Kenya"
+msgid "Egypt"
 msgstr ""
 
 #: choices.py:337
-msgid "Kiribati"
+msgid "El Salvador"
 msgstr ""
 
 #: choices.py:338
-msgid "Kuwait"
+msgid "Equatorial Guinea"
 msgstr ""
 
 #: choices.py:339
-msgid "Kyrgyzstan"
+msgid "Eritrea"
 msgstr ""
 
 #: choices.py:340
-msgid "Laos"
+msgid "Estonia"
 msgstr ""
 
 #: choices.py:341
-msgid "Latvia"
+msgid "Ethiopia"
 msgstr ""
 
 #: choices.py:342
-msgid "Lebanon"
+msgid "Faroe Islands"
 msgstr ""
 
 #: choices.py:343
-msgid "Lesotho"
+msgid "Fiji"
 msgstr ""
 
 #: choices.py:344
-msgid "Liberia"
+msgid "Finland"
 msgstr ""
 
 #: choices.py:345
-msgid "Libya"
+msgid "France"
 msgstr ""
 
 #: choices.py:346
-msgid "Liechtenstein"
+msgid "French Polynesia"
 msgstr ""
 
 #: choices.py:347
-msgid "Lithuania"
+msgid "Gabon"
 msgstr ""
 
 #: choices.py:348
-msgid "Luxembourg"
+msgid "Gambia"
 msgstr ""
 
 #: choices.py:349
-msgid "Macau"
+msgid "Georgia"
 msgstr ""
 
 #: choices.py:350
-msgid "Macedonia"
+msgid "Germany"
 msgstr ""
 
 #: choices.py:351
-msgid "Madagascar"
+msgid "Ghana"
 msgstr ""
 
 #: choices.py:352
-msgid "Malawi"
+msgid "Gibraltar"
 msgstr ""
 
 #: choices.py:353
-msgid "Malaysia"
+msgid "Greece"
 msgstr ""
 
 #: choices.py:354
-msgid "Maldives"
+msgid "Grenada"
 msgstr ""
 
 #: choices.py:355
-msgid "Mali"
+msgid "Guam"
 msgstr ""
 
 #: choices.py:356
-msgid "Malta"
+msgid "Guatemala"
 msgstr ""
 
 #: choices.py:357
-msgid "Marshall Islands"
+msgid "Guinea Bissau"
 msgstr ""
 
 #: choices.py:358
-msgid "Mauritania"
+msgid "Guinea"
 msgstr ""
 
 #: choices.py:359
-msgid "Mauritius"
+msgid "Guyana"
 msgstr ""
 
 #: choices.py:360
-msgid "Mexico"
+msgid "Haiti"
 msgstr ""
 
 #: choices.py:361
-msgid "Micronesia"
+msgid "Honduras"
 msgstr ""
 
 #: choices.py:362
-msgid "Moldova"
+msgid "Hong Kong"
 msgstr ""
 
 #: choices.py:363
-msgid "Monaco"
+msgid "Hungary"
 msgstr ""
 
 #: choices.py:364
-msgid "Mongolia"
+msgid "Iceland"
 msgstr ""
 
 #: choices.py:365
-msgid "Montenegro"
+msgid "India"
 msgstr ""
 
 #: choices.py:366
-msgid "Montserrat"
+msgid "Indonesia"
 msgstr ""
 
 #: choices.py:367
-msgid "Morocco"
+msgid "Iran"
 msgstr ""
 
 #: choices.py:368
-msgid "Mozambique"
+msgid "Iraq"
 msgstr ""
 
 #: choices.py:369
-msgid "Myanmar"
+msgid "Ireland"
 msgstr ""
 
 #: choices.py:370
-msgid "Namibia"
+msgid "Israel"
 msgstr ""
 
-#: choices.py:371 choices.py:637
-msgid "Nauru"
+#: choices.py:371
+msgid "Italy"
 msgstr ""
 
 #: choices.py:372
-msgid "Nepal"
+msgid "Jamaica"
 msgstr ""
 
 #: choices.py:373
-msgid "Netherlands Antilles"
+msgid "Japan"
 msgstr ""
 
 #: choices.py:374
-msgid "Netherlands"
+msgid "Jersey"
 msgstr ""
 
 #: choices.py:375
-msgid "New Zealand"
+msgid "Jordan"
 msgstr ""
 
 #: choices.py:376
-msgid "Nicaragua"
+msgid "Kazakhstan"
 msgstr ""
 
 #: choices.py:377
-msgid "Niger"
+msgid "Kenya"
 msgstr ""
 
 #: choices.py:378
-msgid "Nigeria"
+msgid "Kiribati"
 msgstr ""
 
 #: choices.py:379
-msgid "North Korea"
+msgid "Kuwait"
 msgstr ""
 
 #: choices.py:380
-msgid "Norway"
+msgid "Kyrgyzstan"
 msgstr ""
 
 #: choices.py:381
-msgid "Oman"
+msgid "Laos"
 msgstr ""
 
 #: choices.py:382
-msgid "Pakistan"
+msgid "Latvia"
 msgstr ""
 
 #: choices.py:383
-msgid "Palau"
+msgid "Lebanon"
 msgstr ""
 
 #: choices.py:384
-msgid "Panama"
+msgid "Lesotho"
 msgstr ""
 
 #: choices.py:385
-msgid "Papua New Guinea"
+msgid "Liberia"
 msgstr ""
 
 #: choices.py:386
-msgid "Paraguay"
+msgid "Libya"
 msgstr ""
 
 #: choices.py:387
-msgid "Peru"
+msgid "Liechtenstein"
 msgstr ""
 
 #: choices.py:388
-msgid "Philippines"
+msgid "Lithuania"
 msgstr ""
 
 #: choices.py:389
-msgid "Poland"
+msgid "Luxembourg"
 msgstr ""
 
 #: choices.py:390
-msgid "Portugal"
+msgid "Macau"
 msgstr ""
 
 #: choices.py:391
-msgid "Puerto Rico"
+msgid "Macedonia"
 msgstr ""
 
 #: choices.py:392
-msgid "Qatar"
+msgid "Madagascar"
 msgstr ""
 
 #: choices.py:393
-msgid "Romania"
+msgid "Malawi"
 msgstr ""
 
 #: choices.py:394
-msgid "Russian Federation"
+msgid "Malaysia"
 msgstr ""
 
 #: choices.py:395
-msgid "Rwanda"
+msgid "Maldives"
 msgstr ""
 
 #: choices.py:396
-msgid "Saint Lucia"
+msgid "Mali"
 msgstr ""
 
 #: choices.py:397
-msgid "Samoa"
+msgid "Malta"
 msgstr ""
 
 #: choices.py:398
-msgid "San Marino"
+msgid "Marshall Islands"
 msgstr ""
 
 #: choices.py:399
-msgid "Sao Tome and Principe"
+msgid "Mauritania"
 msgstr ""
 
 #: choices.py:400
-msgid "Saudi Arabia"
+msgid "Mauritius"
 msgstr ""
 
 #: choices.py:401
-msgid "Senegal"
+msgid "Mexico"
 msgstr ""
 
 #: choices.py:402
-msgid "Serbia"
+msgid "Micronesia"
 msgstr ""
 
 #: choices.py:403
-msgid "Seychelles"
+msgid "Moldova"
 msgstr ""
 
 #: choices.py:404
-msgid "Sierra Leone"
+msgid "Monaco"
 msgstr ""
 
 #: choices.py:405
-msgid "Singapore"
+msgid "Mongolia"
 msgstr ""
 
 #: choices.py:406
-msgid "Slovakia"
+msgid "Montenegro"
 msgstr ""
 
 #: choices.py:407
-msgid "Slovenia"
+msgid "Montserrat"
 msgstr ""
 
 #: choices.py:408
-msgid "Solomon Islands"
+msgid "Morocco"
 msgstr ""
 
 #: choices.py:409
-msgid "Somalia"
+msgid "Mozambique"
 msgstr ""
 
 #: choices.py:410
-msgid "South Africa"
+msgid "Myanmar"
 msgstr ""
 
 #: choices.py:411
-msgid "South Korea"
+msgid "Namibia"
 msgstr ""
 
-#: choices.py:412
-msgid "Spain"
+#: choices.py:412 choices.py:678
+msgid "Nauru"
 msgstr ""
 
 #: choices.py:413
-msgid "Sri Lanka"
+msgid "Nepal"
 msgstr ""
 
 #: choices.py:414
-msgid "St Kitts and Nevis"
+msgid "Netherlands Antilles"
 msgstr ""
 
 #: choices.py:415
-msgid "St Vincent and the Grenadines"
+msgid "Netherlands"
 msgstr ""
 
 #: choices.py:416
-msgid "Sudan"
+msgid "New Zealand"
 msgstr ""
 
 #: choices.py:417
-msgid "Suriname"
+msgid "Nicaragua"
 msgstr ""
 
 #: choices.py:418
-msgid "Swaziland"
+msgid "Niger"
 msgstr ""
 
 #: choices.py:419
-msgid "Sweden"
+msgid "Nigeria"
 msgstr ""
 
 #: choices.py:420
-msgid "Switzerland"
+msgid "North Korea"
 msgstr ""
 
 #: choices.py:421
-msgid "Syria"
+msgid "Norway"
 msgstr ""
 
 #: choices.py:422
-msgid "Tajikistan"
+msgid "Oman"
 msgstr ""
 
 #: choices.py:423
-msgid "Taiwan"
+msgid "Pakistan"
 msgstr ""
 
 #: choices.py:424
-msgid "Tanzania"
+msgid "Palau"
 msgstr ""
 
 #: choices.py:425
-msgid "Thailand"
+msgid "Panama"
 msgstr ""
 
 #: choices.py:426
-msgid "Timor Leste"
+msgid "Papua New Guinea"
 msgstr ""
 
 #: choices.py:427
-msgid "Togo"
+msgid "Paraguay"
 msgstr ""
 
-#: choices.py:428 choices.py:695
-msgid "Tonga"
+#: choices.py:428
+msgid "Peru"
 msgstr ""
 
 #: choices.py:429
-msgid "Trinidad and Tobago"
+msgid "Philippines"
 msgstr ""
 
 #: choices.py:430
-msgid "Tunisia"
+msgid "Poland"
 msgstr ""
 
 #: choices.py:431
-msgid "Turkey"
+msgid "Portugal"
 msgstr ""
 
 #: choices.py:432
-msgid "Turkmenistan"
+msgid "Puerto Rico"
 msgstr ""
 
 #: choices.py:433
-msgid "Turks and Caicos Islands"
+msgid "Qatar"
 msgstr ""
 
 #: choices.py:434
-msgid "Tuvalu"
+msgid "Romania"
 msgstr ""
 
 #: choices.py:435
-msgid "Uganda"
+msgid "Russian Federation"
 msgstr ""
 
 #: choices.py:436
-msgid "Ukraine"
+msgid "Rwanda"
 msgstr ""
 
 #: choices.py:437
-msgid "United Arab Emirates"
+msgid "Saint Lucia"
 msgstr ""
 
 #: choices.py:438
-msgid "United Kingdom"
+msgid "Samoa"
 msgstr ""
 
 #: choices.py:439
-msgid "United States of America"
+msgid "San Marino"
 msgstr ""
 
 #: choices.py:440
-msgid "Uruguay"
+msgid "Sao Tome and Principe"
 msgstr ""
 
 #: choices.py:441
-msgid "Uzbekistan"
+msgid "Saudi Arabia"
 msgstr ""
 
 #: choices.py:442
-msgid "Vanuatu"
+msgid "Senegal"
 msgstr ""
 
 #: choices.py:443
-msgid "Vatican City"
+msgid "Serbia"
 msgstr ""
 
 #: choices.py:444
-msgid "Venezuela"
+msgid "Seychelles"
 msgstr ""
 
 #: choices.py:445
-msgid "Viet Nam"
+msgid "Sierra Leone"
 msgstr ""
 
 #: choices.py:446
-msgid "Virgin Islands British"
+msgid "Singapore"
 msgstr ""
 
 #: choices.py:447
-msgid "Virgin Islands US"
+msgid "Slovakia"
 msgstr ""
 
 #: choices.py:448
-msgid "Western Sahara"
+msgid "Slovenia"
 msgstr ""
 
 #: choices.py:449
-msgid "Yemen"
+msgid "Solomon Islands"
 msgstr ""
 
 #: choices.py:450
-msgid "Zambia"
+msgid "Somalia"
 msgstr ""
 
 #: choices.py:451
-msgid "Zimbabwe"
+msgid "South Africa"
+msgstr ""
+
+#: choices.py:452
+msgid "South Korea"
+msgstr ""
+
+#: choices.py:453
+msgid "Spain"
+msgstr ""
+
+#: choices.py:454
+msgid "Sri Lanka"
+msgstr ""
+
+#: choices.py:455
+msgid "St Kitts and Nevis"
 msgstr ""
 
 #: choices.py:456
-msgid "England"
+msgid "St Vincent and the Grenadines"
 msgstr ""
 
 #: choices.py:457
-msgid "Northern Ireland"
+msgid "Sudan"
 msgstr ""
 
 #: choices.py:458
-msgid "Wales"
+msgid "Suriname"
 msgstr ""
 
 #: choices.py:459
-msgid "Scotland"
+msgid "Swaziland"
+msgstr ""
+
+#: choices.py:460
+msgid "Sweden"
+msgstr ""
+
+#: choices.py:461
+msgid "Switzerland"
+msgstr ""
+
+#: choices.py:462
+msgid "Syria"
 msgstr ""
 
 #: choices.py:463
-msgid "Northern Cyprus"
+msgid "Tajikistan"
 msgstr ""
 
 #: choices.py:464
-msgid "Palestine"
+msgid "Taiwan"
 msgstr ""
 
 #: choices.py:465
-msgid "Somaliland"
+msgid "Tanzania"
+msgstr ""
+
+#: choices.py:466
+msgid "Thailand"
+msgstr ""
+
+#: choices.py:467
+msgid "Timor Leste"
+msgstr ""
+
+#: choices.py:468
+msgid "Togo"
+msgstr ""
+
+#: choices.py:469 choices.py:736
+msgid "Tonga"
 msgstr ""
 
 #: choices.py:470
-msgid "African Union"
+msgid "Trinidad and Tobago"
 msgstr ""
 
 #: choices.py:471
-msgid "Arab League"
+msgid "Tunisia"
+msgstr ""
+
+#: choices.py:472
+msgid "Turkey"
 msgstr ""
 
 #: choices.py:473
-msgid "Association of Southeast Asian Nations"
+msgid "Turkmenistan"
 msgstr ""
 
 #: choices.py:474
-msgid "Caricom"
+msgid "Turks and Caicos Islands"
+msgstr ""
+
+#: choices.py:475
+msgid "Tuvalu"
 msgstr ""
 
 #: choices.py:476
-msgid "Commonwealth of Independent States"
+msgid "Uganda"
 msgstr ""
 
 #: choices.py:477
-msgid "Commonwealth of Nations"
+msgid "Ukraine"
 msgstr ""
 
 #: choices.py:478
-msgid "European Union"
+msgid "United Arab Emirates"
 msgstr ""
 
 #: choices.py:479
-msgid "Islamic Conference"
+msgid "United Kingdom"
 msgstr ""
 
 #: choices.py:480
-msgid "NATO"
+msgid "United States of America"
 msgstr ""
 
 #: choices.py:481
-msgid "Olimpic Movement"
+msgid "Uruguay"
 msgstr ""
 
 #: choices.py:482
-msgid "OPEC"
+msgid "Uzbekistan"
 msgstr ""
 
 #: choices.py:483
-msgid "Red Cross"
+msgid "Vanuatu"
 msgstr ""
 
 #: choices.py:484
-msgid "United Nations"
+msgid "Vatican City"
+msgstr ""
+
+#: choices.py:485
+msgid "Venezuela"
+msgstr ""
+
+#: choices.py:486
+msgid "Viet Nam"
+msgstr ""
+
+#: choices.py:487
+msgid "Virgin Islands British"
+msgstr ""
+
+#: choices.py:488
+msgid "Virgin Islands US"
+msgstr ""
+
+#: choices.py:489
+msgid "Western Sahara"
+msgstr ""
+
+#: choices.py:490
+msgid "Yemen"
+msgstr ""
+
+#: choices.py:491
+msgid "Zambia"
+msgstr ""
+
+#: choices.py:492
+msgid "Zimbabwe"
+msgstr ""
+
+#: choices.py:497
+msgid "England"
+msgstr ""
+
+#: choices.py:498
+msgid "Northern Ireland"
+msgstr ""
+
+#: choices.py:499
+msgid "Wales"
+msgstr ""
+
+#: choices.py:500
+msgid "Scotland"
+msgstr ""
+
+#: choices.py:504
+msgid "Northern Cyprus"
+msgstr ""
+
+#: choices.py:505
+msgid "Palestine"
+msgstr ""
+
+#: choices.py:506
+msgid "Somaliland"
+msgstr ""
+
+#: choices.py:511
+msgid "African Union"
+msgstr ""
+
+#: choices.py:512
+msgid "Arab League"
+msgstr ""
+
+#: choices.py:514
+msgid "Association of Southeast Asian Nations"
+msgstr ""
+
+#: choices.py:515
+msgid "Caricom"
+msgstr ""
+
+#: choices.py:517
+msgid "Commonwealth of Independent States"
+msgstr ""
+
+#: choices.py:518
+msgid "Commonwealth of Nations"
+msgstr ""
+
+#: choices.py:519
+msgid "European Union"
 msgstr ""
 
 #: choices.py:520
-msgid "Afar"
+msgid "Islamic Conference"
 msgstr ""
 
 #: choices.py:521
-msgid "Abkhazian"
+msgid "NATO"
 msgstr ""
 
 #: choices.py:522
-msgid "Avestan"
+msgid "Olimpic Movement"
 msgstr ""
 
 #: choices.py:523
-msgid "Afrikaans"
+msgid "OPEC"
 msgstr ""
 
 #: choices.py:524
-msgid "Akan"
+msgid "Red Cross"
 msgstr ""
 
 #: choices.py:525
-msgid "Amharic"
-msgstr ""
-
-#: choices.py:526
-msgid "Aragonese"
-msgstr ""
-
-#: choices.py:527
-msgid "Arabic"
-msgstr ""
-
-#: choices.py:528
-msgid "Assamese"
-msgstr ""
-
-#: choices.py:529
-msgid "Asturian"
-msgstr ""
-
-#: choices.py:530
-msgid "Avaric"
-msgstr ""
-
-#: choices.py:531
-msgid "Aymara"
-msgstr ""
-
-#: choices.py:532
-msgid "Azerbaijani"
-msgstr ""
-
-#: choices.py:533
-msgid "Bashkir"
-msgstr ""
-
-#: choices.py:534
-msgid "Belarusian"
-msgstr ""
-
-#: choices.py:535
-msgid "Bulgarian"
-msgstr ""
-
-#: choices.py:536
-msgid "Bihari"
-msgstr ""
-
-#: choices.py:537
-msgid "Bislama"
-msgstr ""
-
-#: choices.py:538
-msgid "Bambara"
-msgstr ""
-
-#: choices.py:539
-msgid "Bengali"
-msgstr ""
-
-#: choices.py:540
-msgid "Tibetan"
-msgstr ""
-
-#: choices.py:541
-msgid "Breton"
-msgstr ""
-
-#: choices.py:542
-msgid "Bosnian"
-msgstr ""
-
-#: choices.py:543
-msgid "Catalan"
-msgstr ""
-
-#: choices.py:544
-msgid "Chechen"
-msgstr ""
-
-#: choices.py:545
-msgid "Chamorro"
-msgstr ""
-
-#: choices.py:546
-msgid "Corsican"
-msgstr ""
-
-#: choices.py:547
-msgid "Cree"
-msgstr ""
-
-#: choices.py:548
-msgid "Czech"
-msgstr ""
-
-#: choices.py:549
-msgid "Church Slavic"
-msgstr ""
-
-#: choices.py:550
-msgid "Chuvash"
-msgstr ""
-
-#: choices.py:551
-msgid "Welsh"
-msgstr ""
-
-#: choices.py:552
-msgid "Danish"
-msgstr ""
-
-#: choices.py:553
-msgid "German"
-msgstr ""
-
-#: choices.py:554
-msgid "Divehi"
-msgstr ""
-
-#: choices.py:555
-msgid "Dzongkha"
-msgstr ""
-
-#: choices.py:556
-msgid "Ewe"
-msgstr ""
-
-#: choices.py:557
-msgid "Greek"
-msgstr ""
-
-#: choices.py:558
-msgid "English"
-msgstr ""
-
-#: choices.py:559
-msgid "British English"
-msgstr ""
-
-#: choices.py:560
-msgid "American English"
+msgid "United Nations"
 msgstr ""
 
 #: choices.py:561
-msgid "Esperanto"
+msgid "Afar"
 msgstr ""
 
 #: choices.py:562
-msgid "Spanish"
+msgid "Abkhazian"
 msgstr ""
 
 #: choices.py:563
-msgid "Argentinian Spanish"
+msgid "Avestan"
 msgstr ""
 
 #: choices.py:564
-msgid "Estonian"
+msgid "Afrikaans"
 msgstr ""
 
 #: choices.py:565
-msgid "Basque"
+msgid "Akan"
 msgstr ""
 
 #: choices.py:566
-msgid "Persian"
+msgid "Amharic"
 msgstr ""
 
 #: choices.py:567
-msgid "Fulah"
+msgid "Aragonese"
 msgstr ""
 
 #: choices.py:568
-msgid "Finnish"
+msgid "Arabic"
 msgstr ""
 
 #: choices.py:569
-msgid "Fijian"
+msgid "Assamese"
 msgstr ""
 
 #: choices.py:570
-msgid "Faroese"
+msgid "Asturian"
 msgstr ""
 
 #: choices.py:571
-msgid "French"
+msgid "Avaric"
 msgstr ""
 
 #: choices.py:572
-msgid "Friulian"
+msgid "Aymara"
 msgstr ""
 
 #: choices.py:573
-msgid "Frisian"
+msgid "Azerbaijani"
 msgstr ""
 
 #: choices.py:574
-msgid "Irish"
+msgid "Bashkir"
 msgstr ""
 
 #: choices.py:575
-msgid "Scots Gaelic"
+msgid "Belarusian"
 msgstr ""
 
 #: choices.py:576
-msgid "Galician"
+msgid "Bulgarian"
 msgstr ""
 
 #: choices.py:577
-msgid "Guarani"
+msgid "Bihari"
 msgstr ""
 
 #: choices.py:578
-msgid "Gujarati"
+msgid "Bislama"
 msgstr ""
 
 #: choices.py:579
-msgid "Manx"
+msgid "Bambara"
 msgstr ""
 
 #: choices.py:580
-msgid "Hausa"
+msgid "Bengali"
 msgstr ""
 
 #: choices.py:581
-msgid "Hebrew"
+msgid "Tibetan"
 msgstr ""
 
 #: choices.py:582
-msgid "Hindi"
+msgid "Breton"
 msgstr ""
 
 #: choices.py:583
-msgid "Hiri Motu"
+msgid "Bosnian"
 msgstr ""
 
 #: choices.py:584
-msgid "Croatian"
+msgid "Catalan"
 msgstr ""
 
 #: choices.py:585
-msgid "Upper Sorbian"
+msgid "Chechen"
 msgstr ""
 
 #: choices.py:586
-msgid "Haitian"
+msgid "Chamorro"
 msgstr ""
 
 #: choices.py:587
-msgid "Hungarian"
+msgid "Corsican"
 msgstr ""
 
 #: choices.py:588
-msgid "Armenian"
+msgid "Cree"
 msgstr ""
 
 #: choices.py:589
-msgid "Herero"
+msgid "Czech"
 msgstr ""
 
 #: choices.py:590
-msgid "Interlingua"
+msgid "Church Slavic"
 msgstr ""
 
 #: choices.py:591
-msgid "Indonesian"
+msgid "Chuvash"
 msgstr ""
 
 #: choices.py:592
-msgid "Interlingue"
+msgid "Welsh"
 msgstr ""
 
 #: choices.py:593
-msgid "Igbo"
+msgid "Danish"
 msgstr ""
 
 #: choices.py:594
-msgid "Sichuan Yi"
+msgid "German"
 msgstr ""
 
 #: choices.py:595
-msgid "Inupiaq"
+msgid "Divehi"
 msgstr ""
 
 #: choices.py:596
-msgid "Ido"
+msgid "Dzongkha"
 msgstr ""
 
 #: choices.py:597
-msgid "Icelandic"
+msgid "Ewe"
 msgstr ""
 
 #: choices.py:598
-msgid "Italian"
+msgid "Greek"
 msgstr ""
 
 #: choices.py:599
-msgid "Inuktitut"
+msgid "English"
 msgstr ""
 
 #: choices.py:600
-msgid "Japanese"
+msgid "British English"
 msgstr ""
 
 #: choices.py:601
-msgid "Javanese"
+msgid "American English"
 msgstr ""
 
 #: choices.py:602
-msgid "Georgian"
+msgid "Esperanto"
 msgstr ""
 
 #: choices.py:603
-msgid "Kongo"
+msgid "Spanish"
 msgstr ""
 
 #: choices.py:604
-msgid "Kikuyu"
+msgid "Argentinian Spanish"
 msgstr ""
 
 #: choices.py:605
-msgid "Kuanyama"
+msgid "Estonian"
 msgstr ""
 
 #: choices.py:606
-msgid "Kazakh"
+msgid "Basque"
 msgstr ""
 
 #: choices.py:607
-msgid "Greenlandic"
+msgid "Persian"
 msgstr ""
 
 #: choices.py:608
-msgid "Khmer"
+msgid "Fulah"
 msgstr ""
 
 #: choices.py:609
-msgid "Kannada"
+msgid "Finnish"
 msgstr ""
 
 #: choices.py:610
-msgid "Korean"
+msgid "Fijian"
 msgstr ""
 
 #: choices.py:611
-msgid "Konkani"
+msgid "Faroese"
 msgstr ""
 
 #: choices.py:612
-msgid "Kanuri"
+msgid "French"
 msgstr ""
 
 #: choices.py:613
-msgid "Kashmiri"
+msgid "Friulian"
 msgstr ""
 
 #: choices.py:614
-msgid "Kurdish"
+msgid "Frisian"
 msgstr ""
 
 #: choices.py:615
-msgid "Komi"
+msgid "Irish"
 msgstr ""
 
 #: choices.py:616
-msgid "Cornish"
+msgid "Scots Gaelic"
 msgstr ""
 
 #: choices.py:617
-msgid "Kirghiz"
+msgid "Galician"
 msgstr ""
 
 #: choices.py:618
-msgid "Latin"
+msgid "Guarani"
 msgstr ""
 
 #: choices.py:619
-msgid "Luxembourgish"
+msgid "Gujarati"
 msgstr ""
 
 #: choices.py:620
-msgid "Ganda"
+msgid "Manx"
 msgstr ""
 
 #: choices.py:621
-msgid "Limburgan"
+msgid "Hausa"
 msgstr ""
 
 #: choices.py:622
-msgid "Lingala"
+msgid "Hebrew"
 msgstr ""
 
 #: choices.py:623
-msgid "Lao"
+msgid "Hindi"
 msgstr ""
 
 #: choices.py:624
-msgid "Lithuanian"
+msgid "Hiri Motu"
 msgstr ""
 
 #: choices.py:625
-msgid "Luba-Katanga"
+msgid "Croatian"
 msgstr ""
 
 #: choices.py:626
-msgid "Latvian"
+msgid "Upper Sorbian"
 msgstr ""
 
 #: choices.py:627
-msgid "Malagasy"
+msgid "Haitian"
 msgstr ""
 
 #: choices.py:628
-msgid "Marshallese"
+msgid "Hungarian"
 msgstr ""
 
 #: choices.py:629
-msgid "Maori"
+msgid "Armenian"
 msgstr ""
 
 #: choices.py:630
-msgid "Macedonian"
+msgid "Herero"
 msgstr ""
 
 #: choices.py:631
-msgid "Malayalam"
+msgid "Interlingua"
 msgstr ""
 
 #: choices.py:632
-msgid "Mongolian"
+msgid "Indonesian"
 msgstr ""
 
 #: choices.py:633
-msgid "Marathi"
+msgid "Interlingue"
 msgstr ""
 
 #: choices.py:634
-msgid "Malay"
+msgid "Igbo"
 msgstr ""
 
 #: choices.py:635
-msgid "Maltese"
+msgid "Sichuan Yi"
 msgstr ""
 
 #: choices.py:636
-msgid "Burmese"
+msgid "Inupiaq"
+msgstr ""
+
+#: choices.py:637
+msgid "Ido"
 msgstr ""
 
 #: choices.py:638
-msgid "Norwegian Bokm\\u00e5l"
+msgid "Icelandic"
 msgstr ""
 
 #: choices.py:639
-msgid "Ndebele, North"
+msgid "Italian"
 msgstr ""
 
 #: choices.py:640
-msgid "Nepali"
+msgid "Inuktitut"
 msgstr ""
 
 #: choices.py:641
-msgid "Ndonga"
+msgid "Japanese"
 msgstr ""
 
 #: choices.py:642
-msgid "Dutch"
+msgid "Javanese"
 msgstr ""
 
 #: choices.py:643
-msgid "Norwegian Nynorsk"
+msgid "Georgian"
 msgstr ""
 
 #: choices.py:644
-msgid "Norwegian"
+msgid "Kongo"
 msgstr ""
 
 #: choices.py:645
-msgid "Ndebele, South"
+msgid "Kikuyu"
 msgstr ""
 
 #: choices.py:646
-msgid "Sotho, Northern"
+msgid "Kuanyama"
 msgstr ""
 
 #: choices.py:647
-msgid "Navajo"
+msgid "Kazakh"
 msgstr ""
 
 #: choices.py:648
-msgid "Chichewa"
+msgid "Greenlandic"
 msgstr ""
 
 #: choices.py:649
-msgid "Occitan"
+msgid "Khmer"
 msgstr ""
 
 #: choices.py:650
-msgid "Ojibwa"
+msgid "Kannada"
 msgstr ""
 
 #: choices.py:651
-msgid "Oromo"
+msgid "Korean"
 msgstr ""
 
 #: choices.py:652
-msgid "Oriya"
+msgid "Konkani"
 msgstr ""
 
 #: choices.py:653
-msgid "Ossetian"
+msgid "Kanuri"
 msgstr ""
 
 #: choices.py:654
-msgid "Punjabi"
+msgid "Kashmiri"
 msgstr ""
 
 #: choices.py:655
-msgid "Pali"
+msgid "Kurdish"
 msgstr ""
 
 #: choices.py:656
-msgid "Polish"
+msgid "Komi"
 msgstr ""
 
 #: choices.py:657
-msgid "Pashto"
+msgid "Cornish"
 msgstr ""
 
 #: choices.py:658
-msgid "Portuguese"
+msgid "Kirghiz"
 msgstr ""
 
 #: choices.py:659
-msgid "Brazilian Portugese"
+msgid "Latin"
 msgstr ""
 
 #: choices.py:660
-msgid "Quechua"
+msgid "Luxembourgish"
 msgstr ""
 
 #: choices.py:661
-msgid "Rhaeto-Romanic"
+msgid "Ganda"
 msgstr ""
 
 #: choices.py:662
-msgid "Kirundi"
+msgid "Limburgan"
 msgstr ""
 
 #: choices.py:663
-msgid "Romanian"
+msgid "Lingala"
 msgstr ""
 
 #: choices.py:664
-msgid "Russian"
+msgid "Lao"
 msgstr ""
 
 #: choices.py:665
-msgid "Kinyarwanda"
+msgid "Lithuanian"
 msgstr ""
 
 #: choices.py:666
-msgid "Sanskrit"
+msgid "Luba-Katanga"
 msgstr ""
 
 #: choices.py:667
-msgid "Sardinian"
+msgid "Latvian"
 msgstr ""
 
 #: choices.py:668
-msgid "Sindhi"
+msgid "Malagasy"
 msgstr ""
 
 #: choices.py:669
-msgid "Northern Sami"
+msgid "Marshallese"
 msgstr ""
 
 #: choices.py:670
-msgid "Sango"
+msgid "Maori"
 msgstr ""
 
 #: choices.py:671
-msgid "Singhalese"
+msgid "Macedonian"
 msgstr ""
 
 #: choices.py:672
-msgid "Slovak"
+msgid "Malayalam"
 msgstr ""
 
 #: choices.py:673
-msgid "Slovenian"
+msgid "Mongolian"
 msgstr ""
 
 #: choices.py:674
-msgid "Samoan"
+msgid "Marathi"
 msgstr ""
 
 #: choices.py:675
-msgid "Shona"
+msgid "Malay"
 msgstr ""
 
 #: choices.py:676
-msgid "Somali"
+msgid "Maltese"
 msgstr ""
 
 #: choices.py:677
-msgid "Albanian"
-msgstr ""
-
-#: choices.py:678
-msgid "Serbian"
+msgid "Burmese"
 msgstr ""
 
 #: choices.py:679
-msgid "Serbian Latin"
+msgid "Norwegian Bokm\\u00e5l"
 msgstr ""
 
 #: choices.py:680
-msgid "Siswati"
+msgid "Ndebele, North"
 msgstr ""
 
 #: choices.py:681
-msgid "Sotho, Southern"
+msgid "Nepali"
 msgstr ""
 
 #: choices.py:682
-msgid "Sundanese"
+msgid "Ndonga"
 msgstr ""
 
 #: choices.py:683
-msgid "Swedish"
+msgid "Dutch"
 msgstr ""
 
 #: choices.py:684
-msgid "Swahili"
+msgid "Norwegian Nynorsk"
 msgstr ""
 
 #: choices.py:685
-msgid "Tamil"
+msgid "Norwegian"
 msgstr ""
 
 #: choices.py:686
-msgid "Telugu"
+msgid "Ndebele, South"
 msgstr ""
 
 #: choices.py:687
-msgid "Tajik"
+msgid "Sotho, Northern"
 msgstr ""
 
 #: choices.py:688
-msgid "Thai"
+msgid "Navajo"
 msgstr ""
 
 #: choices.py:689
-msgid "Tigrinya"
+msgid "Chichewa"
 msgstr ""
 
 #: choices.py:690
-msgid "Tigre"
+msgid "Occitan"
 msgstr ""
 
 #: choices.py:691
-msgid "Turkmen"
+msgid "Ojibwa"
 msgstr ""
 
 #: choices.py:692
-msgid "Tagalog"
+msgid "Oromo"
 msgstr ""
 
 #: choices.py:693
-msgid "Klingon"
+msgid "Oriya"
 msgstr ""
 
 #: choices.py:694
-msgid "Tswana"
+msgid "Ossetian"
+msgstr ""
+
+#: choices.py:695
+msgid "Punjabi"
 msgstr ""
 
 #: choices.py:696
-msgid "Turkish"
+msgid "Pali"
 msgstr ""
 
 #: choices.py:697
-msgid "Tsonga"
+msgid "Polish"
 msgstr ""
 
 #: choices.py:698
-msgid "Tatar"
+msgid "Pashto"
 msgstr ""
 
 #: choices.py:699
-msgid "Twi"
+msgid "Portuguese"
 msgstr ""
 
 #: choices.py:700
-msgid "Tahitian"
+msgid "Brazilian Portugese"
 msgstr ""
 
 #: choices.py:701
-msgid "Uighur"
+msgid "Quechua"
 msgstr ""
 
 #: choices.py:702
-msgid "Ukrainian"
+msgid "Rhaeto-Romanic"
 msgstr ""
 
 #: choices.py:703
-msgid "Urdu"
+msgid "Kirundi"
 msgstr ""
 
 #: choices.py:704
-msgid "Uzbek"
+msgid "Romanian"
 msgstr ""
 
 #: choices.py:705
-msgid "Venda"
+msgid "Russian"
 msgstr ""
 
 #: choices.py:706
-msgid "Vietnamese"
+msgid "Kinyarwanda"
 msgstr ""
 
 #: choices.py:707
-msgid "Volap\\u00fck"
+msgid "Sanskrit"
 msgstr ""
 
 #: choices.py:708
-msgid "Walloon"
+msgid "Sardinian"
 msgstr ""
 
 #: choices.py:709
-msgid "Sorbian"
+msgid "Sindhi"
 msgstr ""
 
 #: choices.py:710
-msgid "Wolof"
+msgid "Northern Sami"
 msgstr ""
 
 #: choices.py:711
-msgid "Xhosa"
+msgid "Sango"
 msgstr ""
 
 #: choices.py:712
-msgid "Yiddish"
+msgid "Singhalese"
 msgstr ""
 
 #: choices.py:713
-msgid "Yoruba"
+msgid "Slovak"
 msgstr ""
 
 #: choices.py:714
-msgid "Zhuang"
+msgid "Slovenian"
 msgstr ""
 
 #: choices.py:715
-msgid "Chinese"
+msgid "Samoan"
 msgstr ""
 
 #: choices.py:716
-msgid "Simplified Chinese"
+msgid "Shona"
 msgstr ""
 
 #: choices.py:717
-msgid "Traditional Chinese"
+msgid "Somali"
 msgstr ""
 
 #: choices.py:718
-msgid "Zulu"
+msgid "Albanian"
 msgstr ""
 
-#: choices.py:736
-msgid "female"
+#: choices.py:719
+msgid "Serbian"
+msgstr ""
+
+#: choices.py:720
+msgid "Serbian Latin"
+msgstr ""
+
+#: choices.py:721
+msgid "Siswati"
+msgstr ""
+
+#: choices.py:722
+msgid "Sotho, Southern"
+msgstr ""
+
+#: choices.py:723
+msgid "Sundanese"
+msgstr ""
+
+#: choices.py:724
+msgid "Swedish"
+msgstr ""
+
+#: choices.py:725
+msgid "Swahili"
+msgstr ""
+
+#: choices.py:726
+msgid "Tamil"
+msgstr ""
+
+#: choices.py:727
+msgid "Telugu"
+msgstr ""
+
+#: choices.py:728
+msgid "Tajik"
+msgstr ""
+
+#: choices.py:729
+msgid "Thai"
+msgstr ""
+
+#: choices.py:730
+msgid "Tigrinya"
+msgstr ""
+
+#: choices.py:731
+msgid "Tigre"
+msgstr ""
+
+#: choices.py:732
+msgid "Turkmen"
+msgstr ""
+
+#: choices.py:733
+msgid "Tagalog"
+msgstr ""
+
+#: choices.py:734
+msgid "Klingon"
+msgstr ""
+
+#: choices.py:735
+msgid "Tswana"
 msgstr ""
 
 #: choices.py:737
-msgid "male"
+msgid "Turkish"
 msgstr ""
 
 #: choices.py:738
+msgid "Tsonga"
+msgstr ""
+
+#: choices.py:739
+msgid "Tatar"
+msgstr ""
+
+#: choices.py:740
+msgid "Twi"
+msgstr ""
+
+#: choices.py:741
+msgid "Tahitian"
+msgstr ""
+
+#: choices.py:742
+msgid "Uighur"
+msgstr ""
+
+#: choices.py:743
+msgid "Ukrainian"
+msgstr ""
+
+#: choices.py:744
+msgid "Urdu"
+msgstr ""
+
+#: choices.py:745
+msgid "Uzbek"
+msgstr ""
+
+#: choices.py:746
+msgid "Venda"
+msgstr ""
+
+#: choices.py:747
+msgid "Vietnamese"
+msgstr ""
+
+#: choices.py:748
+msgid "Volap\\u00fck"
+msgstr ""
+
+#: choices.py:749
+msgid "Walloon"
+msgstr ""
+
+#: choices.py:750
+msgid "Sorbian"
+msgstr ""
+
+#: choices.py:751
+msgid "Wolof"
+msgstr ""
+
+#: choices.py:752
+msgid "Xhosa"
+msgstr ""
+
+#: choices.py:753
+msgid "Yiddish"
+msgstr ""
+
+#: choices.py:754
+msgid "Yoruba"
+msgstr ""
+
+#: choices.py:755
+msgid "Zhuang"
+msgstr ""
+
+#: choices.py:756
+msgid "Chinese"
+msgstr ""
+
+#: choices.py:757
+msgid "Simplified Chinese"
+msgstr ""
+
+#: choices.py:758
+msgid "Traditional Chinese"
+msgstr ""
+
+#: choices.py:759
+msgid "Zulu"
+msgstr ""
+
+#: choices.py:777
+msgid "female"
+msgstr ""
+
+#: choices.py:778
+msgid "male"
+msgstr ""
+
+#: choices.py:779
 msgid "unspecified"
 msgstr ""
 
-#: forms.py:16
-msgid "Female"
-msgstr ""
-
-#: forms.py:17
-msgid "Male"
-msgstr ""
-
-#: forms.py:18 forms.py:26
-msgid "any"
-msgstr ""
-
-#: forms.py:24
-msgid "Counter-Strike 1.6"
-msgstr ""
-
-#: forms.py:25
-msgid "Call of Duty 4"
-msgstr ""
-
-#: forms.py:33
-msgid "complete"
-msgstr ""
-
-#: forms.py:34
-msgid "incomplete"
-msgstr ""
-
-#: forms.py:35
-msgid "any account"
-msgstr ""
-
-#: forms.py:84
-msgid "Gender"
-msgstr ""
-
-#: forms.py:85
-msgid "Game"
-msgstr ""
-
-#: forms.py:86
-msgid "Account"
-msgstr ""
-
-#: forms.py:86
-msgid ""
-"Incomplete accounts don't have Allegro login or Steam ID/PB GUID filled."
-msgstr ""
-
-#: forms.py:87
-msgid "Subject"
-msgstr ""
-
-#: forms.py:88
-msgid "Content"
-msgstr ""
-
-#: forms.py:89
-msgid "Ignore privacy"
-msgstr ""
-
-#: models.py:43 models.py:54
+#: models.py:54 models.py:70
 msgid "name"
 msgstr ""
 
-#: models.py:66 models.py:77
+#: models.py:87 models.py:102
 msgid "title"
 msgstr ""
 
-#: models.py:90 models.py:101
+#: models.py:118 models.py:129
 msgid "permalink"
 msgstr ""
 
-#: models.py:116
+#: models.py:144
 msgid "date created"
 msgstr ""
 
-#: models.py:118
+#: models.py:146
 msgid "last modified"
 msgstr ""
 
-#: models.py:134
+#: models.py:163
 msgid "language"
 msgstr ""
 
-#: models.py:150
+#: models.py:179
 msgid "last active"
 msgstr ""
 
-#: models.py:180
+#: models.py:214
 msgid "display count"
 msgstr ""
 
-#: models.py:213
+#: models.py:257
 msgid "deleted"
 msgstr ""
