@@ -107,7 +107,7 @@ def thumbnail(image, size):
     elif size.startswith("s"):
         width = height = int(size[1:])
         if image.width > image.height:
-            shift = (image.width - image.height) / 2
+            shift = int((image.width - image.height) / 2)
         else:
             shift = 0
     else:
