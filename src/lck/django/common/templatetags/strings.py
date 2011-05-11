@@ -53,6 +53,13 @@ def title(text):
 
 
 @register.filter
+def upperfirst(text):
+    """Removes leading whitespace and ups the first letter in the string."""
+    text = text.lstrip()
+    return text[0].upper() + text[1:]
+
+
+@register.filter
 def transliterate(text, country_code, text_lang=''):
     """If the country with the specified code is using Cyrillic alphabet,
     transliterates Latin strings using ``lck.i18n.translit``.

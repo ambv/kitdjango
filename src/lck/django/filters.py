@@ -31,5 +31,5 @@ from __future__ import unicode_literals
 from lck.django.common.templatetags.converters import (numberify,
     nullify, timediff)
 from lck.django.common.templatetags.strings import (strike_empty,
-    slugify, title, transliterate, nbsp)
+    slugify, title, transliterate, nbsp, upperfirst)
 from lck.django.common.templatetags.thumbnail import thumbnail
