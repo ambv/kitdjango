@@ -153,7 +153,8 @@ def typical_handler(request, form_class, template, initial={},
     form = form_class(**_kwargs)
     if form.is_valid():
         template = template + '_complete.html'
-        form.save()
+        if hasattr(form, 'save'):
+            form.save()
     else:
         template += '.html'
         if form.errors:
