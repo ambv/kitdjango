@@ -30,6 +30,7 @@ from __future__ import unicode_literals
 
 from functools import partial
 from textwrap import dedent
+import warnings
 
 from lck.lang import unset
 
@@ -101,8 +102,8 @@ class ChoicesEntry(object):
 class ChoiceGroup(ChoicesEntry):
     """A group of choices."""
 
-    def __init__(self, id):
-        super(ChoiceGroup, self).__init__('', id=id)
+    def __init__(self, id, description=''):
+        super(ChoiceGroup, self).__init__(description, id=id)
         self.choices = []
 
 
@@ -145,6 +146,7 @@ def _getter(name, given, returns, found, getter):
 
 class _ChoicesMeta(type):
     def __new__(meta, classname, bases, classDict):
+        groups = []
         values = []
         for k, v in classDict.items():
             if isinstance(v, ChoicesEntry):
@@ -157,6 +159,7 @@ class _ChoicesMeta(type):
             if isinstance(choice, ChoiceGroup):
                 last_choice_id = choice.id
                 group = choice
+                groups.append(group)
             else:
                 if group:
                     group.choices.append(choice)
@@ -168,6 +171,7 @@ class _ChoicesMeta(type):
                     last_choice_id += 1
                     choice.id = last_choice_id
                 last_choice_id = choice.id
+        classDict['__groups__'] = groups
         classDict['__choices__'] = values
         return type.__new__(meta, classname, bases, classDict)
 
@@ -175,7 +179,7 @@ class _ChoicesMeta(type):
 class Choices(list):
     __metaclass__ = _ChoicesMeta
 
-    def __init__(self, filter=(unset,), item=unset, pair=unset):
+    def __init__(self, filter=(unset,), item=unset, pair=unset, grouped=False):
         """Creates a list of pairs from the specified Choices class.
         By default, each pair consists of a numeric ID and the translated
         description. If `use_ids` is False, the name of the attribute
@@ -200,10 +204,23 @@ class Choices(list):
             item = lambda choice: (choice.id, choice.desc)
 
         filter = set(filter)
-        for choice in self.__choices__:
-            if choice.name in filter or (unset in filter and
-                                         isinstance(choice, Choice)):
-                self.append(item(choice))
+        if grouped and self.__groups__:
+            for group in self.__groups__:
+                group_choices = []
+                for choice in group.choices:
+                    if choice.name in filter or (unset in filter and
+                        isinstance(choice, Choice)):
+                        group_choices.append(item(choice))
+                if group_choices:
+                    self.append((group.desc, tuple(group_choices)))
+        else:
+            if grouped:
+                warnings.warn("Choices class called with grouped=True and no "
+                    "actual groups.")
+            for choice in self.__choices__:
+                if choice.name in filter or (unset in filter and
+                    isinstance(choice, Choice)):
+                    self.append(item(choice))
 
     FromName = _getter("FromName",
         given="name",
