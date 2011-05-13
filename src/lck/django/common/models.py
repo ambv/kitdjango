@@ -37,6 +37,7 @@ from datetime import datetime
 from hashlib import sha256
 
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
 from django.core.mail import send_mail
@@ -46,6 +47,9 @@ from django.utils.translation import ugettext_lazy as _
 
 from lck.django.choices import Language
 from lck.django.common import monkeys
+
+
+EDITOR_TRACKABLE_MODEL = getattr(settings, 'EDITOR_TRACKABLE_MODEL', User)
 
 
 class Named(db.Model):
@@ -155,6 +159,26 @@ class TimeTrackable(db.Model):
         super(TimeTrackable, self).save(*args, **kwargs)
 
 
+class EditorTrackable(db.Model):
+    created_by = db.ForeignKey(EDITOR_TRACKABLE_MODEL, verbose_name=_("created by"),
+        null=True, blank=True, default=None, related_name='+')
+    modified_by = db.ForeignKey(EDITOR_TRACKABLE_MODEL, verbose_name=_("modified by"),
+        null=True, blank=True, default=None, related_name='+')
+
+    class Meta:
+        abstract = True
+
+    def get_editor_from_request(self, request):
+        return request.user
+
+    def pre_save_model(self, request, obj, form, change):
+        if not change:
+            if not obj.created_by:
+                obj.created_by = self.get_editor_from_request(request)
+        else:
+            obj.modified_by = self.get_editor_from_request(request)
+
+
 class Localized(db.Model):
     """Describes an abstract model which holds data in a specified
     ``language``. The language is chosen from the Language choices class
@@ -164,13 +188,13 @@ class Localized(db.Model):
         choices=Language(filter=set([lang[0] for lang in settings.LANGUAGES])),
             default=Language.IDFromName(settings.LANGUAGE_CODE))
 
+    class Meta:
+        abstract = True
+
     @property
     def lang(self):
         l = Language.FromID(self.language)
         return (l.name, l.desc)
-
-    class Meta:
-        abstract = True
 
 
 class MonitoredActivity(db.Model):
@@ -181,6 +205,9 @@ class MonitoredActivity(db.Model):
 
     _is_online_secs = getattr(settings, 'CURRENTLY_ONLINE_INTERVAL', 120)
     _was_online_secs = getattr(settings, 'RECENTLY_ONLINE_INTERVAL', 300)
+
+    class Meta:
+        abstract = True
 
     def is_currently_online(self, time_limit=_is_online_secs):
         """True if the user's last activity was within the last `time_limit`
@@ -194,9 +221,6 @@ class MonitoredActivity(db.Model):
         seconds (default value 5 minutes, customizable by the
         ``RECENTLY_ONLINE_INTERVAL`` setting."""
         return self.is_currently_online(time_limit=time_limit)
-
-    class Meta:
-        abstract = True
 
 
 class DisplayCounter(db.Model):
@@ -214,6 +238,9 @@ class DisplayCounter(db.Model):
     display_count = db.PositiveIntegerField(verbose_name=_("display count"),
         default=0, editable=False)
 
+    class Meta:
+        abstract = True
+
     def bump(self, unique_id=None):
         should_update = True
         if unique_id:
@@ -230,9 +257,6 @@ class DisplayCounter(db.Model):
         if should_update:
             self.display_count += 1
             self.save(update_modified=False)
-
-    class Meta:
-        abstract = True
 
 
 class ViewableSoftDeletableManager(db.Manager):
