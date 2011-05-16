@@ -63,6 +63,27 @@ behaviour which I consider ugly.
 Change Log
 ----------
 
+0.5.7
+~~~~~
+
+* ``EditorTrackable`` introduced
+
+* Choices can be rendered in grouped form. Currently requires adding
+  ``'--keyword=Group:2 '`` to xgettext invocations in
+  django/core/managemenet/commands/makemessages.py. Cleaning that up is planned
+  for 0.6.0.
+
+* ``typical_handler`` works now with forms w/o a ``save()`` method
+
+* ``upperfirst`` filter introduced: ups only the first character
+
+* Square thumbnails for wide images now work properly
+
+* moved contents of helpers to common (enables i18n and cleans up the API), the
+  helpers module is therefore deprecated
+
+* some i18n updates
+
 0.5.6
 ~~~~~
 
