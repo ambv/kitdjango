@@ -28,20 +28,18 @@ class Command(NoArgsCommand):
             app_models = get_models(app_mod)
             if not app_models:
                 continue
-            model_labels = ", ".join([model.__name__ for model in app_models])
-            import_messages.append("Models from '%s': %s"
-                "" % (app_mod.__name__.split('.')[-2], model_labels))
+            model_labels = []
             for model in app_models:
-                try:
-                    imported_objects[model.__name__] = \
-                        getattr(__import__(app_mod.__name__, {}, {},
-                            model.__name__), model.__name__)
-                except AttributeError, e:
-                    import_messages.append("Failed to import '%s' from '%s': "
-                        "%s" % (model.__name__,
-                            app_mod.__name__.split('.')[-2], str(e)))
-                    continue
-
+                name = model.__name__
+                while name in imported_objects:
+                    name += '_'
+                imported_objects[name] = model
+                if model.__name__ == name:
+                    model_labels.append(name)
+                else:
+                    model_labels.append("{} as {}".format(model.__name__, name))
+            import_messages.append("Models from '%s': %s"
+                "" % (app_mod.__name__.split('.')[-2], ", ".join(model_labels)))
         try:
             if use_plain:
                 # Don't bother loading IPython, because the user wants plain
