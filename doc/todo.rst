@@ -7,6 +7,8 @@ TODO
 Code
 ----
 
+* custom inlines which set lck-specific readonly fields by default
+
 * future date filter for the admin
 
 * create some ingenious hack which allows Profile-based inlines in User
