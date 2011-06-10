@@ -34,16 +34,19 @@ from __future__ import unicode_literals
 
 from functools import partial
 
-from django.template import Node, RequestContext, Template
+from django.template import Node, Context, RequestContext, Template
 
 from lck.cache import memoize
 
 def _render(text, context):
-    if not context or 'request' not in context:
-        raise ValueError("Provided context is empty or doesn't provide "
-                "REQUEST.")
-    return Template(text).render(RequestContext(context['request'],
-        context))
+    if not context:
+        raise ValueError("Provided context is empty.")
+    elif 'request' in context:
+        return Template(text).render(RequestContext(context['request'],
+            context))
+    else:
+        return Template(text).render(Context(context))
+
 
 class DynamicNode(Node):
     """A Node that provides a rendering method to support dynamic arguments."""
