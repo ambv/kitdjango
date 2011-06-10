@@ -277,6 +277,13 @@ class Choices(list):
             return (elem.id for elem in func(self))
         return wrapper
 
+    @staticmethod
+    def ToNames(func):
+        """Converts a sequence of choices to a sequence of choice names."""
+        def wrapper(self):
+            return (elem.name for elem in func(self))
+        return wrapper
+
     Choice = Choice
     Group = ChoiceGroup
 
