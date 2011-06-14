@@ -7,6 +7,8 @@ TODO
 Code
 ----
 
+* make the timing middleware store the results somewhere somehow
+
 * custom inlines which set lck-specific readonly fields by default
 
 * future date filter for the admin

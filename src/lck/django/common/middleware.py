@@ -30,10 +30,58 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from datetime import datetime, timedelta
+from operator import add
+import re
+from time import time
 
 from django.conf import settings
 from django.core.cache import cache
+from django.db import connection
 from django.utils import translation
+
+
+class TimingMiddleware(object):
+    """Taken from https://code.djangoproject.com/wiki/PageStatsMiddleware.
+
+    Requires ending the base template with ``<!--STATS-->``.
+
+    in the base template. Also, this middleware should be absolutely the first
+    one on the list. That way the measurements are more realistic. See:
+
+    https://docs.djangoproject.com/en/dev/topics/http/middleware/
+    """
+
+    def process_view(self, request, view_func, view_args, view_kwargs):
+        n = len(connection.queries)
+        start = time()
+        response = view_func(request, *view_args, **view_kwargs)
+        totTime = time() - start
+        queries = len(connection.queries) - n
+        if queries:
+            dbTime = reduce(add, [float(q['time']) for q in
+                connection.queries[n:]])
+        else:
+            dbTime = 0.0
+        pyTime = totTime - dbTime
+        stats = {
+            'totTime': "%.2f" % totTime,
+            'pyTime': "%.2f" % pyTime,
+            'dbTime': "%.2f" % dbTime,
+            'queries': "%d" % queries,
+        }
+        if response and response.content:
+            content = response.content.rstrip()
+            if content.endswith(b"<!--STATS-->"):
+                content = content.decode(response._charset)
+                stat_fmt = "<!-- Total: {totTime}"
+                if settings.DEBUG:
+                    stat_fmt += (" Python: {pyTime} DB: {dbTime} Queries: "
+                        "{queries}")
+                stat_fmt += " -->"
+                content = content[:-12] + stat_fmt.format(**stats)
+                response.content = content.encode(response._charset)
+        return response
+
 
 class AdminForceLanguageCodeMiddleware(object):
     """Add this middleware to force the admin to always use the language
