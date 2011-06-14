@@ -63,6 +63,24 @@ behaviour which I consider ugly.
 Change Log
 ----------
 
+0.5.8
+~~~~~
+
+* Simplistic ``TimingMiddleware`` introduced.
+
+* Profiles based on ``BaseProfile`` now return ``self`` for ``get_profile()``.
+
+* Trophy icons added.
+
+* Console tag library introduced with the {%color%} tag.
+
+* Allow rendering non-request contexts.
+
+* ``Choices.ToNames`` decorator introduced.
+
+* Pre-importing in ``manage.py shell`` works also for models with
+  a custom``app_model``.
+
 0.5.7
 ~~~~~
 
