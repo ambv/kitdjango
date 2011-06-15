@@ -30,11 +30,11 @@ from __future__ import unicode_literals
 
 from functools import wraps
 import re
+from zlib import adler32, crc32
 
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render_to_response as _render_to_response
-from django.template import RequestContext
+from django.template import loader, RequestContext
 from django.utils import simplejson
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
@@ -45,7 +45,8 @@ INTERNAL_IPS = getattr(settings, 'INTERNAL_IPS', set(('127.0.0.1', '::1',
     'localhost')))
 
 
-def render(request, template_name, context, debug=False, mimetype=None):
+def render(request, template_name, context, debug=False, mimetype=None,
+    compute_etag=True):
     """render(request, template_name, context, [debug, mimetype]) -> HttpResponse
 
     Renders the `context` within for a `request` using a template named
@@ -64,14 +65,18 @@ def render(request, template_name, context, debug=False, mimetype=None):
         context['other_user_profile'] = context['other_user'].get_profile() \
                                         if 'other_user' in context else None
 
-    if debug:
-        for key in context:
-            format = (key, str(context[key]), type(context[key]),
-                      repr(context[key]))
-            print("context['{}'] = {} (type: {}) (repr: {})".format(*format))
-    return _render_to_response(template_name,
-                               RequestContext(request, context),
-                               mimetype=mimetype)
+    http_response_kwargs = {'mimetype': mimetype}
+    response = loader.render_to_string(template_name, RequestContext(request,
+        context)).encode('utf8')
+    if compute_etag:
+        etag = b"-".join((hex(crc32(response)), hex(adler32(response))))
+        if etag == request.environ.get('HTTP_IF_NONE_MATCH', 'X'):
+            response = ""
+            http_response_kwargs['status'] = 304
+    http_response = HttpResponse(response, **http_response_kwargs)
+    if compute_etag:
+        http_response['ETag'] = etag
+    return http_response
 
 
 def render_decorator(func):
@@ -84,9 +89,10 @@ def render_decorator(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         context = func(*args, **kwargs)
-        return _render_to_response(context['template'],
-                                   RequestContext(context['request'], context),
-                                   mimetype=context.get('mimetype', None))
+        return render(context['request'],
+                      context['template'],
+                      RequestContext(context['request'], context),
+                      mimetype=context.get('mimetype', None))
     return wrapper
 
 
