@@ -80,6 +80,7 @@ class TimingMiddleware(object):
                 stat_fmt += " -->"
                 content = content[:-12] + stat_fmt.format(**stats)
                 response.content = content.encode(response._charset)
+        response['X-Slo'] = stats['totTime']
         return response
 
 
