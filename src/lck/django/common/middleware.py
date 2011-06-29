@@ -41,21 +41,33 @@ from django.utils import translation
 
 
 class TimingMiddleware(object):
-    """Taken from https://code.djangoproject.com/wiki/PageStatsMiddleware.
+    """Adds timing information as an HTTP header (named ``X-Slo``) and
+    optionally at the end of the body if it ends with ``<!--STATS-->``.
 
-    Requires ending the base template with ``<!--STATS-->``.
-
-    in the base template. Also, this middleware should be absolutely the first
-    one on the list. That way the measurements are more realistic. See:
+    For the measurements to be most realistic, this middleware should be the
+    first on the list. See:
 
     https://docs.djangoproject.com/en/dev/topics/http/middleware/
+
+    NOTE: If you use any compression middleware (e.g. GZip), the request body
+    will not be updated. Timing information is still available in the HTTP
+    header. If you still need it to show up in the body, move the compression
+    middleware above ``TimingMiddleware`` in the list.
+
+    Based on https://code.djangoproject.com/wiki/PageStatsMiddleware.
     """
 
-    def process_view(self, request, view_func, view_args, view_kwargs):
-        n = len(connection.queries)
-        start = time()
-        response = view_func(request, *view_args, **view_kwargs)
-        totTime = time() - start
+    def process_request(self, request):
+        request.META['TIMING_MIDDLEWARE_START'] = time()
+        request.META['TIMING_MIDDLEWARE_QUERY_OFFSET'] = len(connection.queries)
+
+    def process_response(self, request, response):
+        n = request.META.get('TIMING_MIDDLEWARE_QUERY_OFFSET', 0)
+        start = request.META.get('TIMING_MIDDLEWARE_START')
+        if start:
+            totTime = time() - start
+        else:
+            totTime = 0
         queries = len(connection.queries) - n
         if queries:
             dbTime = reduce(add, [float(q['time']) for q in
@@ -69,18 +81,18 @@ class TimingMiddleware(object):
             'dbTime': "%.2f" % dbTime,
             'queries': "%d" % queries,
         }
+        stat_fmt = "{totTime}"
+        if settings.DEBUG:
+            stat_fmt += (" Code: {pyTime} DB: {dbTime} Q: "
+                "{queries}")
+        stat_fmt = stat_fmt.format(**stats)
         if response and response.content:
             content = response.content.rstrip()
             if content.endswith(b"<!--STATS-->"):
                 content = content.decode(response._charset)
-                stat_fmt = "<!-- Total: {totTime}"
-                if settings.DEBUG:
-                    stat_fmt += (" Python: {pyTime} DB: {dbTime} Queries: "
-                        "{queries}")
-                stat_fmt += " -->"
-                content = content[:-12] + stat_fmt.format(**stats)
+                content = content[:-12] + ('<!-- Total: ' + stat_fmt + ' -->\n')
                 response.content = content.encode(response._charset)
-        response['X-Slo'] = stats['totTime']
+        response['X-Slo'] = stat_fmt
         return response
 
 
