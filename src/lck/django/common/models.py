@@ -149,21 +149,61 @@ class TimeTrackable(db.Model):
         default=datetime.now)
     modified = db.DateTimeField(verbose_name=_("last modified"),
         default=datetime.now)
+    cache_version = db.PositiveIntegerField(verbose_name=_("cache version"),
+        default=0, editable=False)
 
     class Meta:
         abstract = True
 
+    def __init__(self, *args, **kwargs):
+        super(TimeTrackable, self).__init__(*args, **kwargs)
+        db.signals.post_save.connect(self._update_field_state,
+            sender=self.__class__, dispatch_uid='{}-TimeTrackableFieldState'
+            ''.format(self.__class__.__name__))
+        self._update_field_state()
+
     def save(self, update_modified=True, *args, **kwargs):
-        if update_modified:
-            self.modified = datetime.now()
+        if self.dirty_fields:
+            self.cache_version += 1
+            if update_modified:
+                self.modified = datetime.now()
         super(TimeTrackable, self).save(*args, **kwargs)
+
+    def update_cache_version(self, force=False):
+        if self.dirty_fields or force:
+            self.__class__.objects.filter(pk = self.pk).update(cache_version=
+                db.F("cache_version") + 1)
+
+    def _update_field_state(self, *args, **kwargs):
+        self._field_state = self._fields_as_dict()
+
+    def _fields_as_dict(self):
+        fields = []
+        for f in self._meta.fields:
+            _name = f.name
+            if f.rel:
+                _name += '_id'
+            fields.append((_name, getattr(self, _name)))
+        return dict(fields)
+
+    @property
+    def dirty_fields(self):
+        new_state = self._fields_as_dict()
+        diff = []
+        for k, v in self._field_state.iteritems():
+            if v == new_state.get(k):
+                continue
+            diff.append((k, v))
+        return dict(diff)
 
 
 class EditorTrackable(db.Model):
-    created_by = db.ForeignKey(EDITOR_TRACKABLE_MODEL, verbose_name=_("created by"),
-        null=True, blank=True, default=None, related_name='+')
-    modified_by = db.ForeignKey(EDITOR_TRACKABLE_MODEL, verbose_name=_("modified by"),
-        null=True, blank=True, default=None, related_name='+')
+    created_by = db.ForeignKey(EDITOR_TRACKABLE_MODEL,
+        verbose_name=_("created by"), null=True, blank=True, default=None,
+        related_name='+')
+    modified_by = db.ForeignKey(EDITOR_TRACKABLE_MODEL,
+        verbose_name=_("modified by"), null=True, blank=True, default=None,
+        related_name='+')
 
     class Meta:
         abstract = True
@@ -221,6 +261,13 @@ class MonitoredActivity(db.Model):
         seconds (default value 5 minutes, customizable by the
         ``RECENTLY_ONLINE_INTERVAL`` setting."""
         return self.is_currently_online(time_limit=time_limit)
+
+
+class Archivable(db.Model):
+    archived = db.BooleanField(verbose_name=_("is archived?"), default=False)
+
+    class Meta:
+        abstract = True
 
 
 class DisplayCounter(db.Model):
