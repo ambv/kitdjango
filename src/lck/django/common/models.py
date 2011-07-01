@@ -325,7 +325,8 @@ class SoftDeletable(db.Model):
     which is set to ``True`` and the object is then invisible in normal
     operations (thanks to ``ViewableSoftDeletableManager``).
     """
-    deleted = db.BooleanField(verbose_name=_("deleted"), default=False)
+    deleted = db.BooleanField(verbose_name=_("deleted"), default=False,
+        help_text=_("if selected, this element is not available on the website"))
     admin_objects = db.Manager()
     objects = ViewableSoftDeletableManager()
 
