@@ -30,9 +30,19 @@ from __future__ import unicode_literals
 
 from django.template import Library
 from django.utils.safestring import mark_safe
-from postmarkup import render_bbcode
+import postmarkup
 
 register = Library()
+
+class NewWindowLinkTag(postmarkup.LinkTag):
+    def render_open(self, parser, node_index, *args, **kwargs):
+        return super(NewWindowLinkTag, self).render_open(parser, node_index,
+            *args, **kwargs).replace('<a href', '<a rel="nofollow" '
+                'target="_blank" href')
+
+bb_mark = postmarkup.create()
+bb_mark.add_tag(NewWindowLinkTag, 'link')
+bb_mark.add_tag(NewWindowLinkTag, 'url')
 
 @register.filter
 def bbcode(text):
@@ -41,4 +51,4 @@ def bbcode(text):
     Template tag available in ``common`` app's ``bbcode`` library.
 
     :param text: the string to render as BBCode"""
-    return mark_safe(render_bbcode(text))
+    return mark_safe(bb_mark(text))
