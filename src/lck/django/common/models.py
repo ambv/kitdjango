@@ -157,9 +157,6 @@ class TimeTrackable(db.Model):
 
     def __init__(self, *args, **kwargs):
         super(TimeTrackable, self).__init__(*args, **kwargs)
-        db.signals.post_save.connect(self._update_field_state,
-            sender=self.__class__, dispatch_uid='{}-TimeTrackableFieldState'
-            ''.format(self.__class__.__name__))
         self._update_field_state()
 
     def save(self, update_modified=True, *args, **kwargs):
@@ -168,13 +165,14 @@ class TimeTrackable(db.Model):
             if update_modified:
                 self.modified = datetime.now()
         super(TimeTrackable, self).save(*args, **kwargs)
+        self._update_field_state()
 
     def update_cache_version(self, force=False):
         if self.dirty_fields or force:
             self.__class__.objects.filter(pk = self.pk).update(cache_version=
                 db.F("cache_version") + 1)
 
-    def _update_field_state(self, *args, **kwargs):
+    def _update_field_state(self):
         self._field_state = self._fields_as_dict()
 
     def _fields_as_dict(self):
