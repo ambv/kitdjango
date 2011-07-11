@@ -31,6 +31,8 @@ TEMPLATE_LOADERS = (
     'django.template.loaders.app_directories.Loader',
 )
 MIDDLEWARE_CLASSES = (
+    'django.middleware.gzip.GZipMiddleware',
+    'lck.django.common.middleware.TimingMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
@@ -43,6 +45,7 @@ MIDDLEWARE_CLASSES = (
 )
 ROOT_URLCONF = 'dummy.urls'
 TEMPLATE_DIRS = (CURRENT_DIR + "templates",)
+LOCALE_PATHS = (CURRENT_DIR + "locale",)
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -54,6 +57,12 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'django.contrib.comments',
     'django.contrib.flatpages',
+    #'django_crystal_small',
+    #'django_crystal_big',
+    #'django_evolution',
+    #'django_extensions',
+    #'gunicorn',
+    #'haystack',
     'lck.django.common',
     'lck.django.profile',
     'lck.django.score',
@@ -64,6 +73,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.debug',
     'django.core.context_processors.i18n',
     'django.core.context_processors.media',
+    'django.core.context_processors.static',
     'django.contrib.messages.context_processors.messages',
 )
 # See http://docs.djangoproject.com/en/dev/topics/logging for
@@ -103,8 +113,13 @@ STATICFILES_DIRS = (
     CURRENT_DIR + 'media',
 )
 # activity middleware settings
-CURRENTLY_ONLINE_INTERVAL = 120
-RECENTLY_ONLINE_INTERVAL = 300
+CURRENTLY_ONLINE_INTERVAL = 300
+RECENTLY_ONLINE_INTERVAL = 900
+
+# lck.django.score models
+#SCORE_VOTER_MODEL = "account.Profile"
+# lck.django.tags models
+#TAG_AUTHOR_MODEL = "account.Profile"
 
 #
 # stuff that should be customized in settings_local.py
@@ -114,17 +129,32 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 DUMMY_SEND_MAIL = DEBUG
 SEND_BROKEN_LINK_EMAILS = DEBUG
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': TEMP_DIR + 'development.db',
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',
-        'PORT': '',
-        'OPTIONS': {'timeout': 30},
-    }
-}
+DATABASES = dict(
+    default = dict(
+        ENGINE = 'django.db.backends.sqlite3',
+        NAME = TEMP_DIR + 'development.db', # XXX: Please note the TEMP_DIR
+        USER = '',
+        PASSWORD = '',
+        HOST = '',
+        PORT = '',
+        OPTIONS = dict(
+            timeout = 30,
+        )
+    )
+)
+CACHES = dict(
+    default = dict(
+        BACKEND = 'django.core.cache.backends.memcached.MemcachedCache',
+        LOCATION = '127.0.0.1:11211',
+        TIMEOUT = 300,
+        OPTIONS = dict(
+            CULL_FREQUENCY = 0,
+        ),
+        KEY_PREFIX = 'dummy_',
+    )
+)
+INTERNAL_IPS = ['127.0.0.1', '::1', 'localhost']
+
 
 from lck.django import profile_support
 execfile(profile_support)
