@@ -34,7 +34,7 @@ setup (
     url = 'http://packages.python.org/lck.django/',
     keywords = '',
     platforms = ['any'],
-    license = 'GPL v3',
+    license = 'MIT',
     packages = find_packages('src'),
     include_package_data = True,
     package_dir = {'':'src'},
@@ -42,12 +42,15 @@ setup (
     zip_safe = False, # because executing support extensions for settings.py
                       # requires actual files
     install_requires = [
-        'lck.common>=0.4.1',
+        'lck.common>=0.4.3',
         'lck.i18n>=0.3.0',
-        'setuptools',
+        'distribute',
         'django>=1.3',
         'postmarkup',
         'PIL>=1.1.7',
+        'python-memcached',
+        #'pylibmc', # we'll switch at one point when libmemcached will be more
+                    # prevalent on servers
         ],
 
     classifiers = [
