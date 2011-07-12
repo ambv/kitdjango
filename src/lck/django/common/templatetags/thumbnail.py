@@ -135,7 +135,7 @@ def thumbnail(image, size):
         pil_image = Image.open(file)
         if shift is not None:
             shorter = min(image.width, image.height)
-            pil_image = pil_image.crop((shift, 0, shorter, shorter))
+            pil_image = pil_image.crop((shift, 0, shorter+shift, shorter))
         pil_image.thumbnail((width, height), Image.ANTIALIAS)
         pil_image.save(thumb_filename, pil_image.format)
 
