@@ -37,6 +37,7 @@ from time import time
 from django.conf import settings
 from django.core.cache import cache
 from django.db import connection
+from django.http import HttpResponse
 from django.utils import translation
 
 
@@ -140,3 +141,34 @@ class ActivityMiddleware(object):
 
         cache.set('users_online', users_online, 60*60*24)
         cache.set('guests_online', guests_online, 60*60*24)
+
+
+class BasicAuthMiddleware(object):
+    def unauthorized(self):
+        response = HttpResponse("""<!DOCTYPE html>
+        <html>
+            <title>Who's there?</title>
+            <body>
+                <h1>Authorization Required</h1>
+            </body>
+        </html>""", mimetype="text/html")
+        response['WWW-Authenticate'] = 'Basic realm="Development"'
+        response.status_code = 401
+        return response
+
+    def process_request(self, request):
+        if request.META['PATH_INFO'] in settings.BASICAUTH_PUBLIC:
+            return
+
+        if 'HTTP_AUTHORIZATION' not in request.META:
+            return self.unauthorized()
+        authentication = request.META['HTTP_AUTHORIZATION']
+        (authmeth, auth) = authentication.split(' ',1)
+        if authmeth.lower() != 'basic':
+            return self.unauthorized()
+        auth = auth.strip().decode('base64')
+        username, password = auth.split(':',1)
+        if (username, password) == (settings.BASICAUTH_USERNAME,
+                                    settings.BASICAUTH_PASSWORD):
+            return
+        return self.unauthorized()
