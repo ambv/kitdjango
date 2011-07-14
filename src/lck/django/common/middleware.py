@@ -157,9 +157,9 @@ class BasicAuthMiddleware(object):
         return response
 
     def process_request(self, request):
-        if request.META['PATH_INFO'] in settings.BASICAUTH_PUBLIC:
-            return
-
+        for pattern in settings.BASICAUTH_PUBLIC:
+            if re.match(pattern, request.META['PATH_INFO']):
+                return
         if 'HTTP_AUTHORIZATION' not in request.META:
             return self.unauthorized()
         authentication = request.META['HTTP_AUTHORIZATION']
