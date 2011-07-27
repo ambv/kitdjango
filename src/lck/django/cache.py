@@ -111,7 +111,7 @@ def get(key, invalidator=None):
     if time.time() > refresh_time or (invalidator and val_inv != invalidator):
         # Store the stale value while the cache revalidates for another
         # CACHE_MINT_DELAY seconds.
-        set(key, val, invalidator=invalidator, timeout=CACHE_MINT_DELAY,
+        set(key, val, invalidator=None, timeout=CACHE_MINT_DELAY,
             _is_stale=True)
         return None
     return val

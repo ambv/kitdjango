@@ -161,7 +161,7 @@ class TimeTrackable(db.Model):
         self._update_field_state()
 
     def save(self, update_modified=True, *args, **kwargs):
-        if self.dirty_fields:
+        if self.significant_fields_updated:
             self.cache_version += 1
             if update_modified:
                 self.modified = datetime.now()
@@ -169,7 +169,7 @@ class TimeTrackable(db.Model):
         self._update_field_state()
 
     def update_cache_version(self, force=False):
-        if self.dirty_fields or force:
+        if force or self.significant_fields_updated:
             self.__class__.objects.filter(pk = self.pk).update(cache_version=
                 db.F("cache_version") + 1)
 
@@ -184,6 +184,11 @@ class TimeTrackable(db.Model):
                 _name += '_id'
             fields.append((_name, getattr(self, _name)))
         return dict(fields)
+
+    @property
+    def significant_fields_updated(self):
+        return bool(set(self.dirty_fields.keys())- {'cache_version',
+            'modified', 'modified_by', 'display_count'})
 
     @property
     def dirty_fields(self):
