@@ -332,6 +332,24 @@ class SoftDeletable(db.Model):
         abstract = True
 
 
+class WithConcurrentGetOrCreate(object):
+    """
+    The built-in ``Model.objects.get_or_create()`` doesn't work well in
+    concurrent environments. This tiny mixin solves the problem.
+    """
+    @classmethod
+    @transaction.commit_on_success
+    def concurrent_get_or_create(cls, **kwargs):
+        try:
+            obj = cls.objects.create(**kwargs)
+            created = True
+        except IntegrityError:
+            transaction.commit()
+            obj = cls.objects.get(**kwargs)
+            created = False
+        return obj, created
+
+
 # For now this needs to be at the end of the file.
 # FIXME: move it where it's supposed to be.
 
