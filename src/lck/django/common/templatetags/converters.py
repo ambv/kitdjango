@@ -28,6 +28,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from base64 import urlsafe_b64encode, urlsafe_b64decode
 from collections import OrderedDict
 from datetime import datetime
 
@@ -252,3 +253,11 @@ def timediff(timestamp, language='pl'):
                 return timediff_format(locals()[interval], forms[interval], tense)
         return forms['__now__'][_tenses[tense]]
     return forms['__never__'][_tenses[tense]]
+
+@register.filter
+def to_base64(text):
+    return urlsafe_b64encode(text.encode('utf8'))
+
+@register.filter
+def from_base64(text):
+    return urlsafe_b64decode(text.encode('ascii')).decode('utf8')
