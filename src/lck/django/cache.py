@@ -90,31 +90,44 @@ CACHE_FILELOCK_PATH = getattr(settings, 'CACHE_FILELOCK_PATH',
 
 
 @synchronized(path=CACHE_FILELOCK_PATH)
-def get(key):
+def get(key, invalidator=None):
     """Get a value from the cache.
 
     :param key: the key for which to return the value
+
+    :param invalidator: if the value was set with an invalidator, this
+                        parameter should contain a current value for it.
+                        If the stored value differs from the current, the
+                        cached value is considered invalid just like with
+                        a regular timeout.
     """
 
     packed_val = cache.get(key)
     if packed_val is None:
         return None
-    val, refresh_time, is_stale = packed_val
-    if (time.time() > refresh_time) and not is_stale:
+    val, val_inv, refresh_time, is_stale = packed_val
+    if is_stale:
+        return val
+    if time.time() > refresh_time or (invalidator and val_inv != invalidator):
         # Store the stale value while the cache revalidates for another
         # CACHE_MINT_DELAY seconds.
-        set(key, val, timeout=CACHE_MINT_DELAY, _is_stale=True)
+        set(key, val, invalidator=invalidator, timeout=CACHE_MINT_DELAY,
+            _is_stale=True)
         return None
     return val
 
 
 @synchronized(path=CACHE_FILELOCK_PATH)
-def set(key, val, timeout=CACHE_DEFAULT_TIMEOUT, _is_stale=False):
+def set(key, val, invalidator=None, timeout=CACHE_DEFAULT_TIMEOUT,
+    _is_stale=False):
     """Set a value in the cache.
 
     :param key: the key under which to set the value
 
     :param val: the value to set
+
+    :param invalidator: additional data that render a cached value invalid
+                        if different on ``cache.get()``
 
     :param timeout: how long should this value be valid, by default
                     CACHE_DEFAULT_TIMEOUT
@@ -126,7 +139,7 @@ def set(key, val, timeout=CACHE_DEFAULT_TIMEOUT, _is_stale=False):
     # if not stale, add the mint delay to the actual refresh so we can have
     # the value stored a bit longer in the backend than it would be otherwise
     real_refresh = timeout if _is_stale else timeout + CACHE_MINT_DELAY
-    packed_val = (val, refresh_time, _is_stale)
+    packed_val = (val, invalidator, refresh_time, _is_stale)
     return cache.set(key, packed_val, real_refresh)
 
 
