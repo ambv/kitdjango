@@ -190,8 +190,11 @@ class TimeTrackable(db.Model):
         new_state = self._fields_as_dict()
         diff = []
         for k, v in self._field_state.iteritems():
-            if v == new_state.get(k):
-                continue
+            try:
+                if v == new_state.get(k):
+                    continue
+            except (TypeError, ValueError):
+                pass # offset-naive and offset-aware datetimes, etc.
             diff.append((k, v))
         return dict(diff)
 
