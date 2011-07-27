@@ -41,6 +41,7 @@ from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
 from django.core.mail import send_mail
+from django.db import IntegrityError, transaction
 from django.db import models as db
 from django.template.defaultfilters import urlencode
 from django.utils.translation import ugettext_lazy as _
