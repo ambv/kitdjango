@@ -29,8 +29,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import cProfile
 from datetime import datetime, timedelta
-import hotshot
 from operator import add
 import os
 import re
@@ -72,13 +72,11 @@ class TimingMiddleware(object):
             timing_start)
 
     def process_request(self, request):
-        timing_start = time()
-        request.META['TIMING_MIDDLEWARE_START'] = timing_start
+        request.META['TIMING_MIDDLEWARE_START'] = time()
         request.META['TIMING_MIDDLEWARE_QUERY_OFFSET'] = len(connection.queries)
         if INSTRUMENTATION_RULE(request):
-            request.instrumentation = hotshot.Profile(
-                '{}.inprog'.format(self._instr_path(request, timing_start)))
-            request.instrumentation.start()
+            request.instrumentation = cProfile.Profile()
+            request.instrumentation.enable()
 
     def process_response(self, request, response):
         n = request.META.get('TIMING_MIDDLEWARE_QUERY_OFFSET', 0)
@@ -113,13 +111,10 @@ class TimingMiddleware(object):
                 response.content = content.encode(response._charset)
         response['X-Slo'] = stat_fmt
         if hasattr(request, 'instrumentation'):
-            request.instrumentation.stop()
-            request.instrumentation.close()
             path = self._instr_path(request, start)
-            os.rename('{}.inprog'.format(path),
-                '{}-{}-{}.prof'.format(path,
-                request.user.username or 'anon',
-                stats['totTime']))
+            request.instrumentation.disable()
+            request.instrumentation.dump_stats('{}-{}-{}.prof'.format(path,
+                request.user.username or 'anon', stats['totTime']))
         return response
 
 
