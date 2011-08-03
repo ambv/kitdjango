@@ -30,7 +30,9 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from datetime import datetime, timedelta
+import hotshot
 from operator import add
+import os
 import re
 from time import time
 
@@ -39,6 +41,11 @@ from django.core.cache import cache
 from django.db import connection
 from django.http import HttpResponse
 from django.utils import translation
+
+
+INSTRUMENTATION_DIR = getattr(settings, 'INSTRUMENTATION_DIR', '.')
+INSTRUMENTATION_RULE = getattr(settings, 'INSTRUMENTATION_RULE',
+    lambda request: 'instrumentation' in request.session)
 
 
 class TimingMiddleware(object):
@@ -55,12 +62,23 @@ class TimingMiddleware(object):
     header. If you still need it to show up in the body, move the compression
     middleware above ``TimingMiddleware`` in the list.
 
-    Based on https://code.djangoproject.com/wiki/PageStatsMiddleware.
+    Loosely based on https://code.djangoproject.com/wiki/PageStatsMiddleware
+    and http://lurkingideas.net/profiling-django-projects-cachegrind/
     """
 
+    def _instr_path(self, request, timing_start):
+        return "{}/{}-{}".format(INSTRUMENTATION_DIR,
+            request.META['PATH_INFO'].strip('/').replace('/', '|'),
+            timing_start)
+
     def process_request(self, request):
-        request.META['TIMING_MIDDLEWARE_START'] = time()
+        timing_start = time()
+        request.META['TIMING_MIDDLEWARE_START'] = timing_start
         request.META['TIMING_MIDDLEWARE_QUERY_OFFSET'] = len(connection.queries)
+        if INSTRUMENTATION_RULE(request):
+            request.instrumentation = hotshot.Profile(
+                '{}.inprog'.format(self._instr_path(request, timing_start)))
+            request.instrumentation.start()
 
     def process_response(self, request, response):
         n = request.META.get('TIMING_MIDDLEWARE_QUERY_OFFSET', 0)
@@ -94,6 +112,14 @@ class TimingMiddleware(object):
                 content = content[:-12] + ('<!-- Total: ' + stat_fmt + ' -->\n')
                 response.content = content.encode(response._charset)
         response['X-Slo'] = stat_fmt
+        if hasattr(request, 'instrumentation'):
+            request.instrumentation.stop()
+            request.instrumentation.close()
+            path = self._instr_path(request, start)
+            os.rename('{}.inprog'.format(path),
+                '{}-{}-{}.prof'.format(path,
+                request.user.username or 'anon',
+                stats['totTime']))
         return response
 
 
