@@ -64,25 +64,6 @@ class TotalScore(db.Model):
             self.object_id, self.value)
 
     @classmethod
-    def legacy_get_stats_for_model(cls, cases, model, instance=None, ct=None):
-        """Returns a list of stats computed using the specified `cases` which
-        are a sequence of filtering arguments for the TotalScore vote_set for
-        the specified model (and optionally: instance)."""
-        if not ct:
-            ct = ContentType.objects.get_for_model(model)
-        kwargs = {'content_type': ct}
-        if instance:
-            kwargs['object_id'] = instance.id
-        scores = cls.objects.filter(**kwargs)
-        stats = []
-        for case in cases:
-            case_sum = 0
-            for score in scores:
-                case_sum += score.vote_set.filter(**case).count()
-            stats.append(case_sum)
-        return stats
-
-    @classmethod
     def get_stats_for_model(cls, cases, model, instance=None, ct=None):
         """Returns a list of stats computed using the specified `cases` which
         are a sequence of filtering arguments for the TotalScore vote_set for
