@@ -52,7 +52,7 @@ class TotalScore(db.Model):
     """Holds the integer `value` of the total score for votes on a specific
     `content_object`. The `value` is updated whenever a Vote object is created,
     modified or deleted. Don't alter it directly."""
-    value = db.IntegerField(verbose_name=_("value"), default=0)
+    value = db.IntegerField(verbose_name=_("value"), default=0, db_index=True)
     content_type = db.ForeignKey(ContentType, verbose_name=_("Content type"),
         related_name="%(app_label)s_%(class)s_scores")
     object_id = db.IntegerField(verbose_name=_("Content type instance id"),
