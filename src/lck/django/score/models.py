@@ -150,7 +150,7 @@ class Vote(TimeTrackable):
     of Vote instances, don't update it directly."""
     total_score = db.ForeignKey(TotalScore, verbose_name=_("total score"))
     voter = db.ForeignKey(SCORE_VOTER_MODEL, verbose_name=_("voter"))
-    value = db.IntegerField(verbose_name=_("value"), default=1)
+    value = db.IntegerField(verbose_name=_("value"), default=1, db_index=True)
     reason = db.TextField(verbose_name=_("reason"), blank=True, default="")
 
     def __unicode__(self):
