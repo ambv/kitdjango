@@ -118,6 +118,17 @@ class TimingMiddleware(object):
         return response
 
 
+class ForceLanguageCodeMiddleware(object):
+    """Add this middleware to force the whole website to always use the
+    language specified in ``settings.LANGUAGE_CODE`` instead of sniffing it
+    from the user agent."""
+
+    def process_request(self, request):
+        request.LANG = settings.LANGUAGE_CODE
+        translation.activate(request.LANG)
+        request.LANGUAGE_CODE = request.LANG
+
+
 class AdminForceLanguageCodeMiddleware(object):
     """Add this middleware to force the admin to always use the language
     specified in ``settings.LANGUAGE_CODE`` instead of sniffing it from
