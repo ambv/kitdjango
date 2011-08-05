@@ -135,7 +135,7 @@ def redirect(request, link='/', override_request=False):
 
 
 def typical_handler(request, form_class, template, initial={},
-                    initial_kwargs={}, context={}):
+                    initial_kwargs={}, context={}, redirect_on_success=None):
     """A handler for a typical form workflow:
 
     1. Initialize a form object.
@@ -144,8 +144,10 @@ def typical_handler(request, form_class, template, initial={},
        b. otherwise use `initial` as initial data and `initial_kwargs` as \
           keyword arguments for the form object constructor.
 
-    2. If the form validates, save it and override the template name with
-       a version using the "_complete.html" suffix.
+    2. If the form validates, save it and
+       either: override the template name with a version using the
+          "_complete.html" suffix.
+       or: redirect using the `redirect_on_success` arguments
     3. If there are errors on the form, prepare an additional `error_summary`
        string on the form object (for consumption by the template).
     4. Render the result.
@@ -161,7 +163,10 @@ def typical_handler(request, form_class, template, initial={},
     if form.is_valid():
         template = template + '_complete.html'
         if hasattr(form, 'save'):
+            form.request = request
             form.save()
+        if redirect_on_success:
+            return redirect(request, **redirect_on_success)
     else:
         template += '.html'
         if form.errors:

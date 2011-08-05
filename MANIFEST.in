@@ -6,6 +6,7 @@ recursive-include src/lck/django/profile/static *.*
 recursive-include src/lck/django/profile/locale *.*
 recursive-include src/lck/django/score/static *.*
 recursive-include src/lck/django/score/locale *.*
+recursive-include src/lck/django/score/templates *.*
 recursive-include src/lck/django/tags/static *.*
 recursive-include src/lck/django/tags/locale *.*
 prune doc/_build
