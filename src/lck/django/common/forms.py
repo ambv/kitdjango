@@ -6,11 +6,112 @@ import datetime
 import re
 
 from django import forms
-from django.forms.widgets import Select
 from django.forms.extras.widgets import RE_DATE, SelectDateWidget
+from django.forms.widgets import Select, RadioFieldRenderer, HiddenInput
+from django.forms.util import flatatt
 from django.utils.dates import MONTHS
+from django.utils.encoding import StrAndUnicode, force_unicode
+from django.utils.html import escape, conditional_escape
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
+
+
+class JQueryUIRadioInput(StrAndUnicode):
+    """
+    An object used by RadioFieldRenderer that represents a single
+    <input type='radio'>.
+    """
+
+    def __init__(self, name, value, attrs, choice, index):
+        self.name, self.value = name, value
+        self.attrs = attrs
+        self.choice_value = force_unicode(choice[0])
+        self.choice_label = force_unicode(choice[1])
+        self.index = index
+
+    def __unicode__(self):
+        if 'id' in self.attrs:
+            label_for = ' for="%s_%s"' % (self.attrs['id'], self.index)
+        else:
+            label_for = ''
+        choice_label = conditional_escape(force_unicode(self.choice_label))
+        return mark_safe(u'%s<label%s>%s</label>' % (self.tag(), label_for,
+            choice_label)) 
+
+    def is_checked(self):
+        return self.value == self.choice_value
+
+    def tag(self):
+        if 'id' in self.attrs:
+            self.attrs['id'] = '%s_%s' % (self.attrs['id'], self.index)
+        final_attrs = dict(self.attrs, type='radio', name=self.name,
+            value=self.choice_value)
+        if self.is_checked():
+            final_attrs['checked'] = 'checked'
+        return mark_safe(u'<input%s />' % flatatt(final_attrs))
+
+class JQueryUIRenderer(StrAndUnicode):
+    """
+    A customized renderer for radio fields. 
+    """
+
+    def __init__(self, name, value, attrs, choices):
+        self.name, self.value, self.attrs = name, value, attrs
+        self.choices = choices
+
+    def __iter__(self):
+        for i, choice in enumerate(self.choices):
+            if not choice[0]:
+                continue
+            yield JQueryUIRadioInput(self.name,
+                                     self.value,
+                                     self.attrs.copy(),
+                                     choice,
+                                     i)
+
+    def __getitem__(self, idx):
+        choice = self.choices[idx] # Let the IndexError propogate
+        return JQueryUIRadioInput(self.name,
+                                  self.value,
+                                  self.attrs.copy(),
+                                  choice,
+                                  idx)
+
+    def __unicode__(self):
+        return self.render()
+
+    def render(self):
+        return mark_safe('<div class="radio">\n%s\n</div>' \
+                  % '\n'.join([force_unicode(w) for w in self]))
+
+
+class JQueryMobileVerticalRadioGroupRenderer(JQueryUIRenderer):
+    data_type = ""
+
+    def render(self):
+        return mark_safe('<div data-role="fieldcontain"><fieldset '
+            'data-role="controlgroup" %s>\n%s\n</fieldset></div>' %
+            (self.data_type, '\n'.join([force_unicode(w) for w in self])))
+
+
+class JQueryMobileHorizontalRadioGroupRenderer(JQueryMobileVerticalRadioGroupRenderer):
+    data_type = 'data-type="horizontal"'
+
+
+class JQueryUIRadioSelect(forms.RadioSelect):
+    renderer = JQueryUIRenderer
+
+    @classmethod
+    def id_for_label(cls, id_):
+        return id_
+
+
+class JQueryMobileVerticalRadioGroup(JQueryUIRadioSelect):
+    renderer = JQueryMobileVerticalRadioGroupRenderer
+
+
+class JQueryMobileHorizontalRadioGroup(JQueryUIRadioSelect):
+    renderer = JQueryMobileHorizontalRadioGroupRenderer
 
 
 class PolishSelectDateWidget(SelectDateWidget):
