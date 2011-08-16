@@ -357,7 +357,7 @@ class WithConcurrentGetOrCreate(object):
             try:
                 obj = cls.objects.get(**kwargs)
             except cls.DoesNotExist, e2:
-                print("WCGOC ERROR", cls, e1, e2, kwargs)
+                raise e1 # there is an object with a partial argument match
             created = False
         return obj, created
 
