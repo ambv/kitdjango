@@ -136,7 +136,13 @@ def thumbnail(image, size):
         if shift is not None:
             shorter = min(image.width, image.height)
             pil_image = pil_image.crop((shift, 0, shorter+shift, shorter))
+
+        # Make sure the format is good
+        pil_format = pil_image.format
+        if (pil_format == None):
+            pil_format = 'JPEG'
+
         pil_image.thumbnail((width, height), Image.ANTIALIAS)
-        pil_image.save(thumb_filename, pil_image.format)
+        pil_image.save(thumb_filename, pil_format)
 
     return thumb_url
