@@ -35,6 +35,7 @@ from __future__ import unicode_literals
 
 from datetime import datetime
 from hashlib import sha256
+import re
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -43,6 +44,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.core.mail import send_mail
 from django.db import IntegrityError, transaction
 from django.db import models as db
+from django.forms import fields
 from django.template.defaultfilters import urlencode
 from django.utils.translation import ugettext_lazy as _
 
@@ -51,6 +53,7 @@ from lck.django.common import monkeys, nested_commit_on_success
 
 
 EDITOR_TRACKABLE_MODEL = getattr(settings, 'EDITOR_TRACKABLE_MODEL', User)
+MAC_ADDRESS_REGEX = re.compile(r'^([0-9a-fA-F]{2}([:-]?|$)){6}$')
 
 
 class Named(db.Model):
@@ -360,6 +363,35 @@ class WithConcurrentGetOrCreate(object):
                 raise e1 # there is an object with a partial argument match
             created = False
         return obj, created
+
+
+class MACAddressFormField(fields.RegexField):
+    default_error_messages = {
+        'invalid': _(u'Enter a valid MAC address.'),
+    }
+
+    def __init__(self, *args, **kwargs):
+        super(MACAddressFormField, self).__init__(MAC_ADDRESS_REGEX,
+            *args, **kwargs)
+
+
+class MACAddressField(db.Field):
+    empty_strings_allowed = False
+
+    def __init__(self, *args, **kwargs):
+        kwargs['max_length'] = 17
+        super(MACAddressField, self).__init__(*args, **kwargs)
+
+    def get_internal_type(self):
+        return "CharField"
+
+    def formfield(self, **kwargs):
+        defaults = {'form_class': MACAddressFormField}
+        defaults.update(kwargs)
+        return super(MACAddressField, self).formfield(**defaults)
+
+    def get_db_prep_value(self, value):
+        return filter(lambda ch: ch not in ':-', value).upper()
 
 
 # For now this needs to be at the end of the file.
