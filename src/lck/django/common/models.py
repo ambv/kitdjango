@@ -47,7 +47,7 @@ from django.template.defaultfilters import urlencode
 from django.utils.translation import ugettext_lazy as _
 
 from lck.django.choices import Language
-from lck.django.common import monkeys
+from lck.django.common import monkeys, nested_commit_on_success
 
 
 EDITOR_TRACKABLE_MODEL = getattr(settings, 'EDITOR_TRACKABLE_MODEL', User)
@@ -347,14 +347,17 @@ class WithConcurrentGetOrCreate(object):
     concurrent environments. This tiny mixin solves the problem.
     """
     @classmethod
-    @transaction.commit_on_success
+    @nested_commit_on_success
     def concurrent_get_or_create(cls, **kwargs):
         try:
             obj = cls.objects.create(**kwargs)
             created = True
-        except IntegrityError:
+        except IntegrityError, e1:
             transaction.commit()
-            obj = cls.objects.get(**kwargs)
+            try:
+                obj = cls.objects.get(**kwargs)
+            except cls.DoesNotExist, e2:
+                raise e1 # there is an object with a partial argument match
             created = False
         return obj, created
 
