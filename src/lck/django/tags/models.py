@@ -176,8 +176,9 @@ class TaggableBase(db.Model):
         else:
             # may happen if this object is not available through Model.objects,
             # e.g. the model has a custom manager which filters it out
-            self_stems = set(TagStem.objects.get_queryset_for_model(self.__class__,
-                self))
+            self_stems = set((i[0] for i in
+                TagStem.objects.get_queryset_for_model(self.__class__,
+                self).values_list('name')))
         for obj, s in stems.iteritems():
             if not s & self_stems:
                 # things without a single common tag are not similar at all
@@ -265,7 +266,7 @@ class TagStemManager(db.Manager):
     def get_dictionary(self, model=None, content_type=None, stem=None,
         stems=None, official=False, author=None, language=None):
         """Returns a dictionary of all tagged objects with values being
-        sets of stems for the specified object.
+        sets of raw stems (strings) for the specified object.
 
         This is basically an overly complex implementation that avoids
         duplicating SQL queries. A straight forward version would be::
@@ -277,9 +278,9 @@ class TagStemManager(db.Manager):
         tagged_objects = self.get_content_objects(model=model,
             content_type=content_type, stem=stem, stems=stems,
             official=official, author=author, language=language)
-        return {obj: set(self.get_queryset_for_model(obj.__class__,
-            instance=obj, official=official, author=author, language=language))
-            for obj in tagged_objects}
+        return {obj: set((i[0] for i in self.get_queryset_for_model(
+            obj.__class__, instance=obj, official=official, author=author,
+            language=language).values_list('name'))) for obj in tagged_objects}
 
     def get_content_objects(self, model=None, content_type=None, stem=None,
         stems=None, official=False, author=None, language=None):

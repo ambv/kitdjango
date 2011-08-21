@@ -173,6 +173,7 @@ class TimeTrackable(db.Model):
 
     def update_cache_version(self, force=False):
         if force or self.significant_fields_updated:
+            # we're not using save() to bypass signals etc.
             self.__class__.objects.filter(pk = self.pk).update(cache_version=
                 db.F("cache_version") + 1)
 
@@ -312,8 +313,9 @@ class DisplayCounter(db.Model):
             should_update = not bool(cache.get(key))
             cache.set(key, True, 60*60)
         if should_update:
-            self.display_count += 1
-            self.save(update_modified=False)
+            # we're not using save() to bypass signals etc.
+            self.__class__.objects.filter(pk = self.pk).update(display_count=
+                db.F("display_count") + 1)
 
 
 class ViewableSoftDeletableManager(db.Manager):
