@@ -14,11 +14,11 @@ from functools import partial
 import re
 
 from django.conf import settings
-from django.template import Library, TemplateSyntaxError
+from django.template import Library
 from django.utils.safestring import mark_safe
 
 from lck.cache import memoize
-from lck.django.common.templatetags import DynamicNode
+from lck.django.common.templatetags import DynamicNode, validate_param_number
 
 
 register = Library()
@@ -27,12 +27,6 @@ COLOR_MAP = {
     'green': '32',
     'blue': '34',
 }
-
-
-def validate_param_number(condition, tag_name, fail_text):
-    if not condition:
-        raise TemplateSyntaxError("%r tag requires %s argument%s" % (tag_name,
-            fail_text, "s" if fail_text != "one" else ""))
 
 
 @register.tag

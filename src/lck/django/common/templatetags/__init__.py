@@ -34,9 +34,17 @@ from __future__ import unicode_literals
 
 from functools import partial
 
-from django.template import Node, Context, RequestContext, Template
+from django.template import Node, Context, RequestContext, Template,\
+    TemplateSyntaxError
 
 from lck.cache import memoize
+
+
+def validate_param_number(condition, tag_name, fail_text):
+    if not condition:
+        raise TemplateSyntaxError("%r tag requires %s argument%s" % (tag_name,
+            fail_text, "s" if fail_text != "one" else ""))
+
 
 def _render(text, context):
     if not context:

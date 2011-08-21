@@ -33,6 +33,7 @@ import os
 from django import template
 from PIL import Image
 
+from lck.django.common.templatetags import DynamicNode, validate_param_number
 
 register = template.Library()
 
@@ -56,4 +57,41 @@ def cycle(counter, rule):
       steps after 1/3 would
     """
     step, scale = (int(elem) for elem in rule.split("/"))
-    return (counter - 1) % scale == step - 1
+    result = (counter - 1) % scale == step - 1
+    return result
+
+
+@register.tag(name="set")
+def _set(parser, token):
+    args = token.split_contents()
+    is_valid = len(args) == 3
+    validate_param_number(is_valid, args[0], "two arguments")
+    return SetNode(args[1], args[2])
+
+
+class SetNode(DynamicNode):
+    def __init__(self, attr, value):
+        self.attr = attr
+        self.value = int(value)
+
+    def render(self, context):
+        context[self.attr] = self.value
+        return ""
+
+
+@register.tag
+def incr(parser, token):
+    args = token.split_contents()
+    is_valid = len(args) == 2
+    validate_param_number(is_valid, args[0], "one argument")
+    return IncrNode(args[1])
+
+
+class IncrNode(DynamicNode):
+    def __init__(self, attr):
+        self.attr = attr
+
+    def render(self, context):
+        if self.attr in context:
+            context[self.attr] += 1
+        return ""
