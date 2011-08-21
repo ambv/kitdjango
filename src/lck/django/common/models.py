@@ -190,8 +190,8 @@ class TimeTrackable(db.Model):
 
     @property
     def significant_fields_updated(self):
-        return bool(set(self.dirty_fields.keys())- {'cache_version',
-            'modified', 'modified_by', 'display_count'})
+        return bool(set(self.dirty_fields.keys()) - {'cache_version',
+            'modified', 'modified_by', 'display_count', 'last_active'})
 
     @property
     def dirty_fields(self):

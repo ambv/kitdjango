@@ -157,8 +157,9 @@ class ActivityMiddleware(object):
             profile = request.user.get_profile()
             last_active = profile.last_active
             if not last_active or 3 * (now - last_active).seconds > seconds:
-                profile.last_active = now
-                profile.save()
+                # we're not using save() to bypass signals etc.
+                profile.__class__.objects.filter(pk = profile.pk).update(
+                    last_active = now)
         else:
             guest_sid = request.COOKIES.get(settings.SESSION_COOKIE_NAME, '')
             guests_online[guest_sid] = now
