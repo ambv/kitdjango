@@ -308,14 +308,15 @@ class TagStemManager(db.Manager):
             kwargs["author"] = author
         if language is not None:
             kwargs["language"] = language
-        tagged_cts_oids = set((t.content_type_id, t.object_id)
-            for t in Tag.objects.filter(**kwargs))
+        tags = Tag.objects.filter(**kwargs)
+        tagged_cts_oids = set(tags.values_list('content_type_id',
+            'object_id').distinct())
         if not content_type:
-            tagged_cts = {id for id, _ in tagged_cts_oids}
+            tagged_cts = {t[0] for t in tagged_cts_oids}
             tagged_models = {id: ContentType.objects.get(pk=id).model_class()
                 for id in tagged_cts}
-        return set(self._yield_objects_that_exist(tagged_cts_oids,
-            tagged_models))
+        return self._yield_objects_that_exist(tagged_cts_oids,
+            tagged_models)
 
     def get_queryset_for_model(self, model, instance=None, official=False,
         author=None, language=None):
@@ -347,11 +348,10 @@ class TagStemManager(db.Manager):
         yet) it may be possible that asking for an object that exist
         in the database (and has tags on it) raises DoesNotExist instead.
         Here we silently ignore those."""
-        for ctid, oid in cts_oids:
-            try:
-                yield model_table[ctid].objects.get(pk=oid)
-            except model_table[ctid].DoesNotExist:
-                continue
+        for ctid, table in model_table.iteritems():
+            ids = {o[1] for o in filter(lambda x: x[0] == ctid, cts_oids)}
+            for obj in table.objects.filter(pk__in=ids):
+                yield obj
 
 
 class TagStem(Named.NonUnique, Localized, Taggable.NoDefaultTags):
