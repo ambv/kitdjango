@@ -120,10 +120,14 @@ def thumbnail(image, size):
         basename, format = file.rsplit('.', 1)
     except ValueError: # if there is no extension
         basename = file
-        format = 'jpg' 
+        format = 'jpg'
     thumb_filename = basename + '_' + size + '.' + format
 
-    baseurl, format = image.url.rsplit('.', 1)
+    try:
+        baseurl, format = image.url.rsplit('.', 1)
+    except ValueError: # if there is no extension
+        baseurl = file
+        format = 'jpg'
     thumb_url = baseurl + '_' + size + '.' + format
 
     if os.path.exists(thumb_filename):
