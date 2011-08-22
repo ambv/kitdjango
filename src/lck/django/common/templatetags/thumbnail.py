@@ -126,7 +126,7 @@ def thumbnail(image, size):
     try:
         baseurl, format = image.url.rsplit('.', 1)
     except ValueError: # if there is no extension
-        baseurl = file
+        baseurl = image.url
         format = 'jpg'
     thumb_url = baseurl + '_' + size + '.' + format
 
