@@ -116,7 +116,11 @@ def thumbnail(image, size):
     height = int(round(height))
 
     file = image.file.name
-    basename, format = file.rsplit('.', 1)
+    try:
+        basename, format = file.rsplit('.', 1)
+    except ValueError: # if there is no extension
+        basename = file
+        format = 'jpg' 
     thumb_filename = basename + '_' + size + '.' + format
 
     baseurl, format = image.url.rsplit('.', 1)
