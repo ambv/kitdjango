@@ -26,6 +26,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from lck.django.common.forms import WebpImageField
+
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
@@ -52,3 +54,13 @@ class ModelAdmin(admin.ModelAdmin):
         if hasattr(obj, 'pre_save_model'):
             obj.pre_save_model(request, obj, form, change)
         obj.save()
+
+class WebpModelAdmin(admin.ModelAdmin):
+    """ Monkey patched to support webp images. """
+    def formfield_for_dbfield(self, db_field, **kwargs):
+        """ Any image field will have webp support out of the box. """
+        if (db_field.name == 'image'):
+            kwargs['form_class'] = WebpImageField
+        return super(WebpModelAdmin, self).formfield_for_dbfield(
+            db_field, **kwargs)
+
