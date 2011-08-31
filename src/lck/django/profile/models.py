@@ -113,6 +113,10 @@ class BasicInfo(db.Model):
     def get_profile(self):
         return self
 
+    @property
+    def profile(self):
+        return self
+
 
 class ActivationSupport(db.Model):
     activation_token = db.CharField(verbose_name=_("activation token"),
