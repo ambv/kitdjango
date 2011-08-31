@@ -174,6 +174,10 @@ class WebpImageField(forms.ImageField):
         Converts on the fly the image data to png, so that PIL
         will be able to use it normally.
     """
+    def __init__(self, *args, **kwargs):
+        print args
+        print kwargs
+        super(WebpImageField, self).__init__(*args, **kwargs)
 
     def to_python(self, data):
         """ Validates also webp images.
@@ -212,7 +216,7 @@ class WebpImageField(forms.ImageField):
                 # or just th contents in the memory.
                 with NamedTemporaryFile() as file:
                     path = dirname(file.name)
-                    filename = basename(file.name).rsplit(
+                    filename = basename(data.name).rsplit(
                         '.', 1)[0] + '.png'
                     abs_path = join(path, filename)
 
@@ -222,10 +226,8 @@ class WebpImageField(forms.ImageField):
                         # InMemoryUploadFile
                         data.seek(0)
                         file.write(data.read())
-                        output = data.file
                     else:
                         file.write(data['content'])
-                        output = data['content']
 
                     # Make sure no buffers stop us.
                     file.flush()
@@ -243,7 +245,7 @@ class WebpImageField(forms.ImageField):
                                 data.file = StringIO(image.read())
                         else:
                             with open(abs_path, 'r') as image:
-                                data['content'] = StringIO(image.read())
+                                data['content'] = image.read()
                     except CalledProcessError:
                         # Well this wasn't a webp image. Close the file
                         # (thus deleting it in this case) and raise
