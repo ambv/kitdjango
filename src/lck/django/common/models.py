@@ -59,7 +59,8 @@ MAC_ADDRESS_REGEX = re.compile(r'^([0-9a-fA-F]{2}([:-]?|$)){6}$')
 class Named(db.Model):
     """Describes an abstract model with a unique ``name`` field."""
 
-    name = db.CharField(verbose_name=_("name"), max_length=50, unique=True)
+    name = db.CharField(verbose_name=_("name"), max_length=50, unique=True,
+        db_index=True)
 
     class Meta:
         abstract = True
@@ -92,7 +93,8 @@ class Named(db.Model):
 class Titled(db.Model):
     """Describes an abstract model with a unique ``title`` field."""
 
-    title = db.CharField(verbose_name=_("title"), max_length=100, unique=True)
+    title = db.CharField(verbose_name=_("title"), max_length=100, unique=True,
+        db_index=True)
 
     class Meta:
         abstract = True
@@ -275,7 +277,8 @@ class MonitoredActivity(db.Model):
 
 
 class Archivable(db.Model):
-    archived = db.BooleanField(verbose_name=_("is archived?"), default=False)
+    archived = db.BooleanField(verbose_name=_("is archived?"), default=False,
+        db_index=True)
 
     class Meta:
         abstract = True
@@ -338,7 +341,8 @@ class SoftDeletable(db.Model):
     operations (thanks to ``ViewableSoftDeletableManager``).
     """
     deleted = db.BooleanField(verbose_name=_("deleted"), default=False,
-        help_text=_("if selected, this element is not available on the website"))
+        help_text=_("if selected, this element is not available on the "
+        "website"), db_index=True)
     admin_objects = db.Manager()
     objects = ViewableSoftDeletableManager()
 
