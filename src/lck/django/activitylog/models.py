@@ -144,7 +144,7 @@ class ProfileIP(M2M):
     ip = db.ForeignKey(IP, verbose_name=_("IP address"))
 
     class Meta:
-        unique_together = (('ip', 'user'), ('user', 'profile'))
+        unique_together = ('user', 'profile')
         verbose_name = _("IP address")
         verbose_name_plural =_("IP addresses")
 
@@ -156,7 +156,7 @@ class ProfileUserAgent(M2M):
     agent = db.ForeignKey(UserAgent, verbose_name=_("user agent"))
 
     class Meta:
-        unique_together = (('agent', 'user'), ('user', 'profile'))
+        unique_together = ('user', 'profile')
         verbose_name = _("user agent")
         verbose_name_plural = _("user agents")
 

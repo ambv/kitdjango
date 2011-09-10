@@ -3,18 +3,15 @@ Albeit useful, this module is still somewhat a mess in a really early state of d
 """
 
 import datetime
+import os
 import re
 from subprocess import check_call, CalledProcessError
 from tempfile import NamedTemporaryFile
-from os.path import join, dirname, basename, getsize, abspath
-from os import remove, devnull, O_RDWR
-from os import open as os_open
-DEVNULL = os_open(devnull, O_RDWR)
+
 try:
     from cStringIO import StringIO
 except ImportError:
     from StringIO import StringIO
-
 
 from django import forms
 from django.forms.extras.widgets import RE_DATE, SelectDateWidget
@@ -168,88 +165,69 @@ class PolishSelectDateWidget(SelectDateWidget):
 
         return mark_safe(u'\n'.join(output))
 
-class WebpImageField(forms.ImageField):
-    """ Extends the default django ImageField with webp support.
 
-        Converts on the fly the image data to png, so that PIL
-        will be able to use it normally.
+class WebpImageField(forms.ImageField):
+    """Extends the default django ImageField with WEBP support through
+       `dwebp <http://code.google.com/intl/pl/speed/webp/docs/dwebp.html>`_.
+
+       Converts image data to PNG on the fly so that PIL (as of 1.1.7) is able
+       to use it.
     """
 
     def to_python(self, data):
-        """ Validates also webp images.
-
-            Calls the default django validation. Converts
-            webp images on the fly if applicable.
-        """
         try:
-            # Hey, it can actually be a real image you know?
+            # try PIL-supported images first 
             return super(WebpImageField, self).to_python(data)
         except forms.ValidationError, e:
-            # Stolen from Django. Convert the data on the fly via
-            # the dwebp Google program. Unfortunately this means
-            # saving the file somewhere, since the CLI doesn't take
-            # STDIN. Also monkey-patch the UploadFile.
-            if hasattr(data, 'temporary_file_path'):
-                # TemporaryUploadFile, django saved the file
-                # on disk. So let's just convert to the same
-                # location and if successful, viola!
-                source_path = data.temporary_file_path()
-                path = dirname(source_path)
-                filename = basename(file).rsplit(
-                    '.', 1)[0] + '.png'
-                abs_path = join(path, filename)
+            pass
+        if hasattr(data, 'temporary_file_path'):
+            # file already on disk
+            file = data.temporary_file_path()
+            abs_path = os.path.splitext(file)[0] + '.png'
+            devnull = os.open(os.devnull, os.O_RDWR)
+            try:
+                check_call(['dwebp', file, '-o', abs_path],
+                    stdout=devnull, stderr=devnull)
+                data.temporary_file_path = abs_path
+                data.name = os.path.basename(abs_path)
+                data.size = getsize(abs_path)
+                os.unlink(file)
+            except CalledProcessError:
+                raise ValidationError(self.error_messages['invalid_image'])
+            finally:
+                os.close(devnull)
+        else:
+            with NamedTemporaryFile() as file:
+                abs_path = os.path.splitext(file.name)[0] + '.png'
+
+                if hasattr(data, 'read'):
+                    # InMemoryUploadFile
+                    data.seek(0)
+                    file.write(data.read())
+                    output = data.file
+                else:
+                    file.write(data['content'])
+                    output = data['content']
+
+                file.flush()
+
+                devnull = os.open(os.devnull, os.O_RDWR)
                 try:
-                    check_call(['dwebp', source_path, '-o', abs_path],
+                    check_call(['dwebp', file.name, '-o', abs_path],
                         stdout=DEVNULL)
-                    data.temporary_file_path = abs_path
-                    data.name = filename
-                    data.size = getsize(abs_path)
-                    remove(source_path)
-                except CalledProcessError:
-                    raise e
-            else:
-                # Either a StringIO file-like-object in memory,
-                # or just th contents in the memory.
-                with NamedTemporaryFile() as file:
-                    path = dirname(file.name)
-                    filename = basename(file.name).rsplit(
-                        '.', 1)[0] + '.png'
-                    abs_path = join(path, filename)
-
-                    # Write the image data to a tmp file and
-                    # input the save field.
-                    if hasattr(data, 'read'):
+                    # Monkey-patch the UploadFile object.
+                    data.name = os.path.basename(abs_path)
+                    data.size = os.path.getsize(abs_path)
+                    with open(abs_path, 'rb') as image:
                         # InMemoryUploadFile
-                        data.seek(0)
-                        file.write(data.read())
-                        output = data.file
-                    else:
-                        file.write(data['content'])
-                        output = data['content']
-
-                    # Make sure no buffers stop us.
-                    file.flush()
-
-                    try:
-                        # Make the actual conversion via the CLI tool.
-                        check_call(['dwebp', file.name, '-o', abs_path],
-                            stdout=DEVNULL)
-                        # Monkey-patch the UploadFile object.
-                        data.name = filename
-                        data.size = getsize(abs_path)
                         if hasattr(data, 'read'):
-                            # InMemoryUploadFile
-                            with open(abs_path, 'rb') as image:
-                                data.file = StringIO(image.read())
+                            data.file = StringIO(image.read())
                         else:
-                            with open(abs_path, 'r') as image:
-                                data['content'] = StringIO(image.read())
-                    except CalledProcessError:
-                        # Well this wasn't a webp image. Close the file
-                        # (thus deleting it in this case) and raise
-                        # the original exception.
-                        file.close()
-                        raise e
+                            data['content'] = StringIO(image.read())
+                except CalledProcessError:
+                    raise ValidationError(self.error_messages['invalid_image'])
+                finally:
+                    os.close(devnull)
 
-            # Return the monkey-patched UploadFile object.
-            return data
+        # Return the monkey-patched UploadFile object.
+        return data
