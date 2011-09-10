@@ -250,32 +250,6 @@ class Localized(db.Model):
         return (l.name, l.desc)
 
 
-class MonitoredActivity(db.Model):
-    """Describes an abstract model which holds the timestamp of last user
-    activity on the site. Activity is logged using the ActivityMiddleware."""
-    last_active = db.DateTimeField(verbose_name=_("last active"),
-        blank=True, null=True, default=None)
-
-    _is_online_secs = getattr(settings, 'CURRENTLY_ONLINE_INTERVAL', 120)
-    _was_online_secs = getattr(settings, 'RECENTLY_ONLINE_INTERVAL', 300)
-
-    class Meta:
-        abstract = True
-
-    def is_currently_online(self, time_limit=_is_online_secs):
-        """True if the user's last activity was within the last `time_limit`
-        seconds (default value 2 minutes, customizable by the
-        ``CURRENTLY_ONLINE_INTERVAL`` setting."""
-        return (bool(self.last_active) and
-            (datetime.now() - self.last_active).seconds <= time_limit)
-
-    def was_recently_online(self, time_limit=_was_online_secs):
-        """True if the user's last activity was within the last `time_limit`
-        seconds (default value 5 minutes, customizable by the
-        ``RECENTLY_ONLINE_INTERVAL`` setting."""
-        return self.is_currently_online(time_limit=time_limit)
-
-
 class Archivable(db.Model):
     archived = db.BooleanField(verbose_name=_("is archived?"), default=False,
         db_index=True)

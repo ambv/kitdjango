@@ -64,6 +64,7 @@ INSTALLED_APPS = (
     #'gunicorn',
     #'haystack',
     'lck.django.common',
+    'lck.django.activitylog',
     'lck.django.profile',
     'lck.django.score',
     'lck.django.tags',
