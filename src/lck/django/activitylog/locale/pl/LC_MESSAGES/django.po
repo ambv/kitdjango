@@ -1,0 +1,77 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-09-10 17:55+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2)\n"
+
+#: admin.py:40
+msgid "List of users"
+msgstr "Lista użytkowników"
+
+#: admin.py:44
+msgid "List of user agents"
+msgstr "Lista przeglądarek"
+
+#: admin.py:66 models.py:104 models.py:107 models.py:115 models.py:144
+#: models.py:148
+msgid "IP address"
+msgstr "Adres IP"
+
+#: admin.py:79 models.py:96 models.py:156 models.py:160
+msgid "user agent"
+msgstr "przeglądarka"
+
+#: models.py:66
+msgid "last active"
+msgstr "ostatnia aktywność"
+
+#: models.py:91
+msgid "name"
+msgstr "nazwa"
+
+#: models.py:93 models.py:112
+msgid "profiles"
+msgstr "profile"
+
+#: models.py:97 models.py:161
+msgid "user agents"
+msgstr "przeglądarki"
+
+#: models.py:105
+msgid "Presented as string."
+msgstr "Jako łańcuch znaków."
+
+#: models.py:108
+msgid "Presented as int."
+msgstr "Jako liczba całkowita."
+
+#: models.py:109
+msgid "hostname"
+msgstr "nazwa hosta"
+
+#: models.py:116 models.py:149
+msgid "IP addresses"
+msgstr "adresy IP"
+
+#: models.py:135
+msgid "user"
+msgstr "użytkownik"
+
+#: models.py:137
+msgid "profile"
+msgstr "profil"
