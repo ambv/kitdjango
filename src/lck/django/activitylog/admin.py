@@ -39,13 +39,9 @@ class IPAdmin(ModelAdmin):
         return ", ".join([unicode(p) for p in self.profiles.all()])
     user_list.short_description = _("List of users")
 
-    def agent_list(self):
-        return ", ".join([a.name for a in self.agents.order_by('name')])
-    agent_list.short_description = _("List of user agents")
-
-    list_display = ('address', 'hostname', user_list, agent_list)
-    search_fields = ('address', 'number', 'hostname', 'users__username',
-        'agents__name')
+    list_display = ('address', 'hostname', user_list)
+    search_fields = ('address', 'number', 'hostname',
+        'profiles__user__username', 'profiles__user__email')
     readonly_fields = ('number', 'hostname', 'profiles',)
 
 admin.site.register(IP, IPAdmin)
@@ -60,15 +56,15 @@ admin.site.register(UserAgent, UserAgentAdmin)
 
 
 class UserIPInline(admin.TabularInline):
-    def hostname(self):
+    def user_ip(self):
         return '<a href="/admin/activitylog/ip/{}/">{}</a>'.format(self.ip.id,
             self.ip)
-    hostname.short_description = _("IP address")
-    hostname.allow_tags = True
+    user_ip.short_description = _("IP address")
+    user_ip.allow_tags = True
 
     model = IP.profiles.through
     exclude = ('ip', 'profile')
-    readonly_fields = (hostname, 'created', 'modified')
+    readonly_fields = (user_ip, 'created', 'modified')
     extra = 0
 
 
