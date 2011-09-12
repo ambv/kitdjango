@@ -21,11 +21,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-"""Module name
-   ----
-
-   description"""
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -48,6 +43,11 @@ class ActivityMiddleware(object):
     """
 
     def process_request(self, request):
+        # FIXME: use a single cache key with lck.django.cache to minimize
+        # writes to cache
+
+        # FIXME: don't use concurrent_get_or_create for pip and pua to maximize
+        # performance
         now = datetime.now()
         seconds = getattr(settings, 'CURRENTLY_ONLINE_INTERVAL', 120)
         delta = now - timedelta(seconds=seconds)
