@@ -213,10 +213,10 @@ class TimeTrackable(db.Model):
 class EditorTrackable(db.Model):
     created_by = db.ForeignKey(EDITOR_TRACKABLE_MODEL,
         verbose_name=_("created by"), null=True, blank=True, default=None,
-        related_name='+')
+        related_name='+', on_delete=db.SET_NULL)
     modified_by = db.ForeignKey(EDITOR_TRACKABLE_MODEL,
         verbose_name=_("modified by"), null=True, blank=True, default=None,
-        related_name='+')
+        related_name='+', on_delete=db.SET_NULL)
 
     class Meta:
         abstract = True
