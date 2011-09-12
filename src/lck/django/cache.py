@@ -76,7 +76,6 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import time
-from threading import RLock
 
 from django.core.cache import cache
 from django.conf import settings
