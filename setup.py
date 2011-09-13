@@ -42,7 +42,7 @@ setup (
     zip_safe = False, # because executing support extensions for settings.py
                       # requires actual files
     install_requires = [
-        'lck.common>=0.4.3',
+        'lck.common>=0.4.4',
         'lck.i18n>=0.3.0',
         'distribute',
         'django>=1.3',
