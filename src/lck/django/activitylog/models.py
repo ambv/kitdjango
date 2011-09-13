@@ -101,6 +101,7 @@ class UserAgent(TimeTrackable, WithConcurrentGetOrCreate):
 
 
 class IP(TimeTrackable, WithConcurrentGetOrCreate):
+    # FIXME: db_index anywhere?
     address = db.IPAddressField(verbose_name=_("IP address"),
         help_text=_("Presented as string."), unique=True,
         blank=True, null=True, default=None)
