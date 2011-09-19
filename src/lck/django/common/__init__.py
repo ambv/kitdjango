@@ -226,3 +226,60 @@ def nested_commit_on_success(func):
         else:
             return _commit_on_success(*args,**kwds)
     return transaction.wraps(func)(_nested_commit_on_success)
+
+
+class lazy_chain(object):
+    # FIXME: how to introduce sorting for these?
+    def __init__(self, *iterables):
+        self.iterables = iterables
+
+    @staticmethod
+    def xform(value):
+        return value
+
+    @staticmethod
+    def filter(value):
+        return True
+
+    def __iter__(self):
+        for it in self.iterables:
+            for element in it:
+                if self.filter(element):
+                    yield self.xform(element)
+
+    def __getitem__(self, key):
+        if len(self.iterables) == 1:
+            value = self.iterables[0][key]
+            if isinstance(key, slice):
+                result = lazy_chain(value)
+                result.filter = self.filter
+                result.xform = self.xform
+                return result
+            else:
+                return self.xform(value)
+        else:
+            raise NotImplementedError("__getitem__ not yet implemented for "
+                "multiple iterables")
+            # FIXME: implement this based on __len_parts__
+
+    def __len_parts__(self):
+        for iterable in self.iterables:
+            try:
+                yield iterable.count()
+            except:
+                try:
+                    yield len(iterable)
+                except TypeError:
+                    yield len(list(iterable))
+
+    def __len__(self):
+        sum = 0
+        for sub in self.__len_parts__():
+            sum += sub
+        return sum
+
+    def count(self):
+        return len(self)
+
+    def exists(self):
+        return bool(len(self))

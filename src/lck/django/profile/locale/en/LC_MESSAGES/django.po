@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-04-27 23:14+0200\n"
+"POT-Creation-Date: 2011-09-10 17:58+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -48,18 +48,18 @@ msgstr ""
 msgid "Time zone"
 msgstr ""
 
-#: models.py:115
+#: models.py:122
 msgid "activation token"
 msgstr ""
 
-#: models.py:130
+#: models.py:137
 msgid "height"
 msgstr ""
 
-#: models.py:132
+#: models.py:139
 msgid "width"
 msgstr ""
 
-#: models.py:134
+#: models.py:141
 msgid "custom avatar"
 msgstr ""

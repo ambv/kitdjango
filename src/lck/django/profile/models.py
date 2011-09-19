@@ -46,7 +46,8 @@ from lck.django.choices import Country, Gender
 from lck.django.common.templatetags.thumbnail import thumbnail
 
 PROXIED_FIELDS = (set([field.name for field in User._meta.fields]) |
-                  set(['get_full_name']))
+                  set(['check_password', 'get_full_name', 'has_perm',
+                       'has_perms']))
 
 TZ_CHOICES = [(float(x[0]), x[1]) for x in (
     (-12, '-12'), (-11, '-11'), (-10, '-10'), (-9.5, '-09.5'), (-9, '-09'),
@@ -111,6 +112,10 @@ class BasicInfo(db.Model):
         return Country.RawFromID(self.country)
 
     def get_profile(self):
+        return self
+
+    @property
+    def profile(self):
         return self
 
 

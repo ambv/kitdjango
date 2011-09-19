@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-01 18:54+0200\n"
+"POT-Creation-Date: 2011-09-10 17:53+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Plural-Forms:  nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n"
 "%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: __init__.py:168
+#: __init__.py:174
 msgid "Try again"
 msgstr "Spróbuj ponownie"
 
@@ -1763,61 +1763,65 @@ msgstr "mężczyzna"
 msgid "unspecified"
 msgstr "nie podano"
 
-#: models.py:58 models.py:74
+#: models.py:62 models.py:79
 msgid "name"
 msgstr "nazwa"
 
-#: models.py:91 models.py:106
+#: models.py:96 models.py:112
 msgid "title"
 msgstr "tytuł"
 
-#: models.py:122 models.py:133
+#: models.py:128 models.py:139
 msgid "permalink"
 msgstr "trwały link"
 
-#: models.py:148
+#: models.py:154
 msgid "date created"
 msgstr "data i czas utworzenia"
 
-#: models.py:150
+#: models.py:156
 msgid "last modified"
 msgstr "data i czas ostatniej modyfikacji"
 
-#: models.py:152
+#: models.py:158
 msgid "cache version"
 msgstr "wersja cache"
 
-#: models.py:202
+#: models.py:215
 msgid "created by"
 msgstr "stworzone przez"
 
-#: models.py:205
+#: models.py:218
 msgid "modified by"
 msgstr "ostatnio edytowane przez"
 
-#: models.py:227
+#: models.py:240
 msgid "language"
 msgstr "język"
 
-#: models.py:243
-msgid "last active"
-msgstr "ostatnia aktywność"
-
-#: models.py:267
+#: models.py:254
 msgid "is archived?"
 msgstr "czy trafiło do archiwum?"
 
-#: models.py:285
+#: models.py:273
 msgid "display count"
 msgstr "ilość wyświetleń"
 
-#: models.py:328
+#: models.py:317
 msgid "deleted"
 msgstr "wpis usunięty"
 
-#: models.py:329
+#: models.py:318
 msgid "if selected, this element is not available on the website"
-msgstr "Jeżeli zaznaczone, ten wpis nie będzie dostępny do przeglądania w serwisie."
+msgstr ""
+"Jeżeli zaznaczone, ten wpis nie będzie dostępny do przeglądania w serwisie."
+
+#: models.py:350
+msgid "Enter a valid MAC address."
+msgstr "Wpisz poprawny adres MAC."
+
+#~ msgid "last active"
+#~ msgstr "ostatnia aktywność"
 
 #~ msgid "Female"
 #~ msgstr "Kobieta"

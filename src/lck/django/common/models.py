@@ -59,7 +59,8 @@ MAC_ADDRESS_REGEX = re.compile(r'^([0-9a-fA-F]{2}([:-]?|$)){6}$')
 class Named(db.Model):
     """Describes an abstract model with a unique ``name`` field."""
 
-    name = db.CharField(verbose_name=_("name"), max_length=50, unique=True)
+    name = db.CharField(verbose_name=_("name"), max_length=50, unique=True,
+        db_index=True)
 
     class Meta:
         abstract = True
@@ -92,7 +93,8 @@ class Named(db.Model):
 class Titled(db.Model):
     """Describes an abstract model with a unique ``title`` field."""
 
-    title = db.CharField(verbose_name=_("title"), max_length=100, unique=True)
+    title = db.CharField(verbose_name=_("title"), max_length=100, unique=True,
+        db_index=True)
 
     class Meta:
         abstract = True
@@ -211,10 +213,14 @@ class TimeTrackable(db.Model):
 class EditorTrackable(db.Model):
     created_by = db.ForeignKey(EDITOR_TRACKABLE_MODEL,
         verbose_name=_("created by"), null=True, blank=True, default=None,
-        related_name='+')
+        related_name='+', on_delete=db.SET_NULL,
+        limit_choices_to={'is_staff' if EDITOR_TRACKABLE_MODEL is User
+            else 'user__is_staff': True})
     modified_by = db.ForeignKey(EDITOR_TRACKABLE_MODEL,
         verbose_name=_("modified by"), null=True, blank=True, default=None,
-        related_name='+')
+        related_name='+', on_delete=db.SET_NULL,
+        limit_choices_to={'is_staff' if EDITOR_TRACKABLE_MODEL is User
+            else 'user__is_staff': True})
 
     class Meta:
         abstract = True
@@ -248,34 +254,9 @@ class Localized(db.Model):
         return (l.name, l.desc)
 
 
-class MonitoredActivity(db.Model):
-    """Describes an abstract model which holds the timestamp of last user
-    activity on the site. Activity is logged using the ActivityMiddleware."""
-    last_active = db.DateTimeField(verbose_name=_("last active"),
-        blank=True, null=True, default=None)
-
-    _is_online_secs = getattr(settings, 'CURRENTLY_ONLINE_INTERVAL', 120)
-    _was_online_secs = getattr(settings, 'RECENTLY_ONLINE_INTERVAL', 300)
-
-    class Meta:
-        abstract = True
-
-    def is_currently_online(self, time_limit=_is_online_secs):
-        """True if the user's last activity was within the last `time_limit`
-        seconds (default value 2 minutes, customizable by the
-        ``CURRENTLY_ONLINE_INTERVAL`` setting."""
-        return (bool(self.last_active) and
-            (datetime.now() - self.last_active).seconds <= time_limit)
-
-    def was_recently_online(self, time_limit=_was_online_secs):
-        """True if the user's last activity was within the last `time_limit`
-        seconds (default value 5 minutes, customizable by the
-        ``RECENTLY_ONLINE_INTERVAL`` setting."""
-        return self.is_currently_online(time_limit=time_limit)
-
-
 class Archivable(db.Model):
-    archived = db.BooleanField(verbose_name=_("is archived?"), default=False)
+    archived = db.BooleanField(verbose_name=_("is archived?"), default=False,
+        db_index=True)
 
     class Meta:
         abstract = True
@@ -338,7 +319,8 @@ class SoftDeletable(db.Model):
     operations (thanks to ``ViewableSoftDeletableManager``).
     """
     deleted = db.BooleanField(verbose_name=_("deleted"), default=False,
-        help_text=_("if selected, this element is not available on the website"))
+        help_text=_("if selected, this element is not available on the "
+        "website"), db_index=True)
     admin_objects = db.Manager()
     objects = ViewableSoftDeletableManager()
 
