@@ -218,7 +218,7 @@ class WebpImageField(forms.ImageField):
                 devnull = os.open(os.devnull, os.O_RDWR)
                 try:
                     check_call(['dwebp', file.name, '-o', abs_path],
-                        stdout=DEVNULL)
+                        stdout=devnull, stderr=devnull)
                     # Monkey-patch the UploadFile object.
                     data.name = os.path.basename(abs_path)
                     data.size = os.path.getsize(abs_path)
