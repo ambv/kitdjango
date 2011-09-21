@@ -47,7 +47,7 @@ from lck.django.common.templatetags.thumbnail import thumbnail
 
 PROXIED_FIELDS = (set([field.name for field in User._meta.fields]) |
                   set(['check_password', 'get_full_name', 'has_perm',
-                       'has_perms']))
+                       'has_perms', 'set_password']))
 
 TZ_CHOICES = [(float(x[0]), x[1]) for x in (
     (-12, '-12'), (-11, '-11'), (-10, '-10'), (-9.5, '-09.5'), (-9, '-09'),
