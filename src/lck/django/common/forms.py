@@ -173,6 +173,10 @@ class WebpImageField(forms.ImageField):
        Converts image data to PNG on the fly so that PIL (as of 1.1.7) is able
        to use it.
     """
+    def __init__(self, *args, **kwargs):
+        print args
+        print kwargs
+        super(WebpImageField, self).__init__(*args, **kwargs)
 
     def to_python(self, data):
         try:
@@ -214,7 +218,7 @@ class WebpImageField(forms.ImageField):
                 devnull = os.open(os.devnull, os.O_RDWR)
                 try:
                     check_call(['dwebp', file.name, '-o', abs_path],
-                        stdout=DEVNULL)
+                        stdout=devnull, stderr=devnull)
                     # Monkey-patch the UploadFile object.
                     data.name = os.path.basename(abs_path)
                     data.size = os.path.getsize(abs_path)
