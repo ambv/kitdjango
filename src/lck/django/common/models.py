@@ -33,6 +33,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from collections import defaultdict
 from datetime import datetime
 from hashlib import sha256
 import re
@@ -54,6 +55,7 @@ from lck.django.common import monkeys, nested_commit_on_success
 
 EDITOR_TRACKABLE_MODEL = getattr(settings, 'EDITOR_TRACKABLE_MODEL', User)
 MAC_ADDRESS_REGEX = re.compile(r'^([0-9a-fA-F]{2}([:-]?|$)){6}$')
+DEFAULT_SAVE_PRIORITY = getattr(settings, 'DEFAULT_SAVE_PRIORITY', 0)
 
 
 class Named(db.Model):
@@ -151,6 +153,9 @@ class TimeTrackable(db.Model):
     a ``modified`` field that is set automatically upon calling ``save()`` on
     the object.
     """
+    insignificant_fields = {'cache_version', 'modified', 'modified_by',
+        'display_count', 'last_active'}
+
     created = db.DateTimeField(verbose_name=_("date created"),
         default=datetime.now)
     modified = db.DateTimeField(verbose_name=_("last modified"),
@@ -193,8 +198,7 @@ class TimeTrackable(db.Model):
 
     @property
     def significant_fields_updated(self):
-        return bool(set(self.dirty_fields.keys()) - {'cache_version',
-            'modified', 'modified_by', 'display_count', 'last_active'})
+        return bool(set(self.dirty_fields.keys()) - self.insignificant_fields)
 
     @property
     def dirty_fields(self):
@@ -208,6 +212,61 @@ class TimeTrackable(db.Model):
                 pass # offset-naive and offset-aware datetimes, etc.
             diff.append((k, v))
         return dict(diff)
+
+
+class SavePrioritized(TimeTrackable):
+    """ Note: This base class should be put as far in the MRO as possible
+    to protect from saving transformations of values which would be ignored
+    otherwise. Of course TimeTrackable must be put farther for MRO to
+    compile."""
+
+    insignificant_fields = TimeTrackable.insignificant_fields | {
+        'save_priorities', 'max_save_priority'}
+
+    save_priorities = db.TextField(verbose_name=_("save priorities"),
+        default="", editable=False)
+    max_save_priority = db.PositiveIntegerField(
+        verbose_name=_("highest save priority"), default=0, editable=False)
+
+    class Meta(TimeTrackable.Meta):
+        abstract = True
+
+    def get_save_priorities(self):
+        result = defaultdict(lambda: 0)
+        for token in self.save_priorities.split(" "):
+            try:
+                name, priority = token.split("=")
+                result[name] = int(priority)
+            except ValueError:
+                continue
+        return result
+
+    def update_save_priorities(self, priorities):
+        """Note: this doesn't automatically run save()"""
+        tokens = []
+        for field, priority in priorities.iteritems():
+            if priority == 0:
+                continue
+            tokens.append("{}={}".format(field, priority))
+        self.save_priorities = " ".join(tokens)
+
+    def save(self, priority=DEFAULT_SAVE_PRIORITY, *args, **kwargs):
+        priorities = self.get_save_priorities()
+        if self.significant_fields_updated and \
+            priority > self.max_save_priority:
+            self.max_save_priority = priority
+        for field, orig_value in self.dirty_fields.iteritems():
+            if field in self.insignificant_fields:
+                # ignore insignificant fields
+                continue
+            if priorities[field] <= priority:
+                priorities[field] = priority
+            else:
+                # undo the change if priority too low
+                setattr(self, field, orig_value)
+        self.update_save_priorities(priorities)
+        super(SavePrioritized, self).save(*args, **kwargs)
+        # FIXME: should this restore the values that were changed or not?
 
 
 class EditorTrackable(db.Model):
