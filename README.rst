@@ -5,6 +5,16 @@ lck.django
 This library consists of various Django-related routines that extend or modify
 the behaviour of the framework:
 
+ * lots of abstract models to use
+
+ * a user activity log app storing users' IP addresses and user agents (useful
+   for hunting down multi-accounts)
+
+ * a simple ``score`` app
+
+ * a ``tags`` app which is unlike other popular tagging applications for Django
+   in the fact that it supports tagging by users and localized tags
+
  * extensions for ``settings.py`` (current directory resolution, namespace
    package support, settings profile support)
 
