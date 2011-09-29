@@ -1,12 +1,16 @@
 .. include:: ../README.rst
 
-This documentation
-------------------
+lck.django
+----------
 
 .. toctree::
    :maxdepth: 2
   
    overview
+   choices
+   settings
+   manage
+   filters
    license
    todo
 

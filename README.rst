@@ -63,6 +63,78 @@ behaviour which I consider ugly.
 Change Log
 ----------
 
+0.6.0
+~~~~~
+
+Oh boy, lots of changes!
+
+* ``TimeTrackable`` just got a lot smarter. Includes ``cache_version``
+  attribute automatically updated on significant changes to the object.
+  ``modified`` gets updated only when there are actual changes to the object.
+  ``dirty_fields`` property shows changed attributes from last save (works also
+  for objects composed from multiple models, including abstract ones).
+    
+  Inspired by David Cramer and Simon Willison at EuroPython 2011.
+
+* The dogpile-safe ``lck.django.cache`` now supports custom invalidators which
+  enables invalidation not only by time but also by e.g. model changes (think
+  ``TimeTrackable.cache_version``).
+
+* Settings profile support now requires a modified ``manage.py`` script in the
+  Django project. This is forced by the unfortunate design of how Django loads
+  settings.
+
+* Activity logging moved to its own app, ``lck.activitylog``, which now also
+  tracks IPs and user agents of logged-in visitors (useful in hunting
+  multi-accounts). 
+
+* Introduced a ``SavePrioritized`` abstract model which adds priorities to
+  saves on models. Various parts of the application can specify which priority
+  they use. If they update an attribute which was first saved by something with
+  higher priority, the update is silently ignored.
+
+* Introduced a concurrency-aware variant of the popular
+  ``Model.objects.get_or_create`` (unsurprisingly called
+  ``concurrent_get_or_create``)
+
+* Introduced a ``commit_on_success`` variant that supports nesting
+  (unsurprisingly called ``nested_commit_on_success``)
+
+* Introduced ``BasicAuthMiddleware`` for simplistic private URL protecting.
+
+* ``EditorTrackable`` is now safe in terms of foreign key cascading (content
+  authored or modified by a user won't get deleted after this user is removed
+  from the DB). Plus some nice admin refinements.
+
+* Now ``TimingMiddleware`` doesn't break other middlewares using
+  ``process_view()`` and is generally smarter.
+
+* Added ``X-Slo`` header in responses for ``TimingMiddleware``.
+
+* ``render()`` now calculates and emits ETags based on the rendering output.
+
+* ``typical_handler()`` can now ``redirect_on_success``.
+
+* Links from the BBCode filter now open in a new window and have
+  ``rel="nofollow"`` set.
+
+* Introduced a ``{%settings KEY%}`` templatetag.
+
+* Introduced a ``{%git_version%}`` templatetag which returns a short string
+  useful to present as an app version. This is based on the latest commit in
+  the Git repository where the Django project lies in.
+
+* The ``cycle_filter`` template filter now supports explicit counter settings
+  and incrementation.
+
+* Introduced template filters converting to and from Base64.
+
+* Introduced JQuery UI and JQueryMobile integrated radio widgets.
+
+* Improved documentation.
+
+* More complete translations.
+
 0.5.8
 ~~~~~
 

@@ -98,7 +98,7 @@ LOGGING = {
 }
 FORCE_SCRIPT_NAME = ''
 # django.contrib.auth settings
-# AUTH_PROFILE_MODULE = 'account.Profile'
+AUTH_PROFILE_MODULE = 'defaults.Profile'
 # LOGIN_REDIRECT_URL = '/pl/'
 # LOGIN_URL = '/pl/auth/login/'
 # LOGOUT_URL = '/pl/auth/logout/'
@@ -117,10 +117,14 @@ STATICFILES_DIRS = (
 CURRENTLY_ONLINE_INTERVAL = 300
 RECENTLY_ONLINE_INTERVAL = 900
 
+# lck.django.common models
+EDITOR_TRACKABLE_MODEL = "defaults.Profile"
+DEFAULT_SAVE_PRIORITY = 0
+
 # lck.django.score models
-#SCORE_VOTER_MODEL = "account.Profile"
+SCORE_VOTER_MODEL = "defaults.Profile"
 # lck.django.tags models
-#TAG_AUTHOR_MODEL = "account.Profile"
+TAG_AUTHOR_MODEL = "defaults.Profile"
 
 #
 # stuff that should be customized in settings_local.py

@@ -149,10 +149,22 @@ class Slugged(db.Model):
 
 class TimeTrackable(db.Model):
     """Describes an abstract model whose lifecycle is tracked by time. Includes
-    a ``created`` field that is set automatically upon object creation and
-    a ``modified`` field that is set automatically upon calling ``save()`` on
-    the object.
-    """
+    a ``created`` field that is set automatically upon object creation,
+    a ``modified`` field that is updated automatically upon calling ``save()``
+    on the object whenever a **significant** change was done, and
+    a ``cache_version`` integer field that is automatically incremeneted any
+    time a **significant** change is done.
+
+    By a **significant** change we mean any change outside of those internal
+    ``created``, ``modified``, ``cache_version``, ``display_count``
+    or ``last_active`` fields. Full list of ignored fields lies in
+    ``TimeTrackable.insignificant_fields``.
+
+    Note: for admin integration ``lck.django.common.admin.ModelAdmin`` is
+    recommended over the vanilla ``ModelAdmin``. It adds the ``created`` and
+    ``modified`` fields as filters on the side of the change list and those
+    fields will be rendered as read-only on the change form."""
+
     insignificant_fields = {'cache_version', 'modified', 'modified_by',
         'display_count', 'last_active'}
 
@@ -171,6 +183,9 @@ class TimeTrackable(db.Model):
         self._update_field_state()
 
     def save(self, update_modified=True, *args, **kwargs):
+        """Overrides save(). Adds the ``update_modified=True`` argument.
+        If False, the ``modified`` field won't be updated even if there were
+        **significant** changes to the model."""
         if self.significant_fields_updated:
             self.cache_version += 1
             if update_modified:
@@ -179,6 +194,10 @@ class TimeTrackable(db.Model):
         self._update_field_state()
 
     def update_cache_version(self, force=False):
+        """Updates the cache_version bypassing the ``save()`` mechanism, thus
+        providing better performance and consistency. Unless forced by
+        ``force=True``, the update happens only when a **significant** change
+        was made on the object."""
         if force or self.significant_fields_updated:
             # we're not using save() to bypass signals etc.
             self.__class__.objects.filter(pk = self.pk).update(cache_version=
@@ -198,10 +217,21 @@ class TimeTrackable(db.Model):
 
     @property
     def significant_fields_updated(self):
+        """Returns True on significant changes to the model.
+
+        By a **significant** change we mean any change outside of those internal
+        ``created``, ``modified``, ``cache_version``, ``display_count``
+        or ``last_active`` fields. Full list of ignored fields lies in
+        ``TimeTrackable.insignificant_fields``."""
         return bool(set(self.dirty_fields.keys()) - self.insignificant_fields)
 
     @property
     def dirty_fields(self):
+        """dirty_fields() -> {'field1': 'old_value1', 'field2': 'old_value2', ...}
+
+        Returns a dictionary of attributes that have changed on this object
+        and are not yet saved. The values are original values present in the
+        database at the moment of this object's creation/read/last save."""
         new_state = self._fields_as_dict()
         diff = []
         for k, v in self._field_state.iteritems():
@@ -215,10 +245,25 @@ class TimeTrackable(db.Model):
 
 
 class SavePrioritized(TimeTrackable):
-    """ Note: This base class should be put as far in the MRO as possible
+    """Describes a variant of the ``TimeTrackable`` model which also tracks
+    priorities of saves on its fields. The default priority is stored in the
+    settings under ``DEFAULT_SAVE_PRIORITY`` (defaults to 0 if missing).
+
+    The priority engine enables parts of the application to make saves with
+    higher priority. Then all modified fields store the priority value required
+    to update them again. If another part of the application comes along to
+    update one of those fields using lower priority, the change is silently
+    dropped. The priority engine works on a per-field basis.
+
+    Note: This base class should be put as far in the MRO as possible
     to protect from saving transformations of values which would be ignored
-    otherwise. Of course TimeTrackable must be put farther for MRO to
-    compile."""
+    otherwise.
+
+    Note: Because of the limits of Django's multiple inheritance support,
+    models based on ``SavePrioritized`` **CAN NOT** also be explicitly based on
+    ``TimeTrackable``. They are based implicitly so this should be no problem.
+    Just make sure you get rid of the ``TimeTrackable`` base class if you
+    introduce ``SavePrioritized``."""
 
     insignificant_fields = TimeTrackable.insignificant_fields | {
         'save_priorities', 'max_save_priority'}
@@ -232,6 +277,11 @@ class SavePrioritized(TimeTrackable):
         abstract = True
 
     def get_save_priorities(self):
+        """Decodes the stored ``save_priorities`` and returns a defaultdict
+        (a key miss returns priority 0).
+
+        Probably an internal state method, not that much interesting for
+        typical model consumers."""
         result = defaultdict(lambda: 0)
         for token in self.save_priorities.split(" "):
             try:
@@ -242,7 +292,15 @@ class SavePrioritized(TimeTrackable):
         return result
 
     def update_save_priorities(self, priorities):
-        """Note: this doesn't automatically run save()"""
+        """Encodes the ``save_priorities`` field based on the provided
+        ``priorities`` dictionary (like -but not limited to- the one returned
+        by ``get_save_priorities()``).
+
+        Note: this doesn't automatically run save() after updating the
+        ``save_priorities`` field.
+
+        Probably an internal state method, not that much interesting for
+        typical model consumers."""
         tokens = []
         for field, priority in priorities.iteritems():
             if priority == 0:
@@ -251,6 +309,14 @@ class SavePrioritized(TimeTrackable):
         self.save_priorities = " ".join(tokens)
 
     def save(self, priority=DEFAULT_SAVE_PRIORITY, *args, **kwargs):
+        """Overrides save(), adding the ``priority=DEFAULT_SAVE_PRIORITY``
+        argument. Non-zero priority changes to **significant** fields are
+        annotated and saved with the object. If later on another writer with
+        lower priority changes one of those fields which were modified with
+        higher priority, the later change is silently rolled back.
+
+        Note: priorities are stored and enforced on a per-field level.
+        """
         priorities = self.get_save_priorities()
         if self.significant_fields_updated and \
             priority > self.max_save_priority:
@@ -270,6 +336,20 @@ class SavePrioritized(TimeTrackable):
 
 
 class EditorTrackable(db.Model):
+    """Describes objects authored by users of the application. In the admin,
+    on object creation the ``created_by`` field is set according to the editor.
+    Same goes for modifying an object and the ``modified_by`` field. Works best
+    in integration with TimeTrackable.
+
+    If you would rather link to your user profile instead of the user object
+    directly, use the ``EDITOR_TRACKABLE_MODEL`` (the same
+    ``"app_name.ModelClass"``syntax as ``AUTH_PROFILE_MODULE``) setting.
+
+    Note: for automatic editor updates in admin,
+    ``lck.django.common.admin.ModelAdmin`` **MUST** be used instead of the
+    vanilla ``ModelAdmin``. As a bonus, the ``created_by`` and ``modified_by``
+    fields will appear as filters on the side of the change list
+    and those fields will be rendered as read-only on the change form."""
     created_by = db.ForeignKey(EDITOR_TRACKABLE_MODEL,
         verbose_name=_("created by"), null=True, blank=True, default=None,
         related_name='+', on_delete=db.SET_NULL,
@@ -285,9 +365,11 @@ class EditorTrackable(db.Model):
         abstract = True
 
     def get_editor_from_request(self, request):
+        """This has to be overriden if you're using a profile ForeignKey."""
         return request.user
 
     def pre_save_model(self, request, obj, form, change):
+        """Internal method used by ``lck.django.common.ModelAdmin``."""
         if not change:
             if not obj.created_by:
                 obj.created_by = self.get_editor_from_request(request)
@@ -340,6 +422,15 @@ class DisplayCounter(db.Model):
         abstract = True
 
     def bump(self, unique_id=None):
+        """bump([unique_id])
+
+        Increments the ``display_count`` field. If ``unique_id`` is provided,
+        Django's cache is used to make sure a unique visitor can only increment
+        this counter once per hour. Recommended to be used in the form::
+
+          model.bump(remote_addr(request))
+
+        where ``remote_addr`` is a helper from ``lck.django.common``."""
         should_update = True
         if unique_id:
             if not hasattr(self, 'get_absolute_url'):

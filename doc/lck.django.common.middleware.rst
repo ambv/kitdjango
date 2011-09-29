@@ -7,9 +7,8 @@
 Classes
 -------
 
-.. autoclass:: ActivityMiddleware
-   :members:
-
 .. autoclass:: AdminForceLanguageCodeMiddleware
    :members:
 
+.. autoclass:: ForceLanguageCodeMiddleware
+   :members:

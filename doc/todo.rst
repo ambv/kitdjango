@@ -41,8 +41,6 @@ Docs
 
   * models
 
-* Bits undocumented:
-
   * score
     
   * tags

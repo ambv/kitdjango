@@ -145,7 +145,7 @@ def typical_handler(request, form_class, template, initial={},
           keyword arguments for the form object constructor.
 
     2. If the form validates, save it and
-       either: override the template name with a version using the
+       either: override the template name with a version using the \
           "_complete.html" suffix.
        or: redirect using the `redirect_on_success` arguments
     3. If there are errors on the form, prepare an additional `error_summary`

@@ -28,12 +28,12 @@ Classes
    :members:
    
 
-.. autoclass:: Localized
+.. autoclass:: SavePrioritized
    :show-inheritance:
    :members:
-   
 
-.. autoclass:: MonitoredActivity
+
+.. autoclass:: Localized
    :show-inheritance:
    :members:
    
@@ -41,18 +41,13 @@ Classes
 .. autoclass:: DisplayCounter
    :show-inheritance:
    :members:
-   
 
+   
 .. autoclass:: SoftDeletable
    :show-inheritance:
    :members:
    
 
 .. autoclass:: ViewableSoftDeletableManager
-   :show-inheritance:
-   :members:
-
-
-.. autoclass:: MassMailer
    :show-inheritance:
    :members:
