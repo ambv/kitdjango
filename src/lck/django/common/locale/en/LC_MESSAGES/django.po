@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-10 17:53+0200\n"
+"POT-Creation-Date: 2011-10-02 19:25+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,6 +19,10 @@ msgstr ""
 
 #: __init__.py:174
 msgid "Try again"
+msgstr ""
+
+#: admin.py:59
+msgid "Edit separately"
 msgstr ""
 
 #: choices.py:302
@@ -1761,58 +1765,66 @@ msgstr ""
 msgid "unspecified"
 msgstr ""
 
-#: models.py:62 models.py:79
+#: models.py:64 models.py:81
 msgid "name"
 msgstr ""
 
-#: models.py:96 models.py:112
+#: models.py:98 models.py:114
 msgid "title"
 msgstr ""
 
-#: models.py:128 models.py:139
+#: models.py:130 models.py:141
 msgid "permalink"
 msgstr ""
 
-#: models.py:154
+#: models.py:171
 msgid "date created"
 msgstr ""
 
-#: models.py:156
+#: models.py:173
 msgid "last modified"
 msgstr ""
 
-#: models.py:158
+#: models.py:175
 msgid "cache version"
 msgstr ""
 
-#: models.py:215
+#: models.py:271
+msgid "save priorities"
+msgstr ""
+
+#: models.py:274
+msgid "highest save priority"
+msgstr ""
+
+#: models.py:354
 msgid "created by"
 msgstr ""
 
-#: models.py:218
+#: models.py:359
 msgid "modified by"
 msgstr ""
 
-#: models.py:240
+#: models.py:385
 msgid "language"
 msgstr ""
 
-#: models.py:254
+#: models.py:399
 msgid "is archived?"
 msgstr ""
 
-#: models.py:273
+#: models.py:418
 msgid "display count"
 msgstr ""
 
-#: models.py:317
+#: models.py:471
 msgid "deleted"
 msgstr ""
 
-#: models.py:318
+#: models.py:472
 msgid "if selected, this element is not available on the website"
 msgstr ""
 
-#: models.py:350
+#: models.py:504
 msgid "Enter a valid MAC address."
 msgstr ""
