@@ -499,6 +499,24 @@ class WithConcurrentGetOrCreate(object):
         return obj, created
 
 
+class VerboseNameGetter(object):
+    def __init__(self, model):
+        self.model = model
+
+    def __hasattr__(self, name):
+        try:
+            name = self.model._meta.get_field_by_name(name)[0].verbose_name
+            return True
+        except:
+            return False
+
+    def __getattr__(self, name):
+        try:
+            return self.model._meta.get_field_by_name(name)[0].verbose_name
+        except:
+            return None
+
+
 class MACAddressFormField(fields.RegexField):
     default_error_messages = {
         'invalid': _(u'Enter a valid MAC address.'),
