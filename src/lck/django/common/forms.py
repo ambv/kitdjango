@@ -58,9 +58,10 @@ class JQueryUIRadioInput(StrAndUnicode):
             final_attrs['checked'] = 'checked'
         return mark_safe(u'<input%s />' % flatatt(final_attrs))
 
+
 class JQueryUIRenderer(StrAndUnicode):
     """
-    A customized renderer for radio fields. 
+    A customized renderer for radio fields.
     """
 
     def __init__(self, name, value, attrs, choices):
