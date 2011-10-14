@@ -47,7 +47,7 @@ setup (
         'distribute',
         'django>=1.3',
         'postmarkup',
-        'PIL>=1.1.7',
+        'Pillow>=1.7.5',
         'python-memcached',
         #'pylibmc', # we'll switch at one point when libmemcached will be more
                     # prevalent on servers
