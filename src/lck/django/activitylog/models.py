@@ -106,9 +106,10 @@ class IP(TimeTrackable, WithConcurrentGetOrCreate):
         help_text=_("Presented as string."), unique=True,
         blank=True, null=True, default=None)
     number = db.BigIntegerField(verbose_name=_("IP address"),
-        help_text=_("Presented as int."), editable=False, unique=True)
+        help_text=_("Presented as int."), editable=False, unique=True,
+        null=True, blank=True, default=None)
     hostname = db.CharField(verbose_name=_("hostname"), max_length=255,
-        unique=True, null=True, blank=True, default=None)
+        null=True, blank=True, default=None)
     profiles = db.ManyToManyField(ACTIVITYLOG_PROFILE_MODEL,
         verbose_name=_("profiles"), help_text="", through="ProfileIP")
 
