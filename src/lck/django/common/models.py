@@ -542,8 +542,12 @@ class MACAddressField(db.Field):
         defaults.update(kwargs)
         return super(MACAddressField, self).formfield(**defaults)
 
-    def get_db_prep_value(self, value):
+    @staticmethod
+    def normalize(value):
         return filter(lambda ch: ch not in ':-', value).upper()
+
+    def get_db_prep_value(self, value):
+        return self.normalize(value)
 
 
 # For now this needs to be at the end of the file.
