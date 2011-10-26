@@ -29,10 +29,12 @@ from __future__ import unicode_literals
 from datetime import datetime, timedelta
 
 from django.conf import settings
+from django.contrib.sites.models import Site
 from django.core.cache import cache
+from django.db import models as db
 
 from lck.django.activitylog.models import UserAgent, IP, ProfileIP,\
-    ProfileUserAgent
+    ProfileUserAgent, Backlink
 from lck.django.common import remote_addr
 
 
@@ -42,20 +44,56 @@ class ActivityMiddleware(object):
     (one third of the seconds specified ``CURRENTLY_ONLINE_INTERVAL`` setting).
     """
 
-    def process_request(self, request):
-        # FIXME: use a single cache key with lck.django.cache to minimize
-        # writes to cache
+    def update_backlinks(self, request, current_site, now):
+        backlink, backlink_created = Backlink.concurrent_get_or_create(
+            site=current_site,
+            url=request.META['PATH_INFO'],
+            referrer=request.META['HTTP_REFERER'])
+        if not backlink_created:
+            # we're not using save() to bypass signals etc.
+            Backlink.objects.filter(id=backlink.id).update(modified=now,
+                visits=db.F('visits') + 1)
 
-        # FIXME: don't use concurrent_get_or_create for pip and pua to maximize
-        # performance
+    def process_request(self, request):
+        # FIXME: don't use concurrent_get_or_create for bl, pip and pua to
+        # maximize performance
         now = datetime.now()
         seconds = getattr(settings, 'CURRENTLY_ONLINE_INTERVAL', 120)
         delta = now - timedelta(seconds=seconds)
+        current_site = Site.objects.get(id=settings.SITE_ID)
+        try:
+            ref = request.META.get('HTTP_REFERER', '').split('//')[1]
+            if ref == current_site.domain or ref.startswith(
+                current_site.domain + '/'):
+                self.update_backlinks(request, current_site, now)
+        except IndexError:
+            pass
         users_online = cache.get('users_online', {})
         guests_online = cache.get('guests_online', {})
+        users_touched = False
+        guests_touched = False
         if request.user.is_authenticated():
             users_online[request.user.id] = now
+            users_touched = True
             profile = request.user.get_profile()
+        else:
+            guest_sid = request.COOKIES.get(settings.SESSION_COOKIE_NAME, '')
+            guests_online[guest_sid] = now
+            guests_touched = True
+            profile = None
+        for user_id in users_online.keys():
+            if users_online[user_id] < delta:
+                users_touched = True
+                del users_online[user_id]
+        if users_touched:
+            cache.set('users_online', users_online, 60*60*24)
+        for guest_id in guests_online.keys():
+            if guests_online[guest_id] < delta:
+                guests_touched = True
+                del guests_online[guest_id]
+        if guests_touched:
+            cache.set('guests_online', guests_online, 60*60*24)
+        if profile:
             last_active = profile.last_active
             if not last_active or 3 * (now - last_active).seconds > seconds:
                 # we're not using save() to bypass signals etc.
@@ -72,17 +110,3 @@ class ActivityMiddleware(object):
                 user=request.user, profile=profile)
             ProfileUserAgent.objects.filter(pk = pua.pk).update(
                 modified = now)
-        else:
-            guest_sid = request.COOKIES.get(settings.SESSION_COOKIE_NAME, '')
-            guests_online[guest_sid] = now
-
-        for user_id in users_online.keys():
-            if users_online[user_id] < delta:
-                del users_online[user_id]
-
-        for guest_id in guests_online.keys():
-            if guests_online[guest_id] < delta:
-                del guests_online[guest_id]
-
-        cache.set('users_online', users_online, 60*60*24)
-        cache.set('guests_online', guests_online, 60*60*24)

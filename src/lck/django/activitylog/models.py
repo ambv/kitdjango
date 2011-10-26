@@ -36,6 +36,7 @@ import socket
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
 from django.db import models as db
 from django.utils.translation import ugettext_lazy as _
 
@@ -88,7 +89,7 @@ class MonitoredActivity(db.Model):
 
 class UserAgent(TimeTrackable, WithConcurrentGetOrCreate):
     # those names can be over 350 characters in length
-    name = db.TextField(verbose_name=_("name"), unique=True)
+    name = db.TextField(verbose_name=_("name"), unique=True, db_index=True)
     profiles = db.ManyToManyField(ACTIVITYLOG_PROFILE_MODEL,
         verbose_name=_("profiles"), through="ProfileUserAgent", help_text="")
 
@@ -101,10 +102,9 @@ class UserAgent(TimeTrackable, WithConcurrentGetOrCreate):
 
 
 class IP(TimeTrackable, WithConcurrentGetOrCreate):
-    # FIXME: db_index anywhere?
     address = db.IPAddressField(verbose_name=_("IP address"),
         help_text=_("Presented as string."), unique=True,
-        blank=True, null=True, default=None)
+        blank=True, null=True, default=None, db_index=True)
     number = db.BigIntegerField(verbose_name=_("IP address"),
         help_text=_("Presented as int."), editable=False, unique=True,
         null=True, blank=True, default=None)
@@ -131,6 +131,21 @@ class IP(TimeTrackable, WithConcurrentGetOrCreate):
                       0x0000100 * int(c) + \
                       0x0000001 * int(d)
         super(IP, self).save(*args, **kwargs)
+
+
+class Backlink(TimeTrackable, WithConcurrentGetOrCreate):
+    site = db.ForeignKey(Site, verbose_name=_("site"))
+    url = db.URLField(verbose_name=_("URL"))
+    referrer = db.URLField(verbose_name=_("referrer"))
+    visits = db.PositiveIntegerField(verbose_name=_("visits"), default=1)
+
+    class Meta:
+        verbose_name = _("backlink")
+        verbose_name_plural = _("backlinks")
+        unique_together = ('site', 'url', 'referrer')
+
+    def __unicode__(self):
+        return self.url
 
 
 class M2M(TimeTrackable, WithConcurrentGetOrCreate):

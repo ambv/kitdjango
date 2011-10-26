@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-10 17:55+0200\n"
+"POT-Creation-Date: 2011-10-26 14:44+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,55 +23,78 @@ msgstr ""
 msgid "List of users"
 msgstr "Lista użytkowników"
 
-#: admin.py:44
-msgid "List of user agents"
-msgstr "Lista przeglądarek"
-
-#: admin.py:66 models.py:104 models.py:107 models.py:115 models.py:144
-#: models.py:148
+#: admin.py:71 models.py:105 models.py:108 models.py:117 models.py:161
+#: models.py:166
 msgid "IP address"
 msgstr "Adres IP"
 
-#: admin.py:79 models.py:96 models.py:156 models.py:160
+#: admin.py:84 models.py:97 models.py:174 models.py:179
 msgid "user agent"
 msgstr "przeglądarka"
 
-#: models.py:66
+#: models.py:67
 msgid "last active"
 msgstr "ostatnia aktywność"
 
-#: models.py:91
+#: models.py:92
 msgid "name"
 msgstr "nazwa"
 
-#: models.py:93 models.py:112
+#: models.py:94 models.py:114
 msgid "profiles"
 msgstr "profile"
 
-#: models.py:97 models.py:161
+#: models.py:98 models.py:180
 msgid "user agents"
 msgstr "przeglądarki"
 
-#: models.py:105
+#: models.py:106
 msgid "Presented as string."
 msgstr "Jako łańcuch znaków."
 
-#: models.py:108
+#: models.py:109
 msgid "Presented as int."
 msgstr "Jako liczba całkowita."
 
-#: models.py:109
+#: models.py:111
 msgid "hostname"
 msgstr "nazwa hosta"
 
-#: models.py:116 models.py:149
+#: models.py:118 models.py:167
 msgid "IP addresses"
 msgstr "adresy IP"
 
-#: models.py:135
+#: models.py:137
+msgid "site"
+msgstr "strona"
+
+#: models.py:138
+msgid "URL"
+msgstr ""
+
+#: models.py:139
+msgid "referrer"
+msgstr "odsyłacz"
+
+#: models.py:140
+msgid "visits"
+msgstr "wizyty"
+
+#: models.py:143
+msgid "backlink"
+msgstr "link zwrotny"
+
+#: models.py:144
+msgid "backlinks"
+msgstr "linki zwrotne"
+
+#: models.py:152
 msgid "user"
 msgstr "użytkownik"
 
-#: models.py:137
+#: models.py:154
 msgid "profile"
 msgstr "profil"
+
+#~ msgid "List of user agents"
+#~ msgstr "Lista przeglądarek"

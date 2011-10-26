@@ -31,7 +31,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from lck.django.common.admin import ModelAdmin
 
-from lck.django.activitylog.models import UserAgent, IP
+from lck.django.activitylog.models import UserAgent, IP, Backlink
 
 
 class IPAdmin(ModelAdmin):
@@ -53,6 +53,15 @@ class UserAgentAdmin(ModelAdmin):
     readonly_fields = ('profiles',)
 
 admin.site.register(UserAgent, UserAgentAdmin)
+
+
+class BacklinkAdmin(ModelAdmin):
+    list_display = ('url', 'referrer', 'visits', 'site')
+    list_filter = ('site',)
+    search_fields = ('url', 'referrer')
+    readonly_fields = ('visits',)
+
+admin.site.register(Backlink, BacklinkAdmin)
 
 
 class UserIPInline(admin.TabularInline):
