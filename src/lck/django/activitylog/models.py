@@ -138,6 +138,9 @@ class Backlink(TimeTrackable, WithConcurrentGetOrCreate):
     url = db.URLField(verbose_name=_("URL"))
     referrer = db.URLField(verbose_name=_("referrer"))
     visits = db.PositiveIntegerField(verbose_name=_("visits"), default=1)
+    verified = db.BooleanField(verbose_name=_("is verified?"), default=False,
+        help_text=_("Only verified backlinks should be visible on the "
+            "website."))
 
     class Meta:
         verbose_name = _("backlink")

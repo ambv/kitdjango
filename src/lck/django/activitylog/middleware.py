@@ -63,8 +63,8 @@ class ActivityMiddleware(object):
         current_site = Site.objects.get(id=settings.SITE_ID)
         try:
             ref = request.META.get('HTTP_REFERER', '').split('//')[1]
-            if ref == current_site.domain or ref.startswith(
-                current_site.domain + '/'):
+            if not (ref == current_site.domain or ref.startswith(
+                current_site.domain + '/')):
                 self.update_backlinks(request, current_site, now)
         except IndexError:
             pass
