@@ -53,7 +53,7 @@ class Command(NoArgsCommand):
             except URLError:
                 continue
             else:
-                backlink.verified = backlink.site.domain in data
+                backlink.verified = backlink.site.domain.encode('utf8') in data
                 if 'verified' in backlink.dirty_fields:
                     print(backlink.referrer, 'for URL', backlink.url,
                         '({} visits)'.format(backlink.visits),
