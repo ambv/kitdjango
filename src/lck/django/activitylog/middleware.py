@@ -44,7 +44,8 @@ class ActivityMiddleware(object):
     (one third of the seconds specified ``CURRENTLY_ONLINE_INTERVAL`` setting).
     """
 
-    def update_backlinks(self, request, current_site, now):
+    def update_backlinks(self, request, current_site):
+        now = datetime.now()
         backlink, backlink_created = Backlink.concurrent_get_or_create(
             site=current_site,
             url=request.META['PATH_INFO'],
@@ -60,14 +61,6 @@ class ActivityMiddleware(object):
         now = datetime.now()
         seconds = getattr(settings, 'CURRENTLY_ONLINE_INTERVAL', 120)
         delta = now - timedelta(seconds=seconds)
-        current_site = Site.objects.get(id=settings.SITE_ID)
-        try:
-            ref = request.META.get('HTTP_REFERER', '').split('//')[1]
-            if not (ref == current_site.domain or ref.startswith(
-                current_site.domain + '/')):
-                self.update_backlinks(request, current_site, now)
-        except IndexError:
-            pass
         users_online = cache.get('users_online', {})
         guests_online = cache.get('guests_online', {})
         users_touched = False
@@ -110,3 +103,14 @@ class ActivityMiddleware(object):
                 user=request.user, profile=profile)
             ProfileUserAgent.objects.filter(pk = pua.pk).update(
                 modified = now)
+
+    def process_response(self, request, response):
+        current_site = Site.objects.get(id=settings.SITE_ID)
+        try:
+            ref = request.META.get('HTTP_REFERER', '').split('//')[1]
+            if response.status_code // 100 == 2 and not \
+                (ref == current_site.domain or ref.startswith(
+                current_site.domain + '/')):
+                self.update_backlinks(request, current_site)
+        except IndexError:
+            pass

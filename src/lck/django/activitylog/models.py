@@ -136,7 +136,7 @@ class IP(TimeTrackable, WithConcurrentGetOrCreate):
 class Backlink(TimeTrackable, WithConcurrentGetOrCreate):
     site = db.ForeignKey(Site, verbose_name=_("site"))
     url = db.URLField(verbose_name=_("URL"), max_length=500)
-    referrer = db.URLField(verbose_name=_("referrer"))
+    referrer = db.URLField(verbose_name=_("referrer"), max_length=500)
     visits = db.PositiveIntegerField(verbose_name=_("visits"), default=1)
     verified = db.BooleanField(verbose_name=_("is verified?"), default=False,
         help_text=_("Only verified backlinks should be visible on the "
