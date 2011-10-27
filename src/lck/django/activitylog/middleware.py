@@ -114,3 +114,4 @@ class ActivityMiddleware(object):
                 self.update_backlinks(request, current_site)
         except IndexError:
             pass
+        return response
