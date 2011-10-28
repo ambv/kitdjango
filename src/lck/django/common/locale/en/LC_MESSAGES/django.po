@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-02 19:25+0200\n"
+"POT-Creation-Date: 2011-10-28 02:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,8 +21,18 @@ msgstr ""
 msgid "Try again"
 msgstr ""
 
-#: admin.py:59
+#: admin.py:77
 msgid "Edit separately"
+msgstr ""
+
+#: admin.py:272
+msgid "and"
+msgstr ""
+
+#: admin.py:274
+#, python-format
+msgid ""
+"Use the left field to do %(model_name)s lookups in the fields %(field_list)s."
 msgstr ""
 
 #: choices.py:302
@@ -1825,6 +1835,10 @@ msgstr ""
 msgid "if selected, this element is not available on the website"
 msgstr ""
 
-#: models.py:504
+#: models.py:522
 msgid "Enter a valid MAC address."
+msgstr ""
+
+#: templates/foreignkey_searchinput.html:5
+msgid "Lookup"
 msgstr ""

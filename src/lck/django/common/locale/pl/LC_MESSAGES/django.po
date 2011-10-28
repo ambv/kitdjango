@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-02 19:25+0200\n"
+"POT-Creation-Date: 2011-10-28 02:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,9 +23,19 @@ msgstr ""
 msgid "Try again"
 msgstr "Spróbuj ponownie"
 
-#: admin.py:59
+#: admin.py:77
 msgid "Edit separately"
 msgstr "Przejdź"
+
+#: admin.py:272
+msgid "and"
+msgstr "oraz"
+
+#: admin.py:274
+#, python-format
+msgid ""
+"Use the left field to do %(model_name)s lookups in the fields %(field_list)s."
+msgstr "Użyj lewego pola do wyszukania obiektu %(model_name)s przez atrybuty %(field_list)s."
 
 #: choices.py:302
 msgid "Afghanistan"
@@ -1828,9 +1838,13 @@ msgid "if selected, this element is not available on the website"
 msgstr ""
 "Jeżeli zaznaczone, ten wpis nie będzie dostępny do przeglądania w serwisie."
 
-#: models.py:504
+#: models.py:522
 msgid "Enter a valid MAC address."
 msgstr "Wpisz poprawny adres MAC."
+
+#: templates/foreignkey_searchinput.html:5
+msgid "Lookup"
+msgstr "Wyszukiwanie"
 
 #~ msgid "last active"
 #~ msgstr "ostatnia aktywność"
@@ -1840,9 +1854,6 @@ msgstr "Wpisz poprawny adres MAC."
 
 #~ msgid "Male"
 #~ msgstr "Mężczyzna"
-
-#~ msgid "any"
-#~ msgstr "dowolna"
 
 #~ msgid "Gender"
 #~ msgstr "Płeć"
