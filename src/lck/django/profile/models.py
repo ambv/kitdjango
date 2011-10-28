@@ -130,6 +130,9 @@ class BasicInfo(db.Model):
     def profile(self):
         return self
 
+    def is_authenticated(self):
+        return True
+
 
 class ActivationSupport(db.Model):
     """Adds an ``activation_token`` field."""
