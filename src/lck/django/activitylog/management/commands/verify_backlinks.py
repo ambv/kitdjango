@@ -26,10 +26,10 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from django.core.management.base import NoArgsCommand
 from optparse import make_option
 from urllib2 import urlopen, URLError
 
+from django.core.management.base import NoArgsCommand
 from lck.django.activitylog.models import Backlink
 
 
@@ -50,7 +50,7 @@ class Command(NoArgsCommand):
             try:
                 url = urlopen(backlink.referrer, timeout=30)
                 data = url.read()
-            except URLError:
+            except (URLError, IOError):
                 continue
             else:
                 backlink.verified = backlink.site.domain.encode('utf8') in data
