@@ -26,6 +26,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from httplib import HTTPException
 from optparse import make_option
 from urllib2 import urlopen, URLError
 
@@ -50,7 +51,7 @@ class Command(NoArgsCommand):
             try:
                 url = urlopen(backlink.referrer, timeout=30)
                 data = url.read()
-            except (URLError, IOError):
+            except (URLError, IOError, HTTPException):
                 continue
             else:
                 backlink.verified = backlink.site.domain.encode('utf8') in data
