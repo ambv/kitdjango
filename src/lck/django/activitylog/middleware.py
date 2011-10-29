@@ -49,7 +49,8 @@ class ActivityMiddleware(object):
         backlink, backlink_created = Backlink.concurrent_get_or_create(
             site=current_site,
             url=request.META['PATH_INFO'],
-            referrer=request.META['HTTP_REFERER'])
+            referrer=request.META['HTTP_REFERER'][:500]) # gotta draw the line
+                                                         # somewhere
         if not backlink_created:
             # we're not using save() to bypass signals etc.
             Backlink.objects.filter(id=backlink.id).update(modified=now,
