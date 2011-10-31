@@ -315,6 +315,7 @@ class ModelAdmin(ForeignKeyAutocompleteModelMixin,
 
     edit_separately = {} # overrides for the "Edit separately" button,
                          # in the form: {'field_name': Model}
+    filter_exclude = set()
 
     def __init__(self, *args, **kwargs):
         super(ModelAdmin, self).__init__(*args, **kwargs)
@@ -322,6 +323,7 @@ class ModelAdmin(ForeignKeyAutocompleteModelMixin,
         self._add_common_fields(('created_by', 'modified_by'))
 
     def _add_common_fields(self, fields):
+        fields = tuple([f for f in fields if f not in self.filter_exclude])
         model_fields = [field.name for field, model in
             self.model._meta.get_fields_with_model()]
         model_has_all_fields = all([arg in model_fields for arg in fields])

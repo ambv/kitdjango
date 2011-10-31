@@ -46,6 +46,7 @@ setup (
         'lck.i18n>=0.3.0',
         'distribute',
         'django>=1.3',
+        'django-celery',
         'postmarkup',
         'Pillow>=1.7.5',
         'python-memcached',
