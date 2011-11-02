@@ -148,6 +148,8 @@ def thumbnail(image, size):
             shorter = min(image.width, image.height)
             pil_image = pil_image.crop((shift, 0, shorter+shift, shorter))
         pil_image.thumbnail((width, height), Image.ANTIALIAS)
+        if pil_format == 'JPEG' and pil_image.mode != 'RGB':
+            pil_image = pil_image.convert('RGB')
         pil_image.save(thumb_filename, pil_format)
 
     return thumb_url
