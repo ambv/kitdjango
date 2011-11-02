@@ -142,6 +142,8 @@ def thumbnail(image, size):
     if create_new:
         pil_image = Image.open(file)
         pil_format = pil_image.format or 'JPEG'
+        if pil_format not in Image.SAVE:
+            pil_format = 'JPEG'
         if shift is not None:
             shorter = min(image.width, image.height)
             pil_image = pil_image.crop((shift, 0, shorter+shift, shorter))
