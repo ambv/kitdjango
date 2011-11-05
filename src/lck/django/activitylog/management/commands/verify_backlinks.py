@@ -81,5 +81,6 @@ class Command(NoArgsCommand):
             if 'status' in backlink.dirty_fields:
                 print(backlink.referrer, 'for URL', backlink.url,
                     '({} visits)'.format(backlink.visits),
-                    'is' if backlink.verified else 'IS NOT', 'verified.')
+                    'is' if backlink.status == BacklinkStatus.verified.id \
+                         else 'IS NOT', 'verified.')
                 backlink.save()
