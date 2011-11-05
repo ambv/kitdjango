@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-26 14:44+0200\n"
+"POT-Creation-Date: 2011-11-05 14:29+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,75 +21,107 @@ msgstr ""
 msgid "List of users"
 msgstr ""
 
-#: admin.py:71 models.py:105 models.py:108 models.py:117 models.py:161
-#: models.py:166
+#: admin.py:71 models.py:106 models.py:109 models.py:118 models.py:198
+#: models.py:203
 msgid "IP address"
 msgstr ""
 
-#: admin.py:84 models.py:97 models.py:174 models.py:179
+#: admin.py:84 models.py:98 models.py:211 models.py:216
 msgid "user agent"
 msgstr ""
 
-#: models.py:67
+#: models.py:68
 msgid "last active"
 msgstr ""
 
-#: models.py:92
+#: models.py:93
 msgid "name"
 msgstr ""
 
-#: models.py:94 models.py:114
+#: models.py:95 models.py:115
 msgid "profiles"
 msgstr ""
 
-#: models.py:98 models.py:180
+#: models.py:99 models.py:217
 msgid "user agents"
 msgstr ""
 
-#: models.py:106
+#: models.py:107
 msgid "Presented as string."
 msgstr ""
 
-#: models.py:109
+#: models.py:110
 msgid "Presented as int."
 msgstr ""
 
-#: models.py:111
+#: models.py:112
 msgid "hostname"
 msgstr ""
 
-#: models.py:118 models.py:167
+#: models.py:119 models.py:204
 msgid "IP addresses"
 msgstr ""
 
-#: models.py:137
-msgid "site"
-msgstr ""
-
-#: models.py:138
-msgid "URL"
-msgstr ""
-
-#: models.py:139
-msgid "referrer"
-msgstr ""
-
 #: models.py:140
-msgid "visits"
+msgid "unknown"
+msgstr ""
+
+#: models.py:141
+msgid "single verification failed"
+msgstr ""
+
+#: models.py:142
+msgid "two verifications failed"
 msgstr ""
 
 #: models.py:143
-msgid "backlink"
+msgid "three verifications failed"
 msgstr ""
 
 #: models.py:144
+msgid "verification terminally failed"
+msgstr ""
+
+#: models.py:145
+msgid "verified"
+msgstr ""
+
+#: models.py:146
+msgid "merged"
+msgstr ""
+
+#: models.py:172
+msgid "site"
+msgstr ""
+
+#: models.py:173
+msgid "URL"
+msgstr ""
+
+#: models.py:174
+msgid "referrer"
+msgstr ""
+
+#: models.py:175
+msgid "visits"
+msgstr ""
+
+#: models.py:176
+msgid "status"
+msgstr ""
+
+#: models.py:180
+msgid "backlink"
+msgstr ""
+
+#: models.py:181
 msgid "backlinks"
 msgstr ""
 
-#: models.py:152
+#: models.py:189
 msgid "user"
 msgstr ""
 
-#: models.py:154
+#: models.py:191
 msgid "profile"
 msgstr ""

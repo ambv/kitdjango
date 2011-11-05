@@ -56,8 +56,8 @@ admin.site.register(UserAgent, UserAgentAdmin)
 
 
 class BacklinkAdmin(ModelAdmin):
-    list_display = ('url', 'referrer', 'visits', 'site')
-    list_filter = ('site',)
+    list_display = ('url', 'referrer', 'status', 'visits', 'site')
+    list_filter = ('site', 'status')
     search_fields = ('url', 'referrer')
     readonly_fields = ('visits',)
 
