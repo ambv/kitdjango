@@ -28,10 +28,16 @@ from __future__ import unicode_literals
 
 from httplib import HTTPException
 from optparse import make_option
-from urllib2 import urlopen, URLError
+from urllib2 import Request, build_opener, URLError
 
+from django.conf import settings
 from django.core.management.base import NoArgsCommand
-from lck.django.activitylog.models import Backlink
+from lck.django.activitylog.models import Backlink, BacklinkStatus
+
+
+BACKLINK_VERIFICATION_USER_AGENT = getattr(settings,
+    'BACKLINK_VERIFICATION_USER_AGENT', 'Mozilla/5.0 (X11; Linux x86_64; '
+    'rv:7.0.1) Gecko/20100101 Firefox/7.0.1 lck.django')
 
 
 class Command(NoArgsCommand):
@@ -45,18 +51,35 @@ class Command(NoArgsCommand):
     def handle_noargs(self, **options):
         verify_all = options.get('all', False)
         backlinks = Backlink.objects.select_related()
-        if not verify_all:
-            backlinks = backlinks.filter(verified=False)
+        if verify_all:
+            # Merged backlinks won't probably correctly verify but they have
+            # been merged from verified backlinks anyway.
+            backlinks = backlinks.exclude(status=BacklinkStatus.merged.id)
+        else:
+            backlinks = backlinks.filter(status__in=BacklinkStatus.is_verifiable())
+        url_opener = build_opener()
         for backlink in backlinks:
             try:
-                url = urlopen(backlink.referrer, timeout=30)
-                data = url.read()
+                url = Request(backlink.referrer)
+                url.add_header('User-Agent',
+                    BACKLINK_VERIFICATION_USER_AGENT)
+                data = url_opener.open(url, timeout=20).read()
             except (URLError, IOError, HTTPException):
-                continue
+                verified = False
             else:
-                backlink.verified = backlink.site.domain.encode('utf8') in data
-                if 'verified' in backlink.dirty_fields:
-                    print(backlink.referrer, 'for URL', backlink.url,
-                        '({} visits)'.format(backlink.visits),
-                        'is' if backlink.verified else 'IS NOT', 'verified.')
-                    backlink.save()
+                verified = backlink.site.domain.encode('utf8') in data
+            if verified:
+                # don't have to care about merged since we exclude them anyway
+                backlink.status = BacklinkStatus.verified.id
+            else:
+                if backlink.status in BacklinkStatus.is_verified():
+                    backlink.status = BacklinkStatus.verification_failed1.id
+                elif backlink.status in BacklinkStatus.can_increment_failure_status():
+                    backlink.status += 1
+                else:
+                    backlink.status = BacklinkStatus.failed.id
+            if 'status' in backlink.dirty_fields:
+                print(backlink.referrer, 'for URL', backlink.url,
+                    '({} visits)'.format(backlink.visits),
+                    'is' if backlink.verified else 'IS NOT', 'verified.')
+                backlink.save()

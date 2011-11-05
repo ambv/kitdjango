@@ -42,6 +42,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from lck.cache import memoize
 from lck.django.common.models import TimeTrackable, WithConcurrentGetOrCreate
+from lck.django.choices import Choices
 
 
 ACTIVITYLOG_PROFILE_MODEL = getattr(settings, 'ACTIVITYLOG_PROFILE_MODEL',
@@ -133,6 +134,40 @@ class IP(TimeTrackable, WithConcurrentGetOrCreate):
         super(IP, self).save(*args, **kwargs)
 
 
+class BacklinkStatus(Choices):
+    _ = Choices.Choice
+
+    unknown = _("unknown")
+    verification_failed1 = _("single verification failed")
+    verifications_failed2 = _("two verifications failed")
+    verifications_failed3 = _("three verifications failed")
+    failed = _("verification terminally failed")
+    verified = _("verified")
+    merged = _("merged")
+
+    @classmethod
+    @Choices.ToIDs
+    def is_verifiable(cls):
+        return (cls.unknown, cls.verification_failed1, cls.verification_failed2,
+            cls.verification_failed3)
+
+    @classmethod
+    @Choices.ToIDs
+    def is_partially_failed(cls):
+        return (cls.verification_failed1, cls.verification_failed2,
+            cls.verification_failed3)
+
+    @classmethod
+    @Choices.ToIDs
+    def can_increment_failure_status(cls):
+        return (cls.unknown, cls.verification_failed1, cls.verification_failed2)
+
+    @classmethod
+    @Choices.ToIDs
+    def is_verified(cls):
+        return (cls.verified, cls.merged)
+
+
 class Backlink(TimeTrackable, WithConcurrentGetOrCreate):
     site = db.ForeignKey(Site, verbose_name=_("site"))
     url = db.URLField(verbose_name=_("URL"), max_length=500)
@@ -141,6 +176,8 @@ class Backlink(TimeTrackable, WithConcurrentGetOrCreate):
     verified = db.BooleanField(verbose_name=_("is verified?"), default=False,
         help_text=_("Only verified backlinks should be visible on the "
             "website."))
+    status = db.PositiveIntegerField(verbose_name=_("status"),
+        choices=BacklinkStatus(), default=BacklinkStatus.unknown.id)
 
     class Meta:
         verbose_name = _("backlink")
