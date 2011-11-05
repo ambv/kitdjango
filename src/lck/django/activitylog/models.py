@@ -139,8 +139,8 @@ class BacklinkStatus(Choices):
 
     unknown = _("unknown")
     verification_failed1 = _("single verification failed")
-    verifications_failed2 = _("two verifications failed")
-    verifications_failed3 = _("three verifications failed")
+    verification_failed2 = _("two verifications failed")
+    verification_failed3 = _("three verifications failed")
     failed = _("verification terminally failed")
     verified = _("verified")
     merged = _("merged")
