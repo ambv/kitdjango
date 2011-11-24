@@ -75,9 +75,11 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from threading import local
 import time
 
 from django.core.cache import cache
+from django.core.cache.backends.memcached import BaseMemcachedCache
 from django.conf import settings
 
 from lck.concurrency import synchronized
@@ -86,6 +88,7 @@ CACHE_MINT_DELAY = getattr(settings, 'CACHE_MINT_DELAY', 30)
 CACHE_DEFAULT_TIMEOUT = getattr(settings, 'CACHE_DEFAULT_TIMEOUT', 300)
 CACHE_FILELOCK_PATH = getattr(settings, 'CACHE_FILELOCK_PATH',
     '/tmp/langacore_django_cache.lock')
+CACHE_MIN_COMPRESS_LEN = getattr(settings, 'CACHE_MIN_COMPRESS_LEN', 131072)
 
 
 @synchronized(path=CACHE_FILELOCK_PATH)
@@ -150,3 +153,48 @@ def delete(key):
     """
 
     return cache.delete(key)
+
+
+class PyLibMCCache(BaseMemcachedCache):
+    "An implementation of the cache binding using pylibmc with compression, etc."
+    def __init__(self, server, params):
+        import pylibmc
+        self._local = local()
+        super(PyLibMCCache, self).__init__(server, params,
+                                           library=pylibmc,
+                                           value_not_found_exception=pylibmc.NotFound)
+
+    @property
+    def _cache(self):
+        # PylibMC uses cache options as the 'behaviors' attribute.
+        # It also needs to use threadlocals, because some versions of
+        # PylibMC don't play well with the GIL.
+        client = getattr(self._local, 'client', None)
+        if client:
+            return client
+
+        client = self._lib.Client(self._servers)
+        if self._options:
+            client.behaviors = self._options
+
+        self._local.client = client
+
+        return client
+
+    def add(self, key, value, timeout=0, version=None):
+        key = self.make_key(key, version=version)
+        return self._cache.add(key, value, self._get_memcache_timeout(timeout),
+            min_compress_len=CACHE_MIN_COMPRESS_LEN)
+
+    def set(self, key, value, timeout=0, version=None):
+        key = self.make_key(key, version=version)
+        self._cache.set(key, value, self._get_memcache_timeout(timeout),
+            min_compress_len=CACHE_MIN_COMPRESS_LEN)
+
+    def set_many(self, data, timeout=0, version=None):
+        safe_data = {}
+        for key, value in data.items():
+            key = self.make_key(key, version=version)
+            safe_data[key] = value
+        self._cache.set_multi(safe_data, self._get_memcache_timeout(timeout),
+            min_compress_len=CACHE_MIN_COMPRESS_LEN)
