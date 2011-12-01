@@ -30,13 +30,14 @@ import operator
 
 from django import forms
 from django.conf import settings
+from django.conf.urls.defaults import patterns, url
 from django.contrib import admin
 from django.contrib.admin.widgets import ForeignKeyRawIdWidget
 from django.core.urlresolvers import reverse, NoReverseMatch
 from django.db import models as db
 from django.db.models.query import QuerySet
 from django.forms.widgets import Select
-from django.http import HttpResponse, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 from django.template.loader import render_to_string
 from django.utils.functional import update_wrapper
 from django.utils.encoding import smart_str
@@ -313,6 +314,7 @@ class ModelAdmin(ForeignKeyAutocompleteModelMixin,
     """Just like admin.ModelAdmin but silently implements a bunch of updates
     for lck.django needs."""
 
+    buttons = ()
     edit_separately = {} # overrides for the "Edit separately" button,
                          # in the form: {'field_name': Model}
     filter_exclude = set()
@@ -335,6 +337,26 @@ class ModelAdmin(ForeignKeyAutocompleteModelMixin,
             ffo[db.ForeignKey] = {'widget': LinkedSelect(model=self.model,
                 overrides=self.edit_separately)}
         self.formfield_overrides = ffo
+
+    def _button_view_dispatcher(self, request, object_id, command):
+        obj = self.model._default_manager.get(pk=object_id)
+        return getattr(self, command)(request, obj) \
+            or HttpResponseRedirect(request.META['HTTP_REFERER'])
+
+    def change_view(self, request, object_id, extra_context={}):
+        extra_context['buttons'] = [(b.func_name, b.short_description)
+            for b in self.buttons]
+        return super(ModelAdmin, self).change_view(request,
+            object_id, extra_context)
+
+    def get_urls(self):
+        def wrap(view):
+            def wrapper(*args, **kwargs):
+                return self.admin_site.admin_view(view)(*args, **kwargs)
+            return update_wrapper(wrapper, view)
+        return patterns('', *(url(r'^(\d+)/(%s)/$' % but.func_name,
+                wrap(self._button_view_dispatcher)) for but in self.buttons)
+                ) + super(ModelAdmin, self).get_urls()
 
     def save_model(self, request, obj, form, change):
         if hasattr(obj, 'pre_save_model'):
