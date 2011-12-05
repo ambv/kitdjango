@@ -343,7 +343,9 @@ class ModelAdmin(ForeignKeyAutocompleteModelMixin,
         return getattr(self, command)(request, obj) \
             or HttpResponseRedirect(request.META['HTTP_REFERER'])
 
-    def change_view(self, request, object_id, extra_context={}):
+    def change_view(self, request, object_id, extra_context=None):
+        if extra_context is None:
+            extra_context = {}
         extra_context['buttons'] = [(b.func_name, b.short_description)
             for b in self.buttons]
         return super(ModelAdmin, self).change_view(request,
