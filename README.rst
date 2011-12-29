@@ -73,6 +73,26 @@ behaviour which I consider ugly.
 Change Log
 ----------
 
+0.6.2
+~~~~~
+
+* ``MACAddressField`` normalization bug fixed
+
+0.6.1
+~~~~~
+
+* buttonable Django admin with ``ModelAdmin``
+
+* "Edit separately" links for ForeignKey fields supported in ``ModelAdmin``
+
+* compressing ``PyLibMCCache`` backend in ``lck.django.cache_backends``
+
+* backlinks support in ``activitylog``
+
+* images crushed and optimized
+
+* use Pillow instead of PIL
+
 0.6.0
 ~~~~~
 
