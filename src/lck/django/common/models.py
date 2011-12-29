@@ -544,7 +544,7 @@ class MACAddressField(db.Field):
 
     @staticmethod
     def normalize(value):
-        return filter(lambda ch: ch not in ':-', value).upper()
+        return ''.join(c for c in value if c not in ':-').upper()
 
     def get_db_prep_value(self, value):
         return self.normalize(value)
