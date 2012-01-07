@@ -241,13 +241,15 @@ def timediff(timestamp, language='pl'):
         weeks = days // 7
         if weeks >= 4:
             years = int((days + 1) // 365.25)
-            months = 12 * years + now.month - timestamp.month
+            months = now.month - timestamp.month
+            if months < 0:
+                months += 12
             if timestamp.day > now.day:
                 months -= 1
         else:
             years, months = 0, 0
-        hours = delta.seconds//3600
-        minutes = delta.seconds%3600//60
+        hours = delta.seconds // 3600
+        minutes = delta.seconds % 3600 // 60
         for interval in forms:
             if interval in locals() and locals()[interval]:
                 return timediff_format(locals()[interval], forms[interval], tense)
