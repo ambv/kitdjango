@@ -73,6 +73,11 @@ behaviour which I consider ugly.
 Change Log
 ----------
 
+0.6.3
+~~~~~
+
+* fixed an embarassing bug with the human-readable ``timediff`` filter
+
 0.6.2
 ~~~~~
 
