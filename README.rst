@@ -73,6 +73,11 @@ behaviour which I consider ugly.
 Change Log
 ----------
 
+0.6.4
+~~~~~
+
+* ``ImageModel`` introduced
+
 0.6.3
 ~~~~~
 

@@ -113,6 +113,6 @@ class ActivityMiddleware(object):
                 (ref == current_site.domain or ref.startswith(
                 current_site.domain + '/')):
                 self.update_backlinks(request, current_site)
-        except IndexError:
+        except (IndexError, UnicodeDecodeError):
             pass
         return response

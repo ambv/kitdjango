@@ -35,6 +35,7 @@ from __future__ import unicode_literals
 
 from collections import defaultdict
 from datetime import datetime
+from functools import partial
 from hashlib import sha256
 import re
 
@@ -47,6 +48,7 @@ from django.db import IntegrityError, transaction
 from django.db import models as db
 from django.forms import fields
 from django.template.defaultfilters import urlencode
+from django.utils.translation import ugettext
 from django.utils.translation import ugettext_lazy as _
 
 from lck.django.choices import Language
@@ -333,6 +335,29 @@ class SavePrioritized(TimeTrackable):
         self.update_save_priorities(priorities)
         super(SavePrioritized, self).save(*args, **kwargs)
         # FIXME: should this restore the values that were changed or not?
+
+
+class ImageModel(Titled, Slugged, TimeTrackable):
+    """Describes image objects. Usage::
+
+        class Icon(ImageModel):
+            image = ImageModel.image_field(upload_to='icons', etc.)
+    """
+    height = db.PositiveIntegerField(verbose_name=_("height"), default=0,
+            editable=False)
+    width = db.PositiveIntegerField(verbose_name=_("width"), default=0,
+            editable=False)
+    image_field = partial(db.ImageField, verbose_name=_("file"),
+            height_field='height', width_field='width', max_length=200)
+
+    def __unicode__(self):
+        if not self.image:
+            return ugettext("new image")
+        format = self.title, self.width, self.height, self.image.size/1024
+        return "%s (%dx%d, %d kB)" % format
+
+    class Meta:
+        abstract = True
 
 
 class EditorTrackable(db.Model):
