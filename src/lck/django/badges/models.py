@@ -47,7 +47,8 @@ class BadgeMetadata(Named.NonUnique, TimeTrackable):
     description = db.TextField(verbose_name=_("description"),
         null=True, blank=True, default=None)
     callback = db.CharField(verbose_name=_("Python callback"), max_length=100,
-        help_text=_("path to a Python function that will award/discard badges"))
+        help_text=_("path to a Python function that will award/discard badges"),
+        blank=True, default="")
 
     class Meta:
         abstract = True
@@ -83,6 +84,9 @@ class BadgeType(BadgeMetadata):
         verbose_name = _("badge type")
         verbose_name_plural = _("badge types")
 
+    def get_description(self):
+        return self.description or self.group.description or ""
+
 
 class Badge(TimeTrackable, EditorTrackable):
     """A single badge given to an `owner` for a certain action on
@@ -92,19 +96,22 @@ class Badge(TimeTrackable, EditorTrackable):
         related_name="%(app_label)s_%(class)s_owned_received")
     owner_oid = db.IntegerField(verbose_name=_("owner (instance id)"),
         db_index=True)
-    owner = GenericForeignKey()
+    owner = GenericForeignKey('owner_ct', 'owner_oid')
     subject_ct = db.ForeignKey(ContentType, verbose_name=_("subject (content type)"),
-        related_name="%(app_label)s_%(class)s_badges_given")
+        related_name="%(app_label)s_%(class)s_badges_given",
+        null=True, blank=True, default=None)
     subject_oid = db.IntegerField(verbose_name=_("subject (instance id)"),
-        db_index=True)
-    subject = GenericForeignKey()
+        db_index=True, null=True, blank=True, default=None)
+    subject = GenericForeignKey('subject_ct', 'subject_oid')
     comment = db.TextField(verbose_name=_("editor comment"),
         null=True, blank=True, default=None)
-
 
     class Meta:
         verbose_name = _("badge")
         verbose_name_plural = _("badges")
+
+    def __unicode__(self):
+        return "{} (o: {}, s: {})".format(self.type, self.owner, self.subject) 
 
     @classmethod
     def find_by_group(cls, group, owner, subject=None):
@@ -115,12 +122,17 @@ class Badge(TimeTrackable, EditorTrackable):
         return cls._find_badge('type__key', type, owner, subject)
 
     @classmethod
+    def find_by_owner(cls, owner, subject=None):
+        return cls._find_badge(None, None, owner, subject)
+
+    @classmethod
     def _find_badge(cls, key, value, owner, subject=None):
         filter = {
-            key: value,
             'owner_ct': ContentType.objects.get_for_model(owner.__class__),
             'owner_oid': owner.pk,
         }
+        if value is not None:
+            filter[key] = value
         if subject:
             filter['subject_ct'] = ContentType.objects.get_for_model(
                 subject.__class__)
@@ -132,6 +144,15 @@ class Badge(TimeTrackable, EditorTrackable):
         if badge_count == 1:
             return badge[0] # a single object
         return None
+
+    @classmethod
+    def _create(cls, type, owner, subject):
+        # convoluted because of Django bugs #7551 and #12316
+        badge = Badge(type=type)
+        badge.owner = owner
+        if subject:
+            badge.subject = subject
+        return badge
 
     @classmethod
     def award(cls, type, owner, subject=None, duplicate=False):
@@ -152,12 +173,12 @@ class Badge(TimeTrackable, EditorTrackable):
             subject=subject)
         if (not old_badge or old_badge.subject != subject) or \
            (badge_type.group.multiple_allowed and duplicate):
-            badge = Badge(type=badge_type, owner=owner, subject=subject)
+            badge = Badge._create(type=badge_type, owner=owner, subject=subject)
             badge.save()
             return badge
         if old_badge.type != badge_type:
             old_badge.delete()
-            badge = Badge(type=badge_type, owner=owner, subject=subject)
+            badge = Badge._create(type=badge_type, owner=owner, subject=subject)
             badge.save()
             return badge
         return None
@@ -165,12 +186,13 @@ class Badge(TimeTrackable, EditorTrackable):
 
 def update_type(type, **kwargs):
     """Send a badge type callback task through Celery."""
-    _do_update(BadgeType.objects.get(pk=type).callback, **kwargs)
+    badge_type = BadgeType.objects.get(pk=type)
+    _do_update(badge_type.callback or badge_type.group.callback, **kwargs)
 
 
 def update_group(group, **kwargs):
     """Send a badge group callback task through Celery."""
-    _do_update(BadgeType.objects.get(pk=type).callback, **kwargs)
+    _do_update(BadgeGroup.objects.get(pk=group).callback, **kwargs)
 
 
 def _do_update(callback, **kwargs):
