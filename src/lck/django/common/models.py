@@ -63,7 +63,7 @@ DEFAULT_SAVE_PRIORITY = getattr(settings, 'DEFAULT_SAVE_PRIORITY', 0)
 class Named(db.Model):
     """Describes an abstract model with a unique ``name`` field."""
 
-    name = db.CharField(verbose_name=_("name"), max_length=50, unique=True,
+    name = db.CharField(verbose_name=_("name"), max_length=75, unique=True,
         db_index=True)
 
     class Meta:
@@ -80,7 +80,7 @@ class Named(db.Model):
     class NonUnique(db.Model):
         """Describes an abstract model with a non-unique ``name`` field."""
 
-        name = db.CharField(verbose_name=_("name"), max_length=50)
+        name = db.CharField(verbose_name=_("name"), max_length=75)
 
         class Meta:
             abstract = True
