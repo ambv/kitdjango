@@ -78,6 +78,8 @@ Change Log
 
 * ``ImageModel`` introduced
 
+* ``Named`` models name field extended to 75 characters of length
+
 0.6.3
 ~~~~~
 
