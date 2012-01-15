@@ -98,12 +98,13 @@ class ActivityMiddleware(object):
                 user=request.user, profile=profile)
             ProfileIP.objects.filter(pk = pip.pk).update(
                 modified = now)
-            agent, _ = UserAgent.concurrent_get_or_create(
-                name=request.META['HTTP_USER_AGENT'])
-            pua, _ = ProfileUserAgent.concurrent_get_or_create(agent=agent,
-                user=request.user, profile=profile)
-            ProfileUserAgent.objects.filter(pk = pua.pk).update(
-                modified = now)
+            if 'HTTP_USER_AGENT' in request.META:
+                agent, _ = UserAgent.concurrent_get_or_create(
+                    name=request.META['HTTP_USER_AGENT'])
+                pua, _ = ProfileUserAgent.concurrent_get_or_create(agent=agent,
+                    user=request.user, profile=profile)
+                ProfileUserAgent.objects.filter(pk = pua.pk).update(
+                    modified = now)
 
     def process_response(self, request, response):
         current_site = Site.objects.get(id=settings.SITE_ID)
