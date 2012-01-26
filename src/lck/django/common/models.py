@@ -554,6 +554,7 @@ class MACAddressFormField(fields.RegexField):
 
 class MACAddressField(db.Field):
     empty_strings_allowed = False
+    allowed_characters = "0123456789ABCDEF"
 
     def __init__(self, *args, **kwargs):
         kwargs['max_length'] = 17
@@ -567,9 +568,33 @@ class MACAddressField(db.Field):
         defaults.update(kwargs)
         return super(MACAddressField, self).formfield(**defaults)
 
-    @staticmethod
-    def normalize(value):
-        return ''.join(c for c in value if c not in ':-').upper()
+    @classmethod
+    def normalize(cls, value):
+        for sep in ':-':
+            _parts = value.split(':', 6)
+            if len(_parts) == 6:
+                parts = []
+                for part in _parts:
+                    p = part.strip().lstrip('0').upper()
+                    if len(p) == 0:
+                        p = '00'
+                    elif len(p) == 1:
+                        p = '0' + p
+                    elif len(p) > 2:
+                        raise ValueError("Invalid octet '{}' in MAC address: "
+                            "{}".format(p, value))
+                    parts.append(p)
+                break # found
+        else:
+            if len(value) == 12:
+                parts = [value.upper()]
+            else:
+                raise ValueError("Invalid MAC address: {}".format(value))
+        result = ''.join(p for p in parts)
+        for char in result:
+            if char not in cls.allowed_characters:
+                raise ValueError("Invalid MAC address: {}".format(value))
+        return result
 
     def get_db_prep_value(self, value):
         return self.normalize(value)

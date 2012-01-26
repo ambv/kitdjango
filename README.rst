@@ -73,6 +73,11 @@ behaviour which I consider ugly.
 Change Log
 ----------
 
+0.6.5
+~~~~~
+
+* more rigorous normalization of MAC addresses in ``MACAddressField``
+
 0.6.4
 ~~~~~
 
