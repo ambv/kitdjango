@@ -570,8 +570,10 @@ class MACAddressField(db.Field):
 
     @classmethod
     def normalize(cls, value):
-        for sep in ':-':
-            _parts = value.split(':', 6)
+        if not value:
+            return None
+        for sep in ':-.':
+            _parts = value.split(sep, 6)
             if len(_parts) == 6:
                 parts = []
                 for part in _parts:
@@ -582,21 +584,24 @@ class MACAddressField(db.Field):
                         p = '0' + p
                     elif len(p) > 2:
                         raise ValueError("Invalid octet '{}' in MAC address: "
-                            "{}".format(p, value))
+                            "'{}'".format(p, value))
                     parts.append(p)
                 break # found
         else:
+            value = value.strip()
             if len(value) == 12:
                 parts = [value.upper()]
+            elif not len(value):
+                return None
             else:
-                raise ValueError("Invalid MAC address: {}".format(value))
+                raise ValueError("Invalid MAC address: '{}'".format(value))
         result = ''.join(p for p in parts)
         for char in result:
             if char not in cls.allowed_characters:
-                raise ValueError("Invalid MAC address: {}".format(value))
-        return result
+                raise ValueError("Invalid MAC address: '{}'".format(value))
+        return result or None
 
-    def get_db_prep_value(self, value):
+    def get_prep_value(self, value):
         return self.normalize(value)
 
 

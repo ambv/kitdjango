@@ -73,6 +73,12 @@ behaviour which I consider ugly.
 Change Log
 ----------
 
+0.6.6
+~~~~~
+
+* ``MACAddressField`` MAC address normalization ignores empty values, supports
+  Cisco ``0000.0000.0000`` notation and fixes a minor regression from 0.6.5
+
 0.6.5
 ~~~~~
 
