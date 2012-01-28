@@ -167,3 +167,16 @@ class BasicAuthMiddleware(object):
                                     settings.BASICAUTH_PASSWORD):
             return
         return self.unauthorized()
+
+
+class SessionAwareLanguageMiddleware(object):
+    """If the request is provided with a ?lang GET argument, change
+    the language accordingly."""
+
+    def process_request(self, request):
+        if 'lang' in request.GET:
+            request.session['_language_code'] = request.GET['lang']
+        if '_language_code' in request.session:
+            request.LANG = request.session['_language_code']
+            translation.activate(request.LANG)
+            request.LANGUAGE_CODE = request.LANG
