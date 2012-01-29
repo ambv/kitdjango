@@ -187,6 +187,15 @@ class TaggableBase(db.Model):
         distance.sort(key=lambda elem: elem[1])
         return distance
 
+    def get_tags(self, official=True, author=None, language=None):
+        """get_tags([official, author, language]) -> [TagStem, TagStem, ...]
+
+        A convenience getter for tags on the current taggable. By default gets
+        the `official` tags by no specific `author` and in any `language`."""
+        return TagStem.objects.get_queryset_for_model(self.__class__, self,
+            official=official, author=author, language=language).extra(
+                select={'lname': 'lower(tags_tagstem.name)'}).order_by('lname')
+
     class Meta:
         abstract = True
 
@@ -212,7 +221,7 @@ class Taggable(TaggableBase):
         if hasattr(self, 'default_tags_author'):
             author_lookup_fields = [getattr(self, 'default_tags_author')]
         else:
-            author_lookup_fields = ['author', 'user', 'sender']
+            author_lookup_fields = ['created_by', 'author', 'user', 'sender']
         for field_name in author_lookup_fields:
             try:
                 _author = getattr(self, field_name)
