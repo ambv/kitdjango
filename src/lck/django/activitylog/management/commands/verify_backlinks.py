@@ -65,7 +65,7 @@ class Command(NoArgsCommand):
         url_opener = build_opener()
         for backlink in backlinks:
             try:
-                url = Request(backlink.referrer)
+                url = Request(backlink.referrer.encode('utf8'))
                 url.add_header('User-Agent',
                     BACKLINK_VERIFICATION_USER_AGENT)
                 data = url_opener.open(url, timeout=20).read()
