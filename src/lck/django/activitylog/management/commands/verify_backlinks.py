@@ -34,6 +34,11 @@ from django.conf import settings
 from django.core.management.base import NoArgsCommand
 from lck.django.activitylog.models import Backlink, BacklinkStatus
 
+from __builtin__ import print as builtin_print
+
+def print(*args, **kwargs):
+    builtin_print(*[s.encode('utf8') for s in args], **kwargs)
+
 
 BACKLINK_VERIFICATION_USER_AGENT = getattr(settings,
     'BACKLINK_VERIFICATION_USER_AGENT', 'Mozilla/5.0 (X11; Linux x86_64; '
