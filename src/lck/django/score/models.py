@@ -43,6 +43,7 @@ from django.db import models as db
 from django.utils.translation import ugettext_lazy as _
 
 from lck.django.common.models import TimeTrackable
+from lck.django.score.signals import total_score_changed
 
 
 SCORE_VOTER_MODEL = getattr(settings, 'SCORE_VOTER_MODEL', User)
@@ -58,6 +59,10 @@ class TotalScore(db.Model):
     object_id = db.IntegerField(verbose_name=_("Content type instance id"),
         db_index=True)
     content_object = GenericForeignKey()
+
+    class Meta:
+        verbose_name = _("total score")
+        verbose_name_plural = _("total scores")
 
     def __unicode__(self):
         return "Total score for ({}.id={}): {}".format(self.content_type,
@@ -138,10 +143,6 @@ class TotalScore(db.Model):
                 result += vote.value
         return result
 
-    class Meta:
-        verbose_name = _("total score")
-        verbose_name_plural = _("total scores")
-
 
 class Vote(TimeTrackable):
     """A single vote. Total score value is updated upon creation and alteration
@@ -151,16 +152,21 @@ class Vote(TimeTrackable):
     value = db.IntegerField(verbose_name=_("value"), default=1, db_index=True)
     reason = db.TextField(verbose_name=_("reason"), blank=True, default="")
 
+    class Meta:
+        verbose_name = _("vote")
+        verbose_name_plural = _("votes")
+        unique_together = ['total_score', 'voter']
+
     def __unicode__(self):
         score_repr = ("+{}" if self.value > 0 else "{}").format(self.value)
         return "Vote {} for ({}.id={}) by {}".format(score_repr,
             self.total_score.content_type, self.total_score.object_id,
             self.voter)
 
-    class Meta:
-        verbose_name = _("vote")
-        verbose_name_plural = _("votes")
-        unique_together = ['total_score', 'voter']
+
+def dispatch_total_score_changed(total_score):
+    total_score_changed.send_robust(sender=TotalScore,
+        content_object=total_score.content_object, value=total_score.value)
 
 
 def vote_pre_save(sender, instance, **kwargs):
@@ -177,9 +183,15 @@ def vote_pre_save(sender, instance, **kwargs):
 db.signals.pre_save.connect(vote_pre_save, Vote)
 
 
+def vote_post_save(sender, instance, **kwargs):
+    dispatch_total_score_changed(instance.total_score)
+db.signals.post_save.connect(vote_post_save, Vote)
+
+
 def vote_post_delete(sender, instance, **kwargs):
     """Decreases total score value by the value of the currently removed
     object."""
     instance.total_score.value -= instance.value
     instance.total_score.save()
+    dispatch_total_score_changed(instance.total_score)
 db.signals.post_delete.connect(vote_post_delete, Vote)
