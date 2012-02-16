@@ -158,11 +158,19 @@ class BasicAuthMiddleware(object):
         if 'HTTP_AUTHORIZATION' not in request.META:
             return self.unauthorized()
         authentication = request.META['HTTP_AUTHORIZATION']
-        (authmeth, auth) = authentication.split(' ',1)
+        try:
+            authmeth, auth = authentication.split(' ', 1)
+        except Exception:
+            # Russian script kiddies and their invalid headers
+            return self.unauthorized()
         if authmeth.lower() != 'basic':
             return self.unauthorized()
         auth = auth.strip().decode('base64')
-        username, password = auth.split(':',1)
+        try:
+            username, password = auth.split(':', 1)
+        except UnicodeDecodeError:
+            # Russian script kiddies and their strange encodings
+            return self.unauthorized()
         if (username, password) == (settings.BASICAUTH_USERNAME,
                                     settings.BASICAUTH_PASSWORD):
             return
