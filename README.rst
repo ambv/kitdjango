@@ -73,6 +73,15 @@ behaviour which I consider ugly.
 Change Log
 ----------
 
+0.6.7
+~~~~~
+
+* ``lck.django.score``: send a signal on total score change (allows for caching
+  strategies on the app side)
+
+* ``maxid`` management command introduced: for every registered model returns
+  the current maximum value for primary keys 
+
 0.6.6
 ~~~~~
 
