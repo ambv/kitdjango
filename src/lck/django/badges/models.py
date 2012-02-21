@@ -111,7 +111,7 @@ class Badge(TimeTrackable, EditorTrackable):
         verbose_name_plural = _("badges")
 
     def __unicode__(self):
-        return "{} (o: {}, s: {})".format(self.type, self.owner, self.subject) 
+        return "{} (o: {}, s: {})".format(self.type, self.owner, self.subject)
 
     @classmethod
     def find_by_group(cls, group, owner, subject=None):
@@ -138,11 +138,8 @@ class Badge(TimeTrackable, EditorTrackable):
                 subject.__class__)
             filter['subject_oid'] = subject.pk
         badge = Badge.objects.filter(**filter)
-        badge_count = badge.count()
-        if badge_count > 1:
-            return badge # queryset
-        if badge_count == 1:
-            return badge[0] # a single object
+        if badge.exists():
+            return badge
         return None
 
     @classmethod
@@ -155,29 +152,36 @@ class Badge(TimeTrackable, EditorTrackable):
         return badge
 
     @classmethod
-    def award(cls, type, owner, subject=None, duplicate=False):
+    def award(cls, type, owner, subject=None):
         """Award a badge of a specified `type` to an `owner` for actions
         on a specific `subject`.
 
         If there is an existing badge of the same group and the same type,
         no other badge is awarded unless `multiple_allowed` is set on the
-        badge group and `duplicate` is ``True``.
+        badge group.
 
         If there is an existing badge of the same group but of a different
         type, it is "upgraded" to the current type unless `multiple_allowed`
-        is set on the badge and `duplicate` is ``True``. In the latter case
-        a duplicate badge is awarded.
+        is set on the badge group. In the latter case a duplicate badge is
+        awarded.
         """
         badge_type = BadgeType.objects.get(pk=type)
-        old_badge = Badge.find_by_group(badge_type.group.key, owner=owner,
+        old_badges = Badge.find_by_group(badge_type.group.key, owner=owner,
             subject=subject)
-        if (not old_badge or old_badge.subject != subject) or \
-           (badge_type.group.multiple_allowed and duplicate):
-            badge = Badge._create(type=badge_type, owner=owner, subject=subject)
-            badge.save()
-            return badge
-        if old_badge.type != badge_type:
-            old_badge.delete()
+        create_badge = False
+        if badge_type.group.multiple_allowed:
+            create_badge = True
+        else:
+            # delete badge versions which are to be upgraded
+            old_badges.exclude(type=badge_type).delete()
+            if old_badges.exists():
+                # leave a single badge
+                for outdated in old_badges[1:]:
+                    outdated.delete()
+                return old_badges[0]
+            else:
+                create_badge = True
+        if create_badge:
             badge = Badge._create(type=badge_type, owner=owner, subject=subject)
             badge.save()
             return badge
