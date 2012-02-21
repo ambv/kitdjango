@@ -169,7 +169,7 @@ class Badge(TimeTrackable, EditorTrackable):
         old_badges = Badge.find_by_group(badge_type.group.key, owner=owner,
             subject=subject)
         create_badge = False
-        if badge_type.group.multiple_allowed:
+        if badge_type.group.multiple_allowed or not old_badges:
             create_badge = True
         else:
             # delete badge versions which are to be upgraded
