@@ -188,21 +188,21 @@ class Badge(TimeTrackable, EditorTrackable):
         return None
 
 
-def update_type(type, **kwargs):
+def update_type(type, *args, **kwargs):
     """Send a badge type callback task through Celery."""
     badge_type = BadgeType.objects.get(pk=type)
-    _do_update(badge_type.callback or badge_type.group.callback, **kwargs)
+    _do_update(badge_type.callback or badge_type.group.callback, *args, **kwargs)
 
 
-def update_group(group, **kwargs):
+def update_group(group, *args, **kwargs):
     """Send a badge group callback task through Celery."""
-    _do_update(BadgeGroup.objects.get(pk=group).callback, **kwargs)
+    _do_update(BadgeGroup.objects.get(pk=group).callback, *args, **kwargs)
 
 
-def _do_update(callback, **kwargs):
+def _do_update(callback, *args, **kwargs):
     module, function = splitext(callback)
     mod = importlib.import_module(module)
     try:
-        eval('mod{}.delay(**kwargs)'.format(function))
+        eval('mod{}.delay(*args, **kwargs)'.format(function))
     except (NameError, AttributeError):
         raise ValueError("Cannot find badge callback `{}`".format(callback))
