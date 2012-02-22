@@ -53,6 +53,9 @@ class BadgeMetadata(Named.NonUnique, TimeTrackable):
     class Meta:
         abstract = True
 
+    def __unicode__(self):
+        return "{} ({})".format(self.name, self.key)
+
 
 class BadgeGroup(BadgeMetadata):
     """Owners can be awarded only a single badge of a specified group at
