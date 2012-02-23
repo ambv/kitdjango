@@ -33,13 +33,14 @@ import re
 from zlib import adler32, crc32
 
 from django.conf import settings
+from django.core.exceptions import FieldError
 from django.db import transaction
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader, RequestContext
 from django.utils import simplejson
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
-
+from lck.lang import unset
 
 DOTS_REGEX = re.compile(r'\.\s+')
 INTERNAL_IPS = getattr(settings, 'INTERNAL_IPS', set(('127.0.0.1', '::1',
@@ -229,38 +230,105 @@ def nested_commit_on_success(func):
 
 
 class lazy_chain(object):
-    # FIXME: how to introduce sorting for these?
+    """Enables chaining multiple iterables to serve them lazily as
+    a queryset-compatible object. Supports collective ``count()``, ``exists()``,
+    ``exclude``, ``filter`` and ``order_by`` methods.
+
+    Provides special overridable static methods used while yielding values:
+
+      * ``xform(value)`` - transforms the value JIT before yielding it back
+
+      * ``xfilter(value)`` - yield a value only if xfilter(value) returns True.
+                             See known issues belowe.
+
+      * ``xkey(value)`` - returns a value to be used in comparison between
+                          elements if sorting should be used.
+
+    Known issues
+    ------------
+
+    1. If slicing or ``xfilter`` is used, reported ``len()`` is computed by
+       iterating over all iterables so performance is weak.
+
+    2. Indexing on lazy chains uses iteration underneath so performance
+       is weak. This feature is only available as a last resort. Slicing on the
+       other hand is also lazy."""
+
     def __init__(self, *iterables):
         self.iterables = iterables
+        self.start = None
+        self.stop = None
+        self.step = None
 
     @staticmethod
     def xform(value):
+        """Transform the ``value`` just-in-time before yielding it back.
+        Default implementation simply returns the ``value`` as is."""
         return value
 
     @staticmethod
-    def filter(value):
+    def xfilter(value=unset):
+        """Only yield the ``value`` if this method returns ``True``.
+        Skip to the next iterator value otherwise. Default implementation
+        always returns ``True``."""
         return True
 
+    @staticmethod
+    def xkey(value=unset):
+        """Return a value used in comparison between elements if sorting
+        should be used."""
+        return value
+
+    def copy(self, *iterables):
+        """Returns a copy of this lazy chain. If `iterables` are provided,
+        they are used instead of the ones in the current object."""
+        if not iterables:
+            iterables = self.iterables
+        result = lazy_chain(*iterables)
+        result.xfilter = self.xfilter
+        result.xform = self.xform
+        result.start = self.start
+        result.stop = self.stop
+        result.step = self.step
+        return result
+
     def __iter__(self):
+        index = -1
         for it in self.iterables:
             for element in it:
-                if self.filter(element):
-                    yield self.xform(element)
+                if not self.xfilter(element):
+                    continue
+                index += 1
+                if self.start and index < self.start:
+                    continue
+                if self.step and index % self.step:
+                    continue
+                if self.stop and index >= self.stop:
+                    break
+                yield self.xform(element)
 
     def __getitem__(self, key):
-        if len(self.iterables) == 1:
-            value = self.iterables[0][key]
-            if isinstance(key, slice):
-                result = lazy_chain(value)
-                result.filter = self.filter
-                result.xform = self.xform
-                return result
-            else:
-                return self.xform(value)
+        if isinstance(key, slice):
+            if any((key.start and key.start < 0,
+                    key.stop and key.stop < 0,
+                    key.step and key.step < 0)):
+                raise ValueError("lazy chains do not support negative indexing")
+            result = self.copy()
+            result.start = key.start
+            result.stop = key.stop
+            result.step = key.step
+        elif isinstance(key, int):
+            if key < 0:
+                raise ValueError("lazy chains do not support negative indexing")
+            for index, elem in enumerate(self):
+                if index == key:
+                    return elem
+            raise IndexError("lazy chain index out of range")
         else:
-            raise NotImplementedError("__getitem__ not yet implemented for "
-                "multiple iterables")
-            # FIXME: implement this based on __len_parts__
+            raise ValueError("lazy chain supports only integer indexing and "
+                "slices.")
+
+        return result
 
     def __len_parts__(self):
         for iterable in self.iterables:
@@ -273,13 +341,59 @@ class lazy_chain(object):
                     yield len(list(iterable))
 
     def __len__(self):
-        sum = 0
-        for sub in self.__len_parts__():
-            sum += sub
-        return sum
+        try:
+            if all((self.xfilter(),
+                    not self.start,
+                    not self.stop,
+                    not self.step or self.step == 1)):
+                # fast __len__
+                sum = 0
+                for sub in self.__len_parts__():
+                    sum += sub
+                return sum
+        except TypeError:
+            pass
+        # slow __len__ if xfilter or slicing was used
+        for length, _ in enumerate(self):
+            pass
+        return length+1
+
+    def _django_factory(self, _method, *args, **kwargs):
+        new_iterables = []
+        for it in self.iterables:
+            try:
+                new_iterables.append(getattr(it, _method)(**kwargs))
+            except (AttributeError, ValueError, FieldError):
+                new_iterables.append(it)
+        return self.copy(new_iterables)
+
+    def all(self):
+        return self
 
     def count(self):
+        """Queryset-compatible ``count`` method. Supports multiple iterables.
+        """
         return len(self)
 
+    def exclude(self, *args, **kwargs):
+        """Queryset-compatible ``filter`` method. Will silently skip filtering
+        for incompatible iterables."""
+        return self._django_factory('exclude', *args, **kwargs)
+
     def exists(self):
+        """Queryset-compatible ``exists`` method. Supports multiple iterables.
+        """
         return bool(len(self))
+
+    def filter(self, *args, **kwargs):
+        """Queryset-compatible ``filter`` method. Will silently skip filtering
+        for incompatible iterables."""
+        return self._django_factory('filter', *args, **kwargs)
+
+    def none(self, *args, **kwargs):
+        return lazy_chain()
+
+    def order_by(self, *args, **kwargs):
+        """Queryset-compatible ``order_by`` method. Will silently skip ordering
+        for incompatible iterables."""
+        return self._django_factory('order_by', *args, **kwargs)

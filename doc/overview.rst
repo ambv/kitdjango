@@ -16,7 +16,7 @@ For more detailed view on the modules, see the documentation below.
   cache
   choices
   filters
-  helpers
+  common
   common.forms
   common.middleware
   common.models
@@ -27,6 +27,7 @@ For more detailed view on the modules, see the documentation below.
   common.templatetags.thumbnail
   activitylog.middleware
   activitylog.models
+  badges.models
   profile.models
   score.models
   score.templatetags.lckd_score
