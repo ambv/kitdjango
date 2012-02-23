@@ -354,6 +354,7 @@ class lazy_chain(object):
         except TypeError:
             pass
         # slow __len__ if xfilter or slicing was used
+        length = 0
         for length, _ in enumerate(self):
             pass
         return length+1
