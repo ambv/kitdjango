@@ -68,6 +68,7 @@ INSTALLED_APPS = (
     'lck.django.profile',
     'lck.django.score',
     'lck.django.tags',
+    'lck.dummy.defaults',
 )
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',

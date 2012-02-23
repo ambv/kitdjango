@@ -46,7 +46,7 @@ from lck.django.choices import Choices
 
 
 ACTIVITYLOG_PROFILE_MODEL = getattr(settings, 'ACTIVITYLOG_PROFILE_MODEL',
-    settings.AUTH_PROFILE_MODULE)
+    getattr(settings, 'AUTH_PROFILE_MODULE', 'auth.User'))
 
 
 @memoize
