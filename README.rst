@@ -10,18 +10,22 @@ the behaviour of the framework:
  * a user activity log app storing users' IP addresses and user agents (useful
    for hunting down multi-accounts)
 
- * a simple ``score`` app
+ * a ``score`` app enabling users on websites to vote on objects
 
- * a ``tags`` app which is unlike other popular tagging applications for Django
-   in the fact that it supports tagging by users and localized tags
+ * a ``tags`` app which supports tagging by users and localized tags
 
- * extensions for ``settings.py`` (current directory resolution, namespace
-   package support, settings profile support)
+ * a ``badges`` app which enables users to receive badges for actions on the
+   website
 
  * ``Choices``: an enum implementation for Django forms and models (with
    predefined classes for languages, countries, etc.)
 
- * typical filters, template tags, models, form fields, etc.
+ * extensions for ``settings.py`` (current directory resolution, namespace
+   package support, settings profile support)
+
+ * a set of composable abstract models for the Django ORM
+
+ * typical filters, template tags, form fields, etc.
 
 Complete documentation for the package can be found here:
 
@@ -72,6 +76,14 @@ behaviour which I consider ugly.
 
 Change Log
 ----------
+
+0.7.0
+~~~~~
+
+* ``lck.django.badges`` introduced
+
+* ``lck.django.common`` cleaned up, ``lazy_chain`` significantly upgraded (now
+  properly supports multiple iterables with filtering, slicing and sorting)
 
 0.6.7
 ~~~~~
