@@ -236,16 +236,19 @@ class lazy_chain(object):
 
     Provides special overridable static methods used while yielding values:
 
-      * ``xform(value)`` - transforms the value JIT before yielding it back
+      * ``xfilter(value)`` - yield a value only if ``xfilter(value)`` returns
+                             ``True``. See known issues belowe.
 
-      * ``xfilter(value)`` - yield a value only if xfilter(value) returns True.
-                             See known issues belowe.
+      * ``xform(value)`` - transforms the value JIT before yielding it back.
+                           It is only called for values within the specified
+                           slice and those which passed ``xfilter``.
 
       * ``xkey(value)`` - returns a value to be used in comparison between
-                          elements if sorting should be used.
+                          elements if sorting should be used. Individual
+                          iterables should be presorted for the complete result
+                          to be sorted properly.
 
-    Known issues
-    ------------
+    Known issues:
 
     1. If slicing or ``xfilter`` is used, reported ``len()`` is computed by
        iterating over all iterables so performance is weak.
@@ -268,14 +271,18 @@ class lazy_chain(object):
 
     @staticmethod
     def xfilter(value=unset):
-        """Only yield the ``value`` if this method returns ``True``.
+        """xfilter(value) -> bool
+
+        Only yield the ``value`` if this method returns ``True``.
         Skip to the next iterator value otherwise. Default implementation
         always returns ``True``."""
         return True
 
     @staticmethod
     def xkey(value=unset):
-        """Return a value used in comparison between elements if sorting
+        """xkey(value) -> comparable value
+
+        Return a value used in comparison between elements if sorting
         should be used."""
         return value
 
@@ -287,25 +294,62 @@ class lazy_chain(object):
         result = lazy_chain(*iterables)
         result.xfilter = self.xfilter
         result.xform = self.xform
+        result.xkey = self.xkey
         result.start = self.start
         result.stop = self.stop
         result.step = self.step
         return result
 
+    def _filtered_next(self, iterator):
+        """Raises StopIteration just like regular iterator.next()."""
+        result = iterator.next()
+        while not self.xfilter(result):
+            result = iterator.next()
+        return result
+
     def __iter__(self):
-        index = -1
-        for it in self.iterables:
-            for element in it:
-                if not self.xfilter(element):
-                    continue
-                index += 1
-                if self.start and index < self.start:
-                    continue
-                if self.step and index % self.step:
-                    continue
-                if self.stop and index >= self.stop:
-                    break
-                yield self.xform(element)
+        try:
+            sorting = self.xkey() is not unset
+        except TypeError:
+            sorting = True
+        if sorting:
+            def _gen():
+                candidates = {}
+                for iterable in self.iterables:
+                    iterator = iter(iterable)
+                    try:
+                        candidates[iterator] = [self._filtered_next(iterator),
+                            iterator]
+                    except StopIteration:
+                        continue
+                while candidates:
+                    try:
+                        to_yield, iterator = min(candidates.viewvalues(),
+                            key=lambda x: self.xkey(x[0]))
+                        yield to_yield
+                    except ValueError:
+                        # sequence empty
+                        break
+                    try:
+                        candidates[iterator] = [self._filtered_next(iterator),
+                            iterator]
+                    except StopIteration:
+                        del candidates[iterator]
+        else:
+            def _gen():
+                for it in self.iterables:
+                    for element in it:
+                        if not self.xfilter(element):
+                            continue
+                        yield element
+        for index, element in enumerate(_gen()):
+            if self.start and index < self.start:
+                continue
+            if self.step and index % self.step:
+                continue
+            if self.stop and index >= self.stop:
+                break
+            yield self.xform(element)
 
     def __getitem__(self, key):
         if isinstance(key, slice):
@@ -320,9 +364,11 @@ class lazy_chain(object):
         elif isinstance(key, int):
             if key < 0:
                 raise ValueError("lazy chains do not support negative indexing")
-            for index, elem in enumerate(self):
+            self_without_transform = self.copy()
+            self_without_transform.xform = lambda x: x
+            for index, elem in enumerate(self_without_transform):
                 if index == key:
-                    return elem
+                    return self.xform(elem)
             raise IndexError("lazy chain index out of range")
         else:
             raise ValueError("lazy chain supports only integer indexing and "
