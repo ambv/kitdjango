@@ -5,7 +5,7 @@ lck.django
 This library consists of various Django-related routines that extend or modify
 the behaviour of the framework:
 
- * lots of abstract models to use
+ * lots of composable abstract models to use
 
  * a user activity log app storing users' IP addresses and user agents (useful
    for hunting down multi-accounts)
@@ -22,8 +22,6 @@ the behaviour of the framework:
 
  * extensions for ``settings.py`` (current directory resolution, namespace
    package support, settings profile support)
-
- * a set of composable abstract models for the Django ORM
 
  * typical filters, template tags, form fields, etc.
 
