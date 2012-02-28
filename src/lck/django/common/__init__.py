@@ -56,10 +56,10 @@ def render(request, template_name, context, debug=False, mimetype=None,
 
     if hasattr(settings, 'AUTH_PROFILE_MODULE'):
         if 'user_profile' in context:
-            raise KeyError, ("lck.django.helpers.render() doesn't "
+            raise KeyError, ("lck.django.common.render() doesn't "
                              "accept contexts with 'user_profile'")
         if 'other_user_profile' in context:
-            raise KeyError, ("lck.django.helpers.render() doesn't "
+            raise KeyError, ("lck.django.common.render() doesn't "
                              "accept contexts with 'other_user_profile'")
 
         context['user_profile'] = request.user.get_profile() \

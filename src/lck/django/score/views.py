@@ -37,8 +37,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 
-from lck.django.helpers import render_decorator as render
-from lck.django.helpers import redirect
+from lck.django.common import render_decorator as render
+from lck.django.common import redirect
 from lck.django.score.models import TotalScore, Vote
 
 @render

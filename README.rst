@@ -75,6 +75,11 @@ behaviour which I consider ugly.
 Change Log
 ----------
 
+0.7.1
+~~~~~
+
+* fixed a regression from 0.7.0 in ``lck.django.score`` after cleaning up helpers
+
 0.7.0
 ~~~~~
 
