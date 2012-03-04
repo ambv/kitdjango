@@ -54,6 +54,10 @@ class Command(NoArgsCommand):
             "a link back actually exists.")
 
     def handle_noargs(self, **options):
+        if isinstance(BACKLINK_VERIFICATION_USER_AGENT, unicode):
+            bvua = BACKLINK_VERIFICATION_USER_AGENT.encode('utf8')
+        else:
+            bvua = BACKLINK_VERIFICATION_USER_AGENT
         verify_all = options.get('all', False)
         backlinks = Backlink.objects.select_related()
         if verify_all:
@@ -66,8 +70,7 @@ class Command(NoArgsCommand):
         for backlink in backlinks:
             try:
                 url = Request(backlink.referrer.encode('utf8'))
-                url.add_header('User-Agent',
-                    BACKLINK_VERIFICATION_USER_AGENT)
+                url.add_header(b'User-Agent', bvua)
                 data = url_opener.open(url, timeout=20).read()
             except (URLError, IOError, HTTPException):
                 verified = False
