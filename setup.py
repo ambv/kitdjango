@@ -47,6 +47,7 @@ setup (
         'distribute',
         'django>=1.3',
         'django-celery',
+        'dj.choices==0.8.0',
         'postmarkup',
         'Pillow>=1.7.5',
         'python-memcached',

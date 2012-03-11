@@ -33,6 +33,8 @@ from __future__ import unicode_literals
 
 import os
 
+from dj import choices
+
 for path in ('current_dir_support', 'namespace_package_support',
              'profile_support'):
     globals()[path] = os.sep.join((os.path.split(__file__)[0], path + '.py',))
