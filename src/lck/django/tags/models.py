@@ -292,7 +292,7 @@ class TagStemManager(db.Manager):
             language=language).values_list('name'))) for obj in tagged_objects}
 
     def get_content_objects(self, model=None, content_type=None, stem=None,
-        stems=None, official=False, author=None, language=None):
+        stems=None, official=False, author=None, language=None, order_by=None):
         """Returns a set of tagged objects."""
         author = _tag_get_user(author, default=None)
         language = _tag_get_language(language, default=None)
@@ -326,7 +326,7 @@ class TagStemManager(db.Manager):
             tagged_models = {id: ContentType.objects.get(pk=id).model_class()
                 for id in tagged_cts}
         return self._yield_objects_that_exist(tagged_cts_oids,
-            tagged_models)
+            tagged_models, order_by)
 
     def get_queryset_for_model(self, model, instance=None, official=False,
         author=None, language=None):
@@ -352,7 +352,7 @@ class TagStemManager(db.Manager):
         return self.filter(**kwargs).distinct()
 
     @staticmethod
-    def _yield_objects_that_exist(cts_oids, model_table):
+    def _yield_objects_that_exist(cts_oids, model_table, order_by=None):
         """For models that implement a custom manager to filter out some
         objects (for instance to hide articles which should not be published
         yet) it may be possible that asking for an object that exist
@@ -360,7 +360,10 @@ class TagStemManager(db.Manager):
         Here we silently ignore those."""
         for ctid, table in model_table.iteritems():
             ids = {o[1] for o in filter(lambda x: x[0] == ctid, cts_oids)}
-            for obj in table.objects.filter(pk__in=ids):
+            qs = table.objects.filter(pk__in=ids)
+            if order_by:
+                qs = qs.order_by(*order_by)
+            for obj in qs:
                 yield obj
 
 
