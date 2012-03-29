@@ -75,6 +75,13 @@ behaviour which I consider ugly.
 Change Log
 ----------
 
+0.7.2
+~~~~~
+
+* choices moved to a separate `dj.choices
+  <http://pypi.python.org/pypi/dj.choices/>`_ package. The old interface is thus
+  deprecated and will be removed in a future version.
+
 0.7.1
 ~~~~~
 
