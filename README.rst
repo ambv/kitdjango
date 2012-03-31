@@ -75,6 +75,11 @@ behaviour which I consider ugly.
 Change Log
 ----------
 
+0.7.3
+~~~~~
+
+* Added `order_by` argument to TagStem.objects.get_content_objects()
+
 0.7.2
 ~~~~~
 
