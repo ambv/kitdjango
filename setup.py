@@ -45,7 +45,7 @@ setup (
         'lck.common>=0.4.5',
         'lck.i18n>=0.3.0',
         'distribute',
-        'django>=1.3',
+        'django>=1.3.1',
         'django-celery',
         'dj.choices==0.8.3',
         'postmarkup',

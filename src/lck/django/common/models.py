@@ -51,6 +51,11 @@ from django.template.defaultfilters import urlencode
 from django.utils.translation import ugettext
 from django.utils.translation import ugettext_lazy as _
 
+try:
+    from django.utils.timezone import now
+except ImportError:
+    now = datetime.now
+
 from lck.django.choices import Language
 from lck.django.common import monkeys, nested_commit_on_success
 
@@ -171,9 +176,9 @@ class TimeTrackable(db.Model):
         'display_count', 'last_active'}
 
     created = db.DateTimeField(verbose_name=_("date created"),
-        default=datetime.now)
+        default=now)
     modified = db.DateTimeField(verbose_name=_("last modified"),
-        default=datetime.now)
+        default=now)
     cache_version = db.PositiveIntegerField(verbose_name=_("cache version"),
         default=0, editable=False)
 
@@ -191,7 +196,7 @@ class TimeTrackable(db.Model):
         if self.significant_fields_updated:
             self.cache_version += 1
             if update_modified:
-                self.modified = datetime.now()
+                self.modified = now()
         super(TimeTrackable, self).save(*args, **kwargs)
         self._update_field_state()
 

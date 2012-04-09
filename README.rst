@@ -75,6 +75,16 @@ behaviour which I consider ugly.
 Change Log
 ----------
 
+0.7.4
+~~~~~
+
+* Django 1.4 ``USE_TZ = True`` compatibility
+
+* example settings updated to support new Django 1.4 settings
+
+* ``User`` attribute proxying in ``Profile`` models rewritten to support all
+  built-in and custom attributes on the ``User`` model
+
 0.7.3
 ~~~~~
 

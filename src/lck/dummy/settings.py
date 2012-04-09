@@ -20,11 +20,12 @@ LANGUAGE_CODE = 'pl-pl'
 SITE_ID = 1
 USE_I18N = True
 USE_L10N = True #FIXME: breaks contents of localized date fields on form reload
+USE_TZ = True
 MEDIA_ROOT = CURRENT_DIR + 'uploads'
 MEDIA_URL = '/uploads/'
 STATIC_ROOT = CURRENT_DIR + 'static'
 STATIC_URL = '/static/'
-ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
+ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/' # deprecated in Django 1.4
 FILE_UPLOAD_TEMP_DIR = CURRENT_DIR + 'uploads-part'
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
@@ -40,7 +41,8 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
-    'lck.django.common.middleware.ActivityMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'lck.django.activitylog.middleware.ActivityMiddleware',
     'lck.django.common.middleware.AdminForceLanguageCodeMiddleware',
 )
 ROOT_URLCONF = 'dummy.urls'
@@ -78,14 +80,21 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.static',
     'django.contrib.messages.context_processors.messages',
 )
+WSGI_APPLICATION = 'dronist.wsgi.application'
 # See http://docs.djangoproject.com/en/dev/topics/logging for
 # more details on how to customize your logging configuration.
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
     'handlers': {
         'mail_admins': {
             'level': 'ERROR',
+            'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
         }
     },
@@ -117,15 +126,16 @@ STATICFILES_DIRS = (
 # activity middleware settings
 CURRENTLY_ONLINE_INTERVAL = 300
 RECENTLY_ONLINE_INTERVAL = 900
+ACTIVITYLOG_PROFILE_MODEL = AUTH_PROFILE_MODULE
 
 # lck.django.common models
-EDITOR_TRACKABLE_MODEL = "defaults.Profile"
+EDITOR_TRACKABLE_MODEL = AUTH_PROFILE_MODULE
 DEFAULT_SAVE_PRIORITY = 0
 
 # lck.django.score models
-SCORE_VOTER_MODEL = "defaults.Profile"
+SCORE_VOTER_MODEL = AUTH_PROFILE_MODULE
 # lck.django.tags models
-TAG_AUTHOR_MODEL = "defaults.Profile"
+TAG_AUTHOR_MODEL = AUTH_PROFILE_MODULE
 
 #
 # stuff that should be customized in settings_local.py

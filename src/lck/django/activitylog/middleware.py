@@ -33,6 +33,11 @@ from django.contrib.sites.models import Site
 from django.core.cache import cache
 from django.db import models as db
 
+try:
+    from django.utils.timezone import now
+except ImportError:
+    now = datetime.now
+
 from lck.django.activitylog.models import UserAgent, IP, ProfileIP,\
     ProfileUserAgent, Backlink
 from lck.django.common import remote_addr
@@ -45,7 +50,6 @@ class ActivityMiddleware(object):
     """
 
     def update_backlinks(self, request, current_site):
-        now = datetime.now()
         backlink, backlink_created = Backlink.concurrent_get_or_create(
             site=current_site,
             url=request.META['PATH_INFO'],
@@ -53,26 +57,26 @@ class ActivityMiddleware(object):
                                                          # somewhere
         if not backlink_created:
             # we're not using save() to bypass signals etc.
-            Backlink.objects.filter(id=backlink.id).update(modified=now,
+            Backlink.objects.filter(id=backlink.id).update(modified=now(),
                 visits=db.F('visits') + 1)
 
     def process_request(self, request):
         # FIXME: don't use concurrent_get_or_create for bl, pip and pua to
         # maximize performance
-        now = datetime.now()
+        _now = now()
         seconds = getattr(settings, 'CURRENTLY_ONLINE_INTERVAL', 120)
-        delta = now - timedelta(seconds=seconds)
+        delta = _now - timedelta(seconds=seconds)
         users_online = cache.get('users_online', {})
         guests_online = cache.get('guests_online', {})
         users_touched = False
         guests_touched = False
         if request.user.is_authenticated():
-            users_online[request.user.id] = now
+            users_online[request.user.id] = _now
             users_touched = True
             profile = request.user.get_profile()
         else:
             guest_sid = request.COOKIES.get(settings.SESSION_COOKIE_NAME, '')
-            guests_online[guest_sid] = now
+            guests_online[guest_sid] = _now
             guests_touched = True
             profile = None
         for user_id in users_online.keys():
@@ -89,22 +93,22 @@ class ActivityMiddleware(object):
             cache.set('guests_online', guests_online, 60*60*24)
         if profile:
             last_active = profile.last_active
-            if not last_active or 3 * (now - last_active).seconds > seconds:
+            if not last_active or 3 * (_now - last_active).seconds > seconds:
                 # we're not using save() to bypass signals etc.
                 profile.__class__.objects.filter(pk = profile.pk).update(
-                    last_active = now)
+                    last_active = _now)
             ip, _ = IP.concurrent_get_or_create(address=remote_addr(request))
             pip, _ = ProfileIP.concurrent_get_or_create(ip=ip,
                 user=request.user, profile=profile)
             ProfileIP.objects.filter(pk = pip.pk).update(
-                modified = now)
+                modified = _now)
             if 'HTTP_USER_AGENT' in request.META:
                 agent, _ = UserAgent.concurrent_get_or_create(
                     name=request.META['HTTP_USER_AGENT'])
                 pua, _ = ProfileUserAgent.concurrent_get_or_create(agent=agent,
                     user=request.user, profile=profile)
                 ProfileUserAgent.objects.filter(pk = pua.pk).update(
-                    modified = now)
+                    modified = _now)
 
     def process_response(self, request, response):
         current_site = Site.objects.get(id=settings.SITE_ID)
