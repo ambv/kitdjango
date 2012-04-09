@@ -43,10 +43,6 @@ from django.utils.translation import ugettext_lazy as _
 from lck.django.choices import Country, Gender
 from lck.django.common.templatetags.thumbnail import thumbnail
 
-PROXIED_FIELDS = (set([field.name for field in User._meta.fields]) |
-                  set(['check_password', 'get_full_name', 'has_perm',
-                       'has_perms', 'set_password']))
-
 TZ_CHOICES = [(float(x[0]), x[1]) for x in (
     (-12, '-12'), (-11, '-11'), (-10, '-10'), (-9.5, '-09.5'), (-9, '-09'),
     (-8.5, '-08.5'), (-8, '-08 PST'), (-7, '-07 MST'), (-6, '-06 CST'),
@@ -95,9 +91,10 @@ class BasicInfo(db.Model):
         super(BasicInfo, self).save(*args, **kwargs)
 
     def __getattr__(self, name):
-        if name in PROXIED_FIELDS:
+        try:
+            return super(BasicInfo, self).__getattr__(name)
+        except AttributeError:
             return getattr(User.objects.get(id=self.__dict__['user_id']), name)
-        return super(BasicInfo, self).__getattr__(name)
 
     def age(self):
         """age() -> numeric_age"""
