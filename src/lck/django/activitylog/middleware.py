@@ -91,24 +91,29 @@ class ActivityMiddleware(object):
                 del guests_online[guest_id]
         if guests_touched:
             cache.set('guests_online', guests_online, 60*60*24)
+        ip, _ = IP.concurrent_get_or_create(address=remote_addr(request))
+        if 'HTTP_USER_AGENT' in request.META:
+            agent, _ = UserAgent.concurrent_get_or_create(name=request.META[
+                'HTTP_USER_AGENT'])
+        else:
+            agent = None
         if profile:
             last_active = profile.last_active
             if not last_active or 3 * (_now - last_active).seconds > seconds:
                 # we're not using save() to bypass signals etc.
                 profile.__class__.objects.filter(pk = profile.pk).update(
                     last_active = _now)
-            ip, _ = IP.concurrent_get_or_create(address=remote_addr(request))
             pip, _ = ProfileIP.concurrent_get_or_create(ip=ip,
                 user=request.user, profile=profile)
             ProfileIP.objects.filter(pk = pip.pk).update(
                 modified = _now)
-            if 'HTTP_USER_AGENT' in request.META:
-                agent, _ = UserAgent.concurrent_get_or_create(
-                    name=request.META['HTTP_USER_AGENT'])
+            if agent:
                 pua, _ = ProfileUserAgent.concurrent_get_or_create(agent=agent,
                     user=request.user, profile=profile)
                 ProfileUserAgent.objects.filter(pk = pua.pk).update(
                     modified = _now)
+        request.ip = ip
+        request.agent = agent
 
     def process_response(self, request, response):
         current_site = Site.objects.get(id=settings.SITE_ID)

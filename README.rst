@@ -85,6 +85,9 @@ Change Log
 * ``User`` attribute proxying in ``Profile`` models rewritten to support all
   built-in and custom attributes on the ``User`` model
 
+* ``activitylog.middleware`` now records IPs and user agents for unauthenticated
+  requests as well.  Possibly a performance hit.
+
 0.7.3
 ~~~~~
 
