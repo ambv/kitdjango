@@ -75,6 +75,11 @@ behaviour which I consider ugly.
 Change Log
 ----------
 
+0.7.5
+~~~~~
+
+* Django 1.4 compatibility improved
+
 0.7.4
 ~~~~~
 
