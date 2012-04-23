@@ -30,7 +30,6 @@ import operator
 
 from django import forms
 from django.conf import settings
-from django.conf.urls.defaults import patterns, url
 from django.contrib import admin
 from django.contrib.admin.widgets import ForeignKeyRawIdWidget
 from django.core.urlresolvers import reverse, NoReverseMatch
@@ -44,6 +43,11 @@ from django.utils.encoding import smart_str
 from django.utils.safestring import mark_safe
 from django.utils.text import get_text_list, truncate_words
 from django.utils.translation import ugettext_lazy as _
+try:
+    from django.conf.urls import patterns, url
+except ImportError:
+    # XXX: Remove this when 1.3 compatibility is dropped.
+    from django.conf.urls.defaults import patterns, url
 
 
 class LinkedSelect(Select):
@@ -349,7 +353,7 @@ class ModelAdmin(ForeignKeyAutocompleteModelMixin,
         extra_context['buttons'] = [(b.func_name, b.short_description)
             for b in self.buttons]
         return super(ModelAdmin, self).change_view(request,
-            object_id, extra_context)
+            object_id, extra_context=extra_context)
 
     def get_urls(self):
         def wrap(view):
