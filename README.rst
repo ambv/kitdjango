@@ -75,6 +75,13 @@ behaviour which I consider ugly.
 Change Log
 ----------
 
+0.7.6
+~~~~~
+
+* Further Django 1.4 compatibility improvements: auto-compelete foreign key
+  mixin works correctly now
+
+
 0.7.5
 ~~~~~
 
