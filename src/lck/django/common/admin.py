@@ -28,6 +28,7 @@ from __future__ import unicode_literals
 
 import operator
 
+import django
 from django import forms
 from django.conf import settings
 from django.contrib import admin
@@ -110,11 +111,15 @@ class ForeignKeySearchInput(ForeignKeyRawIdWidget):
         obj = self.rel.to._default_manager.get(**{key: value})
         return truncate_words(obj, 14)
 
-    def __init__(self, rel, search_fields, attrs=None, hide_id=False, instant_lookup=False):
+    def __init__(self, rel, search_fields, admin_site, attrs=None, hide_id=False, instant_lookup=False):
         self.search_fields = search_fields
         self.hide_id = hide_id
         self.instant_lookup = instant_lookup
-        super(ForeignKeySearchInput, self).__init__(rel, attrs)
+        super_kwargs = {'rel': rel, 'attrs': attrs}
+        if django.VERSION >= (1,4):
+            # XXX: Remove this when 1.3 compatibility is dropped.
+            super_kwargs['admin_site'] = admin_site
+        super(ForeignKeySearchInput, self).__init__(**super_kwargs)
 
     def render(self, name, value, attrs=None):
         if attrs is None:
@@ -144,10 +149,15 @@ class ForeignKeySearchInput(ForeignKeyRawIdWidget):
                 model_name)))) + str(value) + '/'
         except NoReverseMatch:
             view_url = None
+        if django.VERSION >= (1,4):
+            # XXX: Remove this when 1.3 compatibility is dropped.
+            admin_media_prefix = settings.STATIC_URL + 'admin/img/'
+        else:
+            admin_media_prefix = settings.ADMIN_MEDIA_PREFIX + 'img/admin/'
         context = {
             'url': url,
             'related_url': related_url,
-            'admin_media_prefix': settings.ADMIN_MEDIA_PREFIX,
+            'admin_media_prefix': admin_media_prefix,
             'search_path': self.search_path,
             'search_fields': ','.join(self.search_fields),
             'model_name': model_name,
@@ -306,6 +316,7 @@ class ForeignKeyAutocompleteInlineMixin(object):
                 help_text = u'%s %s' % (kwargs['help_text'], help_text)
             kwargs['widget'] = ForeignKeySearchInput(db_field.rel,
                                         self.related_search_fields.get(db_field.name, ('__unicode__',)),
+                                        self.admin_site,
                                         hide_id=db_field.name in self.hide_id_textfields,
                                         instant_lookup=db_field.name in self.instant_lookup_fields)
             kwargs['help_text'] = help_text
