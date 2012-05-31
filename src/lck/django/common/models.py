@@ -609,6 +609,9 @@ class MACAddressField(db.Field):
     def get_prep_value(self, value):
         return self.normalize(value)
 
+    def south_field_triple(self):
+        return ('lck.django.common.models.MACAddressFIeld', [], {})
+
 
 # For now this needs to be at the end of the file.
 # FIXME: move it where it's supposed to be.
