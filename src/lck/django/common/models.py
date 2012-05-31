@@ -610,7 +610,7 @@ class MACAddressField(db.Field):
         return self.normalize(value)
 
     def south_field_triple(self):
-        return ('lck.django.common.models.MACAddressFIeld', [], {})
+        return ('lck.django.common.models.MACAddressField', [], {})
 
 
 # For now this needs to be at the end of the file.
