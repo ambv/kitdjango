@@ -42,6 +42,11 @@ from lck.django.activitylog.models import UserAgent, IP, ProfileIP,\
     ProfileUserAgent, Backlink
 from lck.django.common import remote_addr
 
+_backlink_url_max_length = Backlink._meta.get_field_by_name(
+    'url')[0].max_length
+_backlink_referrer_max_length = Backlink._meta.get_field_by_name(
+    'referrer')[0].max_length
+
 
 class ActivityMiddleware(object):
     """Updates the `last_active` profile field for every logged in user with
@@ -52,9 +57,8 @@ class ActivityMiddleware(object):
     def update_backlinks(self, request, current_site):
         backlink, backlink_created = Backlink.concurrent_get_or_create(
             site=current_site,
-            url=request.META['PATH_INFO'],
-            referrer=request.META['HTTP_REFERER'][:500]) # gotta draw the line
-                                                         # somewhere
+            url=request.META['PATH_INFO'][:_backlink_url_max_length],
+            referrer=request.META['HTTP_REFERER'][:_backlink_referrer_max_length])
         if not backlink_created:
             # we're not using save() to bypass signals etc.
             Backlink.objects.filter(id=backlink.id).update(modified=now(),

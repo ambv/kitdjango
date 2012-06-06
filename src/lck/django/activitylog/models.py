@@ -33,6 +33,7 @@ from __future__ import unicode_literals
 
 from datetime import datetime
 import socket
+import zlib
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -44,6 +45,8 @@ from lck.cache import memoize
 from lck.django.common.models import TimeTrackable, WithConcurrentGetOrCreate
 from lck.django.choices import Choices
 
+import logging
+LOG = logging.getLogger(__name__)
 
 ACTIVITYLOG_PROFILE_MODEL = getattr(settings, 'ACTIVITYLOG_PROFILE_MODEL',
     getattr(settings, 'AUTH_PROFILE_MODULE', 'auth.User'))
@@ -89,8 +92,11 @@ class MonitoredActivity(db.Model):
 
 
 class UserAgent(TimeTrackable, WithConcurrentGetOrCreate):
-    # those names can be over 350 characters in length
-    name = db.TextField(verbose_name=_("name"), unique=True, db_index=True)
+    # `names` can be over 350 characters in length. We cannot use `unique`
+    # and `db_index` on it because MySQL doesn't support it so we use
+    # a separate `hash` column for that.
+    name = db.TextField(verbose_name=_("name"))
+    hash = db.IntegerField(verbose_name=_("hash"), unique=True, db_index=True)
     profiles = db.ManyToManyField(ACTIVITYLOG_PROFILE_MODEL,
         verbose_name=_("profiles"), through="ProfileUserAgent", help_text="")
 
@@ -100,6 +106,23 @@ class UserAgent(TimeTrackable, WithConcurrentGetOrCreate):
 
     def __unicode__(self):
         return self.name
+
+    @classmethod
+    def concurrent_get_or_create(cls, name):
+        hash = cls.hash_for_name(name)
+        ua, created = super(UserAgent, cls).concurrent_get_or_create(hash=hash)
+        if created:
+            ua.name = name
+            ua.save()
+        elif ua.name != name:
+            LOG.warning(_("UserAgent Adler32 conflict with existing "
+                "ID {} for name=[[{}]]").format(hash, name))
+            return cls.concurrent_get_or_create(name + ' ')
+        return ua, created
+
+    @classmethod
+    def hash_for_name(cls, name):
+        return zlib.adler32(name)
 
 
 class IP(TimeTrackable, WithConcurrentGetOrCreate):
@@ -172,6 +195,7 @@ class Backlink(TimeTrackable, WithConcurrentGetOrCreate):
     site = db.ForeignKey(Site, verbose_name=_("site"))
     url = db.URLField(verbose_name=_("URL"), max_length=500)
     referrer = db.URLField(verbose_name=_("referrer"), max_length=500)
+    hash = db.IntegerField(verbose_name=_("hash"), unique=True, db_index=True)
     visits = db.PositiveIntegerField(verbose_name=_("visits"), default=1)
     status = db.PositiveIntegerField(verbose_name=_("status"),
         choices=BacklinkStatus(), default=BacklinkStatus.unknown.id)
@@ -179,10 +203,34 @@ class Backlink(TimeTrackable, WithConcurrentGetOrCreate):
     class Meta:
         verbose_name = _("backlink")
         verbose_name_plural = _("backlinks")
-        unique_together = ('site', 'url', 'referrer')
+        # PostgreSQL would simply use this:
+        #
+        #   unique_together = ('site', 'url', 'referrer')
+        #
+        # but MySQL cries that "Specified key was too long; max key length is
+        # 767 bytes" so we have to use the `hash` field just as with the
+        # UserAgent model.
 
     def __unicode__(self):
         return self.url
+
+    @classmethod
+    def concurrent_get_or_create(cls, site, url, referrer):
+        hash = cls.hash_for_triple(site, url, referrer)
+        ua, created = super(Backlink, cls).concurrent_get_or_create(hash=hash)
+        if created:
+            ua.site = site
+            ua.url = url
+            ua.referrer = referrer
+            ua.save()
+        elif ua.site != site or ua.url != url or ua.referrer != referrer:
+            LOG.error(_("Backlink not added, Adler32 conflict with existing "
+                "ID {}. URL=[[{}]]; REF=[[{}]].").format(hash, url, referrer))
+        return ua, created
+
+    @classmethod
+    def hash_for_triple(cls, site, url, referrer):
+        return zlib.adler32('\n'.join(str(site.id), url, referrer))
 
 
 class M2M(TimeTrackable, WithConcurrentGetOrCreate):
