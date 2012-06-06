@@ -17,9 +17,6 @@ the behaviour of the framework:
  * a ``badges`` app which enables users to receive badges for actions on the
    website
 
- * ``Choices``: an enum implementation for Django forms and models (with
-   predefined classes for languages, countries, etc.)
-
  * extensions for ``settings.py`` (current directory resolution, namespace
    package support, settings profile support)
 
@@ -75,6 +72,23 @@ behaviour which I consider ugly.
 Change Log
 ----------
 
+0.7.7
+~~~~~
+
+* South migrations supported across the board. For existing installations you
+  should run::
+
+    $ python manage.py migrate APP_NAME 0001 --fake
+    $ python manage.py migrate APP_NAME
+
+  where ``APP_NAME`` is ``activitylog``, ``badges``, ``common``, ``flatpages``,
+  ``profile``, ``score`` or ``tags``.
+
+* uniqueness constraints in ``activitylog.models.Backlink`` and
+  ``activitylog.models.UserAgent`` moved to separate ``hash`` fields to make
+  MySQL happy. South migrations should handle schema evolution regardless of the
+  backend you're using.
+  
 0.7.6
 ~~~~~
 
