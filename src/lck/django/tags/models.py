@@ -207,6 +207,21 @@ class DefaultTags(db.CharField):
         defaults.update(kwargs)
         super(DefaultTags, self).__init__(*args, **defaults)
 
+    def south_field_triple(self):
+        kwargs = dict(
+            null=self.null,
+            blank=self.blank,
+            choices=self.choices,
+            db_column=self.db_column,
+            db_index=self.db_index,
+            db_tablespace=self.db_tablespace,
+            default=self.default,
+            editable=self.editable,
+            primary_key=self.primary_key,
+            unique=self.unique,
+        )
+        return ('lck.django.tags.models.DefaultTags', [], kwargs)
+
 
 class Taggable(TaggableBase):
     """Provides the `tags` generic relation and default tags that can be edited
