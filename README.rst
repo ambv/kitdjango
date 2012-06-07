@@ -72,6 +72,12 @@ behaviour which I consider ugly.
 Change Log
 ----------
 
+0.7.8
+~~~~~
+
+* Fixed South support for custom fields (``DefaultTags`` and
+  ``MACAddressField``).
+
 0.7.7
 ~~~~~
 
