@@ -611,17 +611,15 @@ class MACAddressField(db.Field):
 
     def south_field_triple(self):
         kwargs = dict(
-            null=self.null,
-            blank=self.blank,
-            choices=self.choices,
-            db_column=self.db_column,
-            db_index=self.db_index,
-            db_tablespace=self.db_tablespace,
-            default=self.default,
-            editable=self.editable,
-            primary_key=self.primary_key,
-            unique=self.unique,
+            null=repr(self.null),
+            blank=repr(self.blank),
+            db_column=repr(self.db_column),
+            db_index=repr(self.db_index),
+            primary_key=repr(self.primary_key),
+            unique=repr(self.unique),
         )
+        if self.default is not db.NOT_PROVIDED:
+            kwargs['default'] = self.default
         return ('lck.django.common.models.MACAddressField', [], kwargs)
 
 
