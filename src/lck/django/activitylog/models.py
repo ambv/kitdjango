@@ -122,7 +122,7 @@ class UserAgent(TimeTrackable, WithConcurrentGetOrCreate):
 
     @classmethod
     def hash_for_name(cls, name):
-        return zlib.adler32(name)
+        return zlib.adler32(name.encode('utf8'))
 
 
 class IP(TimeTrackable, WithConcurrentGetOrCreate):
