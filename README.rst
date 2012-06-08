@@ -72,6 +72,16 @@ behaviour which I consider ugly.
 Change Log
 ----------
 
+0.7.9
+~~~~~
+
+* Fixed backlink hash generation in ``activitylog``
+
+* ``activitylog`` accepts UTF-8 characters in ``User-Agent`` headers
+
+* ``activitylog`` South migration #0002 now also works on backends with DDL
+  transactions (e.g. Postgres)
+
 0.7.8
 ~~~~~
 
