@@ -39,16 +39,10 @@ class Migration(SchemaMigration):
 
         # Changing field 'UserAgent.name'
         db.alter_column('activitylog_useragent', 'name', self.gf('django.db.models.fields.TextField')())
-        # Removing index on 'UserAgent', fields ['name']
-        try:
-            db.delete_index('activitylog_useragent', ['name'])
-        except Exception:
-            print "If you are on MySQL, you can safely ignore the above error."
-
 
         # Adding field 'Backlink.hash'
         db.add_column('activitylog_backlink', 'hash',
-                      self.gf('django.db.models.fields.IntegerField')(null=True, unique=True, db_index=True),
+                      self.gf('django.db.models.fields.IntegerField')(default=None, null=True, unique=True, db_index=True),
                       keep_default=False)
         if not db.dry_run:
             for ua in orm.Backlink.objects.all():
@@ -65,9 +59,6 @@ class Migration(SchemaMigration):
         db.alter_column('activitylog_backlink', 'referrer', self.gf('django.db.models.fields.URLField')(max_length=500))
 
     def backwards(self, orm):
-        # Adding index on 'UserAgent', fields ['name']
-        db.create_index('activitylog_useragent', ['name'])
-
         # Deleting field 'UserAgent.hash'
         db.delete_column('activitylog_useragent', 'hash')
 
@@ -95,7 +86,7 @@ class Migration(SchemaMigration):
 
     @classmethod
     def hash_for_triple(cls, site, url, referrer):
-        return zlib.adler32('\n'.join(str(site.id), url, referrer))
+        return zlib.adler32(u'\n'.join((str(site.id), url, referrer)).encode('utf8'))
 
     models = {
         apm_key: freeze_apps(apm_app)[apm_key],

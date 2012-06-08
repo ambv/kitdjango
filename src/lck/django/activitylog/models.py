@@ -230,7 +230,7 @@ class Backlink(TimeTrackable, WithConcurrentGetOrCreate):
 
     @classmethod
     def hash_for_triple(cls, site, url, referrer):
-        return zlib.adler32('\n'.join(str(site.id), url, referrer))
+        return zlib.adler32('\n'.join((str(site.id), url, referrer)).encode('utf8'))
 
 
 class M2M(TimeTrackable, WithConcurrentGetOrCreate):
