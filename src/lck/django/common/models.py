@@ -619,7 +619,7 @@ class MACAddressField(db.Field):
             unique=repr(self.unique),
         )
         if self.default is not db.NOT_PROVIDED:
-            kwargs['default'] = self.default
+            kwargs['default'] = repr(self.default)
         return ('lck.django.common.models.MACAddressField', [], kwargs)
 
 

@@ -217,7 +217,7 @@ class DefaultTags(db.CharField):
             unique=repr(self.unique),
         )
         if self.default is not db.NOT_PROVIDED:
-            kwargs['default'] = self.default
+            kwargs['default'] = repr(self.default)
         return ('lck.django.tags.models.DefaultTags', [], kwargs)
 
 
