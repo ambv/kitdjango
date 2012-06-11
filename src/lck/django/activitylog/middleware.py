@@ -31,6 +31,7 @@ from datetime import datetime, timedelta
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.cache import cache
+from django.core.exceptions import ImproperlyConfigured
 from django.db import models as db
 
 try:
@@ -46,6 +47,8 @@ _backlink_url_max_length = Backlink._meta.get_field_by_name(
     'url')[0].max_length
 _backlink_referrer_max_length = Backlink._meta.get_field_by_name(
     'referrer')[0].max_length
+BACKLINKS_LOCAL_SITES = getattr(settings, 'BACKLINKS_LOCAL_SITES',
+    'current')
 
 
 class ActivityMiddleware(object):
@@ -119,14 +122,34 @@ class ActivityMiddleware(object):
         request.ip = ip
         request.agent = agent
 
-    def process_response(self, request, response):
-        current_site = Site.objects.get(id=settings.SITE_ID)
-        try:
-            ref = request.META.get('HTTP_REFERER', '').split('//')[1]
-            if response.status_code // 100 == 2 and not \
-                (ref == current_site.domain or ref.startswith(
-                current_site.domain + '/')):
-                self.update_backlinks(request, current_site)
-        except (IndexError, UnicodeDecodeError):
-            pass
-        return response
+    if BACKLINKS_LOCAL_SITES == 'current':
+        def process_response(self, request, response):
+            current_site = Site.objects.get(id=settings.SITE_ID)
+            try:
+                ref = request.META.get('HTTP_REFERER', '').split('//')[1]
+                if response.status_code // 100 == 2 and not \
+                    (ref == current_site.domain or ref.startswith(
+                    current_site.domain + '/')):
+                    self.update_backlinks(request, current_site)
+            except (IndexError, UnicodeDecodeError):
+                pass
+            return response
+    elif BACKLINKS_LOCAL_SITES == 'all':
+        def process_response(self, request, response):
+            try:
+                ref = request.META.get('HTTP_REFERER', '').split('//')[1]
+                if response.status_code // 100 == 2:
+                    for site in Site.objects.all():
+                        if ref == site.domain or \
+                            ref.startswith(site.domain + '/'):
+                            break
+                        if site.id == settings.SITE_ID:
+                            current_site = site
+                    else:
+                        self.update_backlinks(request, current_site)
+            except (IndexError, UnicodeDecodeError):
+                pass
+            return response
+    else:
+        raise ImproperlyConfigured("Unsupported value for "
+            "BACKLINKS_LOCAL_SITES: {!r}".format(BACKLINKS_LOCAL_SITES))

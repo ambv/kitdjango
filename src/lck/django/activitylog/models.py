@@ -95,7 +95,7 @@ class UserAgent(TimeTrackable, WithConcurrentGetOrCreate):
     # `names` can be over 350 characters in length. We cannot use `unique`
     # and `db_index` on it because MySQL doesn't support it so we use
     # a separate `hash` column for that.
-    name = db.TextField(verbose_name=_("name"))
+    name = db.TextField(verbose_name=_("name"), blank=True, default="")
     hash = db.IntegerField(verbose_name=_("hash"), unique=True, db_index=True)
     profiles = db.ManyToManyField(ACTIVITYLOG_PROFILE_MODEL,
         verbose_name=_("profiles"), through="ProfileUserAgent", help_text="")
@@ -192,9 +192,12 @@ class BacklinkStatus(Choices):
 
 
 class Backlink(TimeTrackable, WithConcurrentGetOrCreate):
-    site = db.ForeignKey(Site, verbose_name=_("site"))
-    url = db.URLField(verbose_name=_("URL"), max_length=500)
-    referrer = db.URLField(verbose_name=_("referrer"), max_length=500)
+    site = db.ForeignKey(Site, verbose_name=_("site"), blank=True, null=True,
+        default=None)
+    url = db.URLField(verbose_name=_("URL"), max_length=500, blank=True,
+        default="")
+    referrer = db.URLField(verbose_name=_("referrer"), max_length=500,
+        blank=True, default="")
     hash = db.IntegerField(verbose_name=_("hash"), unique=True, db_index=True)
     visits = db.PositiveIntegerField(verbose_name=_("visits"), default=1)
     status = db.PositiveIntegerField(verbose_name=_("status"),

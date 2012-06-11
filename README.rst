@@ -72,6 +72,15 @@ behaviour which I consider ugly.
 Change Log
 ----------
 
+0.7.10
+~~~~~~
+
+* ``BACKLINKS_LOCAL_SITES`` setting to control if all configured sites should be
+  considered local upon backlink discovery
+
+* More backlink fixes data model fixes to make it more cross-compatible with
+  different backends
+
 0.7.9
 ~~~~~
 
