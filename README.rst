@@ -72,6 +72,14 @@ behaviour which I consider ugly.
 Change Log
 ----------
 
+0.7.11
+~~~~~~
+
+* No code changes
+
+* ``dj.choices`` requirement bumped to 0.8.6 (fully compatible with
+  0.8.5 and significantly improves ``ChoiceFields``)
+
 0.7.10
 ~~~~~~
 
