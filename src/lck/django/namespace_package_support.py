@@ -17,11 +17,11 @@ def django_core_management__find_management_module(app_name):
 
     Supports namespace packages.
     """
-    import sys
     import os.path
 
     parts = app_name.split('.')
     parts.append('management')
+    parts = [str(p) for p in parts]
 
     management_module = __import__(app_name + '.management', fromlist=parts)
     path = management_module.__file__
@@ -34,6 +34,6 @@ def django_core_management__find_management_module(app_name):
 
 # PATCH: a more generic find_management_module that supports namespace
 # packages.
-# COMPATIBILITY: Django 1.1.0 - 1.3.0
+# COMPATIBILITY: Django 1.1.0 - 1.4.0
 django.core.management.find_management_module = \
     django_core_management__find_management_module
