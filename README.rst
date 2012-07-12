@@ -72,6 +72,14 @@ behaviour which I consider ugly.
 Change Log
 ----------
 
+0.7.12
+~~~~~~
+
+* namespace package support now works with Unicode literals in settings.py
+    
+* dummy app settings refinements: timing middleware moved down the stack because
+  it uses the user session, WSGI app definition was wrong
+
 0.7.11
 ~~~~~~
 
