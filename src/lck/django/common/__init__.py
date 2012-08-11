@@ -251,7 +251,13 @@ class lazy_chain(object):
     Known issues:
 
     1. If slicing or ``xfilter`` is used, reported ``len()`` is computed by
-       iterating over all iterables so performance is weak.
+       iterating over all iterables so performance is weak. Note that
+       ``len()`` is used by ``list()`` when you convert your lazy chain to
+       a list or when iterating over the lazy chain in Django templates.
+       If this is not expected, you can convert to a list using a workaround
+       like this::
+
+           list(e for e in some_lazy_chain)
 
     2. Indexing on lazy chains uses iteration underneath so performance
        is weak. This feature is only available as a last resort. Slicing on the
@@ -347,9 +353,9 @@ class lazy_chain(object):
                 continue
             if self.step and index % self.step:
                 continue
+            yield self.xform(element)
             if self.stop and index >= self.stop:
                 break
-            yield self.xform(element)
 
     def __getitem__(self, key):
         if isinstance(key, slice):
