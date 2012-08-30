@@ -72,6 +72,14 @@ behaviour which I consider ugly.
 Change Log
 ----------
 
+0.7.13
+~~~~~~
+
+* No code changes
+
+* ``dj.choices`` requirement bumped to 0.9.0 (choices are not ``int``
+  subclasses, ``unicode(choice)`` is now equivalent to ``choice.desc``)
+
 0.7.12
 ~~~~~~
 
