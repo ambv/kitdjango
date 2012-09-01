@@ -75,10 +75,12 @@ Change Log
 0.7.13
 ~~~~~~
 
-* No code changes
+* ``lazy_chain``: when iterating over a slice, the iterator fetched one item too
+  many. It didn't yield it back so the result was correct but if using
+  ``xfilter()`` that caused unnecessary iteration.
 
-* ``dj.choices`` requirement bumped to 0.9.0 (choices are not ``int``
-  subclasses, ``unicode(choice)`` is now equivalent to ``choice.desc``)
+* ``dj.choices`` requirement bumped to 0.9.0 (choices are ``int`` subclasses,
+  ``unicode(choice)`` is now equivalent to ``choice.desc``)
 
 0.7.12
 ~~~~~~
