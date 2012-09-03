@@ -48,10 +48,31 @@ def test_cut():
     assert "" == cut("", length=0, trailing=" ...")
     assert "12345678 (...)" == cut("123456789", length=-1)
 
-def test_lazy_chain_simple():
+def test_lazy_chain_simple(lc=None):
     from lck.django.common import lazy_chain
-    lc = lazy_chain((1,2), [3,4], "56")
-    lc.xform = lambda v: int(v)
+    if not lc:
+        lc = lazy_chain((1,2), [3,4], "56")
+        lc.xform = lambda v: int(v)
+        lc.xfilter = lambda v: int(v) % 2 == 0
+    assert (2,4,6) == tuple(lc)
+    assert 3 == len(lc)
+    assert (4,6) == tuple(lc[1:])
+    assert 2 == len(lc[1:])
+    assert (4,6) == tuple(lc[1:3])
+    assert 2 == len(lc[1:3])
+    assert (2,4) == tuple(lc[:2])
+    assert 2 == len(lc[:2])
+    assert (2,) == tuple(lc[:2:2])
+    assert 1 == len(lc[:2:2])
+    assert (2,6) == tuple(lc[::2])
+    assert 2 == len(lc[::2])
+    assert 6 == lc[2]
+    try:
+        lc[3]
+        assert False, "Index error not raised."
+    except IndexError:
+        pass
+    lc.xfilter = lambda v: True
     assert (1,2,3,4,5,6) == tuple(lc)
     assert 6 == len(lc)
     assert (5,6) == tuple(lc[4:])
@@ -80,31 +101,41 @@ def test_lazy_chain_simple():
         assert False, "Value error not raised."
     except ValueError:
         pass
+
+def test_lazy_chain_simple_copy():
+    from lck.django.common import lazy_chain
+    lc = lazy_chain((1,2), [3,4], "56")
+    lc.xform = lambda v: int(v)
     lc.xfilter = lambda v: int(v) % 2 == 0
-    assert (2,4,6) == tuple(lc)
+    lc2 = lc.copy(*lc.iterables)
+    test_lazy_chain_simple(lc2)
+
+def test_lazy_chain_sorted(lc=None):
+    from lck.django.common import lazy_chain
+    if not lc:
+        lc = lazy_chain((1,2), [3,4], "56")
+        lc.xform = lambda v: int(v)
+        lc.xkey = lambda v: -int(v)
+        lc.xfilter = lambda v: int(v) % 2 == 0
+    assert (6,4,2) == tuple(lc)
     assert 3 == len(lc)
-    assert (4,6) == tuple(lc[1:])
+    assert (4,2) == tuple(lc[1:])
     assert 2 == len(lc[1:])
-    assert (4,6) == tuple(lc[1:3])
+    assert (4,2) == tuple(lc[1:3])
     assert 2 == len(lc[1:3])
-    assert (2,4) == tuple(lc[:2])
+    assert (6,4) == tuple(lc[:2])
     assert 2 == len(lc[:2])
-    assert (2,) == tuple(lc[:2:2])
+    assert (6,) == tuple(lc[:2:2])
     assert 1 == len(lc[:2:2])
-    assert (2,6) == tuple(lc[::2])
+    assert (6,2) == tuple(lc[::2])
     assert 2 == len(lc[::2])
-    assert 6 == lc[2]
+    assert 2 == lc[2]
     try:
         lc[3]
         assert False, "Index error not raised."
     except IndexError:
         pass
-
-def test_lazy_chain_sorted():
-    from lck.django.common import lazy_chain
-    lc = lazy_chain((1,2), [3,4], "56")
-    lc.xform = lambda v: int(v)
-    lc.xkey = lambda v: -int(v)
+    lc.xfilter = lambda v: True
     assert (5,6,3,4,1,2) == tuple(lc)
     assert 6 == len(lc)
     assert (1,2) == tuple(lc[4:])
@@ -133,22 +164,21 @@ def test_lazy_chain_sorted():
         assert False, "Value error not raised."
     except ValueError:
         pass
+
+def test_lazy_chain_sorted_copy():
+    from lck.django.common import lazy_chain
+    lc = lazy_chain((1,2), [3,4], "56")
+    lc.xform = lambda v: int(v)
+    lc.xkey = lambda v: -int(v)
     lc.xfilter = lambda v: int(v) % 2 == 0
-    assert (6,4,2) == tuple(lc)
-    assert 3 == len(lc)
-    assert (4,2) == tuple(lc[1:])
-    assert 2 == len(lc[1:])
-    assert (4,2) == tuple(lc[1:3])
-    assert 2 == len(lc[1:3])
-    assert (6,4) == tuple(lc[:2])
-    assert 2 == len(lc[:2])
-    assert (6,) == tuple(lc[:2:2])
-    assert 1 == len(lc[:2:2])
-    assert (6,2) == tuple(lc[::2])
-    assert 2 == len(lc[::2])
-    assert 2 == lc[2]
-    try:
-        lc[3]
-        assert False, "Index error not raised."
-    except IndexError:
-        pass
+    lc2 = lc.copy(*lc.iterables)
+    test_lazy_chain_sorted(lc2)
+
+def test_lazy_chain_sorted_django_factory():
+    from lck.django.common import lazy_chain
+    lc = lazy_chain(("8",1,2,"8"), [8,3,4,8], "8568")
+    lc.xform = lambda v: int(v)
+    lc.xkey = lambda v: -int(v)
+    lc.xfilter = lambda v: int(v) % 2 == 0
+    lc2 = lc._django_factory("__getslice__", 1, 3)
+    test_lazy_chain_sorted(lc2)
