@@ -353,9 +353,9 @@ class lazy_chain(object):
                 continue
             if self.step and index % self.step:
                 continue
-            yield self.xform(element)
             if self.stop and index >= self.stop:
                 break
+            yield self.xform(element)
 
     def __getitem__(self, key):
         if isinstance(key, slice):
