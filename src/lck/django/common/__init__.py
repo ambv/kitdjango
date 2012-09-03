@@ -415,10 +415,10 @@ class lazy_chain(object):
         new_iterables = []
         for it in self.iterables:
             try:
-                new_iterables.append(getattr(it, _method)(**kwargs))
+                new_iterables.append(getattr(it, _method)(*args, **kwargs))
             except (AttributeError, ValueError, FieldError):
                 new_iterables.append(it)
-        return self.copy(new_iterables)
+        return self.copy(*new_iterables)
 
     def all(self):
         return self
