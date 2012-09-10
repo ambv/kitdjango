@@ -36,9 +36,9 @@ or::
   $ easy_install lck.django
 
 
-The `source code repository <http://github.com/LangaCore/kitdjango>`_ and `issue
-tracker <http://github.com/LangaCore/kitdjango/issues>`_ are maintained on
-`GitHub <http://github.com/LangaCore/kitdjango>`_.
+The `source code repository <http://github.com/ambv/kitdjango>`_ and `issue
+tracker <http://github.com/ambv/kitdjango/issues>`_ are maintained on
+`GitHub <http://github.com/ambv/kitdjango>`_.
 
 This package bundles some royalty free static images that are useful in almost
 every Django project:
