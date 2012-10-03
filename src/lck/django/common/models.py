@@ -414,14 +414,14 @@ class Localized(db.Model):
     is settings.LANGUAGE_CODE."""
     language = db.PositiveIntegerField(verbose_name=_("language"),
         choices=Language(filter=set([lang[0] for lang in settings.LANGUAGES])),
-            default=Language.IDFromName(settings.LANGUAGE_CODE))
+            default=Language.id_from_name(settings.LANGUAGE_CODE))
 
     class Meta:
         abstract = True
 
     @property
     def lang(self):
-        l = Language.FromID(self.language)
+        l = Language.from_id(self.language)
         return (l.name, l.desc)
 
 

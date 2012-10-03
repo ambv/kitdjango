@@ -118,7 +118,7 @@ class BasicInfo(db.Model):
     def get_country_display_english(self):
         """Displays the country of origin in its English form. This is useful
         for distionary lookups."""
-        return Country.RawFromID(self.country)
+        return Country.raw_from_id(self.country)
 
     def get_profile(self):
         return self

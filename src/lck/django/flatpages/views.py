@@ -64,7 +64,7 @@ def flatpage(request, url):
     if not url.startswith('/'):
         url = "/" + url
     f = get_object_or_404(FlatPage, url=url, sites__id=settings.SITE_ID,
-        language=Language.FromName(request.LANGUAGE_CODE).id)
+        language=Language.id_from_name(request.LANGUAGE_CODE))
     return render_flatpage(request, f)
 
 @csrf_protect

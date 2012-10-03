@@ -258,7 +258,7 @@ class Taggable(TaggableBase):
                 if isinstance(_language, int):
                     return _language
                 elif isinstance(_language, basestring):
-                    return Language.IDFromName(_language)
+                    return Language.id_from_name(_language)
             except AttributeError:
                 continue
         raise ImproperlyConfigured("No compatible language field found for "
