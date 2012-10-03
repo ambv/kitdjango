@@ -72,6 +72,17 @@ behaviour which I consider ugly.
 Change Log
 ----------
 
+0.7.14
+~~~~~~
+
+* ``lazy_chain``: the fix from 0.7.13 introduced a different kind of bug,
+  reverted and fixed properly now. More tests included.
+
+* ``flatpages`` now serve content in the default language if the language
+  requested by the browser is unavailable.
+
+* some internal cleanups
+
 0.7.13
 ~~~~~~
 
