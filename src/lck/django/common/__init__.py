@@ -40,6 +40,8 @@ from django.template import loader, RequestContext
 from django.utils import simplejson
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
+from dj.choices import Language
+
 from lck.lang import unset
 
 DOTS_REGEX = re.compile(r'\.\s+')
@@ -450,3 +452,22 @@ class lazy_chain(object):
         """Queryset-compatible ``order_by`` method. Will silently skip ordering
         for incompatible iterables."""
         return self._django_factory('order_by', *args, **kwargs)
+
+
+def get_langs(request, custom=None):
+    """ get_langs(request) -> list of language IDs
+
+    First there's the exact language as found in the request headers, followed
+    by a generic form and by the ``LANGUAGE_CODE`` value from settings."""
+    langs = []
+    accept = request.META.get('HTTP_ACCEPT_LANGUAGE', '*')
+    if accept != '*':
+        langs.append({'language': Language.id_from_name(request.LANGUAGE_CODE)})
+        langs.append({'language':
+            Language.id_from_name(request.LANGUAGE_CODE.split("-")[0])})
+    if custom:
+        langs.append(custom)
+    langs.append({'language': Language.id_from_name(settings.LANGUAGE_CODE)})
+    langs.append({'language':
+        Language.id_from_name(settings.LANGUAGE_CODE.split("-")[0])})
+    return langs

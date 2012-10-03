@@ -29,14 +29,15 @@ from __future__ import unicode_literals
 
 from django.template import loader, RequestContext
 from django.shortcuts import get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.conf import settings
 from django.core.xheaders import populate_xheaders
 from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_protect
+from dj.choices import Language
 
-from lck.django.choices import Language
 from lck.django.flatpages.models import FlatPage
+from lck.django.common import get_langs
 
 DEFAULT_TEMPLATE = 'flatpages/default.html'
 
@@ -63,8 +64,16 @@ def flatpage(request, url):
         return HttpResponseRedirect("%s/" % request.path)
     if not url.startswith('/'):
         url = "/" + url
-    f = get_object_or_404(FlatPage, url=url, sites__id=settings.SITE_ID,
-        language=Language.id_from_name(request.LANGUAGE_CODE))
+    f = None
+    for lang in get_langs(request):
+        try:
+            f = FlatPage.objects.filter(**lang).get(url=url,
+                sites__id=settings.SITE_ID)
+            break
+        except FlatPage.DoesNotExist:
+            continue
+    if f is None:
+        raise Http404
     return render_flatpage(request, f)
 
 @csrf_protect
