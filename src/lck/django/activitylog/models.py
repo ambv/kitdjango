@@ -40,10 +40,10 @@ from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.db import models as db
 from django.utils.translation import ugettext_lazy as _
+from dj.choices import Choices
 
 from lck.cache import memoize
 from lck.django.common.models import TimeTrackable, WithConcurrentGetOrCreate
-from lck.django.choices import Choices
 
 import logging
 LOG = logging.getLogger(__name__)

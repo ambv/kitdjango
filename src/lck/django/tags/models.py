@@ -44,8 +44,8 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db import models as db
 from django.db.models.signals import post_delete
 from django.utils.translation import ugettext_lazy as _
+from dj.choices import Choice, Language
 
-from lck.django.choices import Choice, Language
 from lck.django.common.models import Named, Localized, TimeTrackable
 from lck.django.tags.helpers import parse_tag_input
 from lck.lang import unset

@@ -50,13 +50,13 @@ from django.forms import fields
 from django.template.defaultfilters import urlencode
 from django.utils.translation import ugettext
 from django.utils.translation import ugettext_lazy as _
+from dj.choices import Language
 
 try:
     from django.utils.timezone import now
 except ImportError:
     now = datetime.now
 
-from lck.django.choices import Language
 from lck.django.common import monkeys, nested_commit_on_success
 
 

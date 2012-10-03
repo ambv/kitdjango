@@ -39,8 +39,8 @@ import re
 from django.contrib.auth.models import User
 from django.db import models as db
 from django.utils.translation import ugettext_lazy as _
+from dj.choices import Country, Gender
 
-from lck.django.choices import Country, Gender
 from lck.django.common.templatetags.thumbnail import thumbnail
 
 TZ_CHOICES = [(float(x[0]), x[1]) for x in (
