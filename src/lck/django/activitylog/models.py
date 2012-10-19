@@ -36,7 +36,6 @@ import socket
 import zlib
 
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.db import models as db
 from django.utils.translation import ugettext_lazy as _
@@ -237,7 +236,6 @@ class Backlink(TimeTrackable, WithConcurrentGetOrCreate):
 
 
 class M2M(TimeTrackable, WithConcurrentGetOrCreate):
-    user = db.ForeignKey(User, verbose_name=_("user")) # for Django-admin
     profile = db.ForeignKey(ACTIVITYLOG_PROFILE_MODEL,
         verbose_name=_("profile"))
 
@@ -249,8 +247,7 @@ class ProfileIP(M2M):
     ip = db.ForeignKey(IP, verbose_name=_("IP address"))
 
     class Meta:
-        unique_together = (('ip', 'user'),
-                           ('ip', 'profile'))
+        unique_together = ('ip', 'profile')
         verbose_name = _("IP address")
         verbose_name_plural =_("IP addresses")
 
@@ -262,8 +259,7 @@ class ProfileUserAgent(M2M):
     agent = db.ForeignKey(UserAgent, verbose_name=_("user agent"))
 
     class Meta:
-        unique_together = (('agent', 'user'),
-                           ('agent', 'profile'))
+        unique_together = ('agent', 'profile')
         verbose_name = _("user agent")
         verbose_name_plural = _("user agents")
 

@@ -29,6 +29,7 @@ from __future__ import unicode_literals
 from datetime import datetime, timedelta
 
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
@@ -40,7 +41,7 @@ except ImportError:
     now = datetime.now
 
 from lck.django.activitylog.models import UserAgent, IP, ProfileIP,\
-    ProfileUserAgent, Backlink
+    ProfileUserAgent, Backlink, ACTIVITYLOG_PROFILE_MODEL
 from lck.django.common import remote_addr
 
 _backlink_url_max_length = Backlink._meta.get_field_by_name(
@@ -80,7 +81,10 @@ class ActivityMiddleware(object):
         if request.user.is_authenticated():
             users_online[request.user.id] = _now
             users_touched = True
-            profile = request.user.get_profile()
+            if ACTIVITYLOG_PROFILE_MODEL in (User, "auth.User"):
+                profile = request.user
+            else:
+                profile = request.user.get_profile()
         else:
             guest_sid = request.COOKIES.get(settings.SESSION_COOKIE_NAME, '')
             guests_online[guest_sid] = _now
@@ -110,13 +114,12 @@ class ActivityMiddleware(object):
                 # we're not using save() to bypass signals etc.
                 profile.__class__.objects.filter(pk = profile.pk).update(
                     last_active = _now)
-            pip, _ = ProfileIP.concurrent_get_or_create(ip=ip,
-                user=request.user, profile=profile)
+            pip, _ = ProfileIP.concurrent_get_or_create(ip=ip, profile=profile)
             ProfileIP.objects.filter(pk = pip.pk).update(
                 modified = _now)
             if agent:
                 pua, _ = ProfileUserAgent.concurrent_get_or_create(agent=agent,
-                    user=request.user, profile=profile)
+                    profile=profile)
                 ProfileUserAgent.objects.filter(pk = pua.pk).update(
                     modified = _now)
         request.ip = ip

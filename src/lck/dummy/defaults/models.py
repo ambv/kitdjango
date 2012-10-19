@@ -31,12 +31,46 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from django.contrib.auth.models import User
 from django.db import models as db
-
-
+from django.dispatch import receiver
+from lck.django.activitylog.models import MonitoredActivity
 from lck.django.profile.models import BasicInfo
 
-class Profile(BasicInfo):
+class Profile(BasicInfo, MonitoredActivity):
     class Meta:
         verbose_name = 'profile'
         verbose_name = 'profiles'
+
+
+def create_a_user_profile_ignoring_dberrors(instance):
+    try:
+        profile, new = Profile.objects.get_or_create(user=instance)
+        profile.save() # to trigger nick update etc.
+    except DatabaseError:
+        pass # no such table yet, first syncdb
+
+
+@receiver(db.signals.post_save, sender=User)
+def user_post_save(sender, instance, created, **kwargs):
+    if created:
+        create_a_user_profile_ignoring_dberrors(instance)
+
+
+# ensure at start no user comes without a profile
+if False: # this is too heavy for tens of thousands of users
+    try:
+        for u in User.objects.order_by('id'):
+            create_a_user_profile_ignoring_dberrors(u)
+    except DatabaseError:
+        pass # no such table yet, first syncdb
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise SystemExit
+
+
+# workaround for a unit test bug in Django 1.4.x
+
+from django.contrib.auth.tests import models as auth_test_models
+del auth_test_models.ProfileTestCase.test_site_profile_not_available

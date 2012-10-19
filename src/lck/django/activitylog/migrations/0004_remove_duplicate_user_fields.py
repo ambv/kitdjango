@@ -5,6 +5,7 @@ from south.v2 import SchemaMigration
 
 from django.conf import settings
 
+
 ACTIVITYLOG_PROFILE_MODEL = getattr(settings, 'ACTIVITYLOG_PROFILE_MODEL',
     getattr(settings, 'AUTH_PROFILE_MODULE', 'auth.User'))
 apm_key = ACTIVITYLOG_PROFILE_MODEL.lower()
@@ -14,14 +15,32 @@ apm_app = ACTIVITYLOG_PROFILE_MODEL.split('.')[0]
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
+        # Removing unique constraint on 'ProfileUserAgent', fields ['user', 'agent']
+        db.delete_unique('activitylog_profileuseragent', ['user_id', 'agent_id'])
 
-        # Changing field 'Backlink.site'
-        db.alter_column('activitylog_backlink', 'site_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['sites.Site'], null=True))
+        # Removing unique constraint on 'ProfileIP', fields ['ip', 'user']
+        db.delete_unique('activitylog_profileip', ['ip_id', 'user_id'])
+
+        # Deleting field 'ProfileIP.user'
+        db.delete_column('activitylog_profileip', 'user_id')
+
+        # Deleting field 'ProfileUserAgent.user'
+        db.delete_column('activitylog_profileuseragent', 'user_id')
+
 
     def backwards(self, orm):
 
-        # Changing field 'Backlink.site'
-        db.alter_column('activitylog_backlink', 'site_id', self.gf('django.db.models.fields.related.ForeignKey')(default=1, to=orm['sites.Site']))
+        # User chose to not deal with backwards NULL issues for 'ProfileIP.user'
+        raise RuntimeError("Cannot reverse this migration. 'ProfileIP.user' and its values cannot be restored.")
+        # Adding unique constraint on 'ProfileIP', fields ['ip', 'user']
+        db.create_unique('activitylog_profileip', ['ip_id', 'user_id'])
+
+
+        # User chose to not deal with backwards NULL issues for 'ProfileUserAgent.user'
+        raise RuntimeError("Cannot reverse this migration. 'ProfileUserAgent.user' and its values cannot be restored.")
+        # Adding unique constraint on 'ProfileUserAgent', fields ['user', 'agent']
+        db.create_unique('activitylog_profileuseragent', ['user_id', 'agent_id'])
+
 
     models = {
         apm_key: freeze_apps(apm_app)[apm_key],
@@ -50,24 +69,22 @@ class Migration(SchemaMigration):
             'profiles': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['{ACTIVITYLOG_PROFILE_MODEL}']".format(ACTIVITYLOG_PROFILE_MODEL=ACTIVITYLOG_PROFILE_MODEL), 'through': "orm['activitylog.ProfileIP']", 'symmetrical': 'False'})
         },
         'activitylog.profileip': {
-            'Meta': {'unique_together': "((u'ip', u'user'), (u'ip', u'profile'))", 'object_name': 'ProfileIP'},
+            'Meta': {'unique_together': "((u'ip', u'profile'),)", 'object_name': 'ProfileIP'},
             'cache_version': ('django.db.models.fields.PositiveIntegerField', [], {'default': '0'}),
             'created': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'ip': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['activitylog.IP']"}),
             'modified': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'profile': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['{ACTIVITYLOG_PROFILE_MODEL}']".format(ACTIVITYLOG_PROFILE_MODEL=ACTIVITYLOG_PROFILE_MODEL)}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"})
+            'profile': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['{ACTIVITYLOG_PROFILE_MODEL}']".format(ACTIVITYLOG_PROFILE_MODEL=ACTIVITYLOG_PROFILE_MODEL)})
         },
         'activitylog.profileuseragent': {
-            'Meta': {'unique_together': "((u'agent', u'user'), (u'agent', u'profile'))", 'object_name': 'ProfileUserAgent'},
+            'Meta': {'unique_together': "((u'agent', u'profile'),)", 'object_name': 'ProfileUserAgent'},
             'agent': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['activitylog.UserAgent']"}),
             'cache_version': ('django.db.models.fields.PositiveIntegerField', [], {'default': '0'}),
             'created': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'modified': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'profile': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['{ACTIVITYLOG_PROFILE_MODEL}']".format(ACTIVITYLOG_PROFILE_MODEL=ACTIVITYLOG_PROFILE_MODEL)}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"})
+            'profile': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['{ACTIVITYLOG_PROFILE_MODEL}']".format(ACTIVITYLOG_PROFILE_MODEL=ACTIVITYLOG_PROFILE_MODEL)})
         },
         'activitylog.useragent': {
             'Meta': {'object_name': 'UserAgent'},

@@ -65,6 +65,7 @@ INSTALLED_APPS = (
     #'django_extensions',
     #'gunicorn',
     #'haystack',
+    'south',
     'lck.django.common',
     'lck.django.activitylog',
     'lck.django.profile',
@@ -144,7 +145,6 @@ TAG_AUTHOR_MODEL = AUTH_PROFILE_MODULE
 SECRET_KEY = 'u*pk)&+kxuyj+rgb&z%!*c4$drco@zs=pob3ugey0#fa@m@c4w'
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
-DUMMY_SEND_MAIL = DEBUG
 SEND_BROKEN_LINK_EMAILS = DEBUG
 DATABASES = dict(
     default = dict(
