@@ -72,6 +72,22 @@ behaviour which I consider ugly.
 Change Log
 ----------
 
+0.8.0
+~~~~~
+
+* ``lazy_chain`` moved to a separate `dj.chain
+  <http://pypi.python.org/pypi/dj.chain/>`_ package. The old interface is thus
+  deprecated and will be removed in a future version.
+
+* ``activitylog`` updates: removed redundant user fields so it works again with
+  ``ACTIVITYLOG_PROFILE_MODEL`` set to ``auth.User``
+    
+* profile admin module includes a predefined ``ProfileInlineFormSet`` for
+  inclusion of profile-tied models to the UserAdmin as inlines
+    
+* the dummy application now passes all internal Django unit tests in versions
+  1.4.0 - 1.4.2
+
 0.7.14
 ~~~~~~
 
