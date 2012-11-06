@@ -41,6 +41,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 from dj.chain import chain as lazy_chain # compatibility with lck.django < 0.8
 from dj.choices import Language
+from lck.cache import memoize
 
 
 DOTS_REGEX = re.compile(r'\.\s+')
@@ -247,3 +248,9 @@ def get_langs(request, custom=None):
     langs.append({'language':
         Language.id_from_name(settings.LANGUAGE_CODE.split("-")[0])})
     return langs
+
+
+@memoize
+def model_is_user(model):
+    from django.contrib.auth.models import User
+    return model in (User, 'auth.User')

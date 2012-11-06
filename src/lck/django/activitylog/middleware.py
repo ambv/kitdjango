@@ -42,7 +42,7 @@ except ImportError:
 
 from lck.django.activitylog.models import UserAgent, IP, ProfileIP,\
     ProfileUserAgent, Backlink, ACTIVITYLOG_PROFILE_MODEL
-from lck.django.common import remote_addr
+from lck.django.common import model_is_user, remote_addr
 
 _backlink_url_max_length = Backlink._meta.get_field_by_name(
     'url')[0].max_length
@@ -81,7 +81,7 @@ class ActivityMiddleware(object):
         if request.user.is_authenticated():
             users_online[request.user.id] = _now
             users_touched = True
-            if ACTIVITYLOG_PROFILE_MODEL in (User, "auth.User"):
+            if model_is_user(ACTIVITYLOG_PROFILE_MODEL):
                 profile = request.user
             else:
                 profile = request.user.get_profile()

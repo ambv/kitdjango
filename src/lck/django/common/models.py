@@ -43,7 +43,6 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
-from django.core.mail import send_mail
 from django.db import IntegrityError, transaction
 from django.db import models as db
 from django.forms import fields
@@ -57,7 +56,7 @@ try:
 except ImportError:
     now = datetime.now
 
-from lck.django.common import monkeys, nested_commit_on_success
+from lck.django.common import model_is_user, monkeys, nested_commit_on_success
 
 
 EDITOR_TRACKABLE_MODEL = getattr(settings, 'EDITOR_TRACKABLE_MODEL', User)
@@ -383,20 +382,25 @@ class EditorTrackable(db.Model):
     created_by = db.ForeignKey(EDITOR_TRACKABLE_MODEL,
         verbose_name=_("created by"), null=True, blank=True, default=None,
         related_name='+', on_delete=db.SET_NULL,
-        limit_choices_to={'is_staff' if EDITOR_TRACKABLE_MODEL is User
+        limit_choices_to={'is_staff' if model_is_user(EDITOR_TRACKABLE_MODEL)
             else 'user__is_staff': True})
     modified_by = db.ForeignKey(EDITOR_TRACKABLE_MODEL,
         verbose_name=_("modified by"), null=True, blank=True, default=None,
         related_name='+', on_delete=db.SET_NULL,
-        limit_choices_to={'is_staff' if EDITOR_TRACKABLE_MODEL is User
+        limit_choices_to={'is_staff' if model_is_user(EDITOR_TRACKABLE_MODEL)
             else 'user__is_staff': True})
 
     class Meta:
         abstract = True
 
     def get_editor_from_request(self, request):
-        """This has to be overriden if you're using a profile ForeignKey."""
-        return request.user
+        """This has to be overriden if you're using a custom editor model.
+        Both ``auth.User`` and ``AUTH_PROFILE_MODULE`` are automatically
+        handled."""
+        if model_is_user(EDITOR_TRACKABLE_MODEL):
+            return request.user
+        else:
+            return request.user.get_profile()
 
     def pre_save_model(self, request, obj, form, change):
         """Internal method used by ``lck.django.common.ModelAdmin``."""

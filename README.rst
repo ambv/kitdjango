@@ -81,6 +81,10 @@ Change Log
 
 * ``activitylog`` updates: removed redundant user fields so it works again with
   ``ACTIVITYLOG_PROFILE_MODEL`` set to ``auth.User``
+
+* ``EditorTrackable`` doesn't require overriding ``get_editor_from_request``
+  anymore if ``EDITOR_TRACKABLE_MODEL`` is set to a profile model instead of
+  ``auth.User``
     
 * profile admin module includes a predefined ``ProfileInlineFormSet`` for
   inclusion of profile-tied models to the UserAdmin as inlines
