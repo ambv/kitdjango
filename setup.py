@@ -47,6 +47,7 @@ setup (
         'distribute',
         'django>=1.3.1',
         'django-celery',
+        'dj.chain==0.9.0',
         'dj.choices==0.9.0',
         'postmarkup',
         'Pillow>=1.7.5',
