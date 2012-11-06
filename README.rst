@@ -87,7 +87,7 @@ Change Log
   ``auth.User``
     
 * profile admin module includes a predefined ``ProfileInlineFormSet`` for
-  inclusion of profile-tied models to the UserAdmin as inlines
+  inclusion of profile-tied models to the ``UserAdmin`` as inlines
     
 * the dummy application now passes all internal Django unit tests in versions
   1.4.0 - 1.4.2
