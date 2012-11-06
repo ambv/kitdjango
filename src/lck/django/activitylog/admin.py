@@ -64,7 +64,7 @@ class BacklinkAdmin(ModelAdmin):
 admin.site.register(Backlink, BacklinkAdmin)
 
 
-class ProfileIPInline(admin.TabularInline):
+class IPInline(admin.TabularInline):
     def user_ip(self):
         return '<a href="/admin/activitylog/ip/{}/">{}</a>'.format(self.ip.id,
             self.ip)
@@ -89,4 +89,4 @@ class UserAgentInline(admin.TabularInline):
     readonly_fields = (user_agent, 'created', 'modified')
     extra = 0
 
-UserIPInline = ProfileIPInline # backwards compatibility
+UserIPInline = IPInline # backwards compatibility
