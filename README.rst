@@ -72,6 +72,13 @@ behaviour which I consider ugly.
 Change Log
 ----------
 
+0.8.1
+~~~~~
+
+* ``namespace_package_support`` extended to cover ``django.utils.translation``
+  as well (previously namespace-packaged projects only worked with I18N if
+  ``setup.py develop`` or ``pip install -e .`` was used to install them)
+
 0.8.0
 ~~~~~
 
