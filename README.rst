@@ -79,6 +79,8 @@ Change Log
   as well (previously namespace-packaged projects only worked with I18N if
   ``setup.py develop`` or ``pip install -e .`` was used to install them)
 
+* ``dj.chain`` requirement bumped to 0.9.1 (supports more collective methods)
+
 0.8.0
 ~~~~~
 
