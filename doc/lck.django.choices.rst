@@ -1,6 +1,11 @@
 lck.django.choices
 ==================
 
+.. note::
+
+  The legacy ``lck.django.choices`` namespace will be removed in ``lck.django``
+  1.0. Use `dj.choices <http://pypi.python.org/pypi/dj.choices>`_.
+
 .. automodule:: lck.django.choices
 
 Classes
