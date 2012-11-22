@@ -38,6 +38,7 @@ from datetime import datetime
 from functools import partial
 from hashlib import sha256
 import re
+import sys
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -515,22 +516,31 @@ class SoftDeletable(db.Model):
 class WithConcurrentGetOrCreate(object):
     """
     The built-in ``Model.objects.get_or_create()`` doesn't work well in
-    concurrent environments. This tiny mixin solves the problem.
+    concurrent environments. This mixin solves the problem.
     """
     @classmethod
     @nested_commit_on_success
     def concurrent_get_or_create(cls, **kwargs):
+        assert (kwargs, 'concurrent_get_or_create() must be passed at least '
+                        'one keyword argument')
+        defaults = kwargs.pop('defaults', {})
+        for f in cls._meta.fields:
+            if f.attname in kwargs:
+                kwargs[f.name] = kwargs.pop(f.attname)
         try:
-            obj = cls.objects.create(**kwargs)
-            created = True
-        except IntegrityError, e1:
-            transaction.commit()
+            params = dict(kwargs)
+            params.update(defaults)
+            sid = transaction.savepoint(using=cls.objects.db)
+            obj = cls.objects.create(**params)
+            transaction.savepoint_commit(sid, using=cls.objects.db)
+            return obj, True
+        except IntegrityError:
+            transaction.savepoint_rollback(sid, using=cls.objects.db)
+            exc_info = sys.exc_info()
             try:
-                obj = cls.objects.get(**kwargs)
-            except cls.DoesNotExist, e2:
-                raise e1 # there is an object with a partial argument match
-            created = False
-        return obj, created
+                return cls.objects.get(**kwargs), False
+            except cls.DoesNotExist:
+                raise exc_info[1], None, exc_info[2] # there is an object with a partial argument match
 
 
 class VerboseNameGetter(object):
