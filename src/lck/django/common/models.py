@@ -516,7 +516,11 @@ class SoftDeletable(db.Model):
 class WithConcurrentGetOrCreate(object):
     """
     The built-in ``Model.objects.get_or_create()`` doesn't work well in
-    concurrent environments. This mixin solves the problem.
+    concurrent environments. This mixin solves the problem by trying to INSERT
+    first and only if it fails, SELECT an existing row.
+
+    Note: inherently incompatible with nested_commit_on_success (will commit
+    underlying transactions).
     """
     @classmethod
     @nested_commit_on_success
@@ -530,17 +534,15 @@ class WithConcurrentGetOrCreate(object):
         try:
             params = dict(kwargs)
             params.update(defaults)
-            sid = transaction.savepoint(using=cls.objects.db)
-            obj = cls.objects.create(**params)
-            transaction.savepoint_commit(sid, using=cls.objects.db)
-            return obj, True
+            return cls.objects.create(**params), True
         except IntegrityError:
-            transaction.savepoint_rollback(sid, using=cls.objects.db)
+            transaction.commit()
             exc_info = sys.exc_info()
             try:
                 return cls.objects.get(**kwargs), False
             except cls.DoesNotExist:
-                raise exc_info[1], None, exc_info[2] # there is an object with a partial argument match
+                # there is an object with a partial argument match
+                raise exc_info[1], None, exc_info[2]
 
 
 class VerboseNameGetter(object):
