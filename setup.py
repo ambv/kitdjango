@@ -46,11 +46,10 @@ setup (
         'lck.i18n>=0.3.0',
         'distribute',
         'django>=1.3.1',
-        'django-celery',
         'dj.chain==0.9.1',
         'dj.choices==0.9.0',
         'postmarkup',
-        'Pillow>=1.7.5',
+        'Pillow>=1.7.6',
         'python-memcached',
         #'pylibmc', # we'll switch at one point when libmemcached will be more
                     # prevalent on servers
