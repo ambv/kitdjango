@@ -72,8 +72,17 @@ behaviour which I consider ugly.
 Change Log
 ----------
 
+0.8.2
+~~~~~
+
+* fixed regression from 0.8.1: removed savepoint support since the updated
+  ``concurrent_get_or_create`` fails miserably on MySQL due to dogdy savepoint
+  support in `MySQL-python <http://pypi.python.org/pypi/MySQL-python>`_
+
 0.8.1
 ~~~~~
+
+* ``concurrent_get_or_create`` based on ``get_or_create`` from Django 1.4.2
 
 * ``namespace_package_support`` extended to cover ``django.utils.translation``
   as well (previously namespace-packaged projects only worked with I18N if
