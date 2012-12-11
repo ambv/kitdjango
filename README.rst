@@ -1,6 +1,6 @@
-----------
+==========
 lck.django
-----------
+==========
 
 This library consists of various Django-related routines that extend or modify
 the behaviour of the framework:
@@ -53,7 +53,8 @@ every Django project:
  * `Country Flags by SenojFlags.com <http://www.senojflags.com>`_ - requires
    using the following HTML::
 
-    <a href="http://www.senojflags.com">Country flag</a> image from <a href="http://www.senojflags.com">Flags of all Countries</a>
+    <a href="http://www.senojflags.com">Country flag</a> image from 
+    <a href="http://www.senojflags.com">Flags of all Countries</a>
 
 For the curious, ``lck`` stands for LangaCore Kit. LangaCore is a one man
 software development shop of mine.
@@ -69,8 +70,31 @@ well.
 it makes my monkey-patching efforts much easier. Moreover, 1.3 nicely deprecates
 behaviour which I consider ugly.
 
+
+How to run the tests
+--------------------
+
+The easiest way would be to run::
+
+  $ DJANGO_SETTINGS_MODULE="lck.dummy.settings" DJANGO_SETTINGS_PROFILE="test" django-admin.py test
+
+This command runs the internal Django tests as well and that's fine because
+there are monkey patches and other subtleties that should better be tested for
+potential breakage.
+
+The dummy project is also used as an example of setting up a Django project.
+However, it seems Django tests are not happy with some changes to the settings
+so we're using the ``test`` profile (which loads overrides from
+``settings-test.py``) to avoid that.
+
+
 Change Log
 ----------
+
+0.8.3
+~~~~~
+
+* Unit tests converted to unittest2 format
 
 0.8.2
 ~~~~~
@@ -194,7 +218,6 @@ Change Log
 
 * Further Django 1.4 compatibility improvements: auto-compelete foreign key
   mixin works correctly now
-
 
 0.7.5
 ~~~~~
