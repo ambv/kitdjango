@@ -94,6 +94,11 @@ Change Log
 0.8.3
 ~~~~~
 
+* ``profile`` now implements automatic profile account synchronization by
+  registering a post-save signal on User and creating an ``AUTH_PROFILE_MODEL``
+  instance. A management command for existing applications called
+  ``sync_profiles`` has been created.
+
 * Unit tests converted to unittest2 format
 
 0.8.2

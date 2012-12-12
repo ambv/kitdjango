@@ -36,12 +36,16 @@ from functools import partial
 from hashlib import md5
 import re
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models as db
+from django.db import DatabaseError
+from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
 from dj.choices import Country, Gender
 
 from lck.django.common.templatetags.thumbnail import thumbnail
+
 
 TZ_CHOICES = [(float(x[0]), x[1]) for x in (
     (-12, '-12'), (-11, '-11'), (-10, '-10'), (-9.5, '-09.5'), (-9, '-09'),
@@ -209,3 +213,32 @@ class GravatarSupport(db.Model):
 
     class Meta:
         abstract = True
+
+
+def create_a_user_profile_ignoring_dberrors(user):
+    """Returns a profile instance associated with the given `user`, creating it
+    first if necessary. The created profile is essentially empty apart from
+    the fields automatically synchronized in save().
+
+    Returns None if the ``AUTH_PROFILE_MODULE`` setting it not used or there's
+    a database error upon creating the profile object (can happen on the first
+    syncdb when the table for user profiles is not ready yet).
+    """
+
+    profile = None
+    if getattr(settings, 'AUTH_PROFILE_MODULE', None):
+        Profile = db.loading.cache.get_model(
+            *settings.AUTH_PROFILE_MODULE.split('.')
+        )
+        try:
+            profile, new = Profile.objects.get_or_create(user=user)
+            profile.save()   # to trigger nick update etc.
+        except DatabaseError:
+            pass   # no such table yet, first syncdb
+    return profile
+
+
+@receiver(db.signals.post_save, sender=User, dispatch_uid="lckdjango-user-ps")
+def user_post_save(sender, instance, created, **kwargs):
+    if created:
+        create_a_user_profile_ignoring_dberrors(instance)

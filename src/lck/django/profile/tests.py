@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2011 by Łukasz Langa
+# Copyright (C) 2012 by Łukasz Langa
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -21,29 +21,27 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-"""lck.dummy.defaults
-   ------------------
-
-   A minimal sample Django app for documentation generation purposes."""
+"""Test for common routines and models."""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from django.db import models as db
-from django.dispatch import receiver
-from lck.django.activitylog.models import MonitoredActivity
-from lck.django.profile.models import BasicInfo
+from django.conf import settings
+from django.test import TestCase
+from django.utils.unittest import skipUnless
 
 
-class Profile(BasicInfo, MonitoredActivity):
-    class Meta:
-        verbose_name = 'profile'
-        verbose_name = 'profiles'
+@skipUnless("lck.dummy.defaults" in settings.INSTALLED_APPS,
+            "Requires the lck.dummy.defaults to be installed.")
+class TestModels(TestCase):
+    def test_creation(self):
+        from django.contrib.auth.models import User
+        from lck.dummy.defaults.models import Profile
 
-
-# workaround for a unit test bug in Django 1.4.x
-
-from django.contrib.auth.tests import models as auth_test_models
-del auth_test_models.ProfileTestCase.test_site_profile_not_available
+        u = User(username='pinky', email='pinky@brain.com')
+        with self.assertRaises(Profile.DoesNotExist):
+            u.get_profile()
+        u.save()
+        self.assertEqual(u.username, u.get_profile().nick)

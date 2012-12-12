@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2011 by Łukasz Langa
+# Copyright (C) 2012 by Łukasz Langa
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -21,29 +21,26 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-"""lck.dummy.defaults
-   ------------------
-
-   A minimal sample Django app for documentation generation purposes."""
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from django.db import models as db
-from django.dispatch import receiver
-from lck.django.activitylog.models import MonitoredActivity
-from lck.django.profile.models import BasicInfo
+from django.contrib.auth.models import User
+from django.core.management.base import NoArgsCommand
+from lck.django.profile.models import create_a_user_profile_ignoring_dberrors
 
 
-class Profile(BasicInfo, MonitoredActivity):
-    class Meta:
-        verbose_name = 'profile'
-        verbose_name = 'profiles'
+class Command(NoArgsCommand):
+    help = ("Creates profiles for users not having them already.")
 
+    requires_model_validation = True
 
-# workaround for a unit test bug in Django 1.4.x
-
-from django.contrib.auth.tests import models as auth_test_models
-del auth_test_models.ProfileTestCase.test_site_profile_not_available
+    def handle_noargs(self, **options):
+        try:
+            for u in User.objects.order_by('id'):
+                create_a_user_profile_ignoring_dberrors(u)
+        except Exception:
+            import traceback
+            traceback.print_exc()
+            raise SystemExit
