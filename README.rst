@@ -94,6 +94,12 @@ Change Log
 0.8.3
 ~~~~~
 
+* ``concurrent_get_or_create`` will now raise AssertionErrors if given either
+  too many fields (e.g. not all of which are unique or compose
+  a unique-together constraint) or too few (e.g. do not form a whole
+  unique-together constraint). Non-unique fields should be passed in the
+  ``defaults`` keyword argument if needed at object creation time.
+
 * ``profile`` now implements automatic profile account synchronization by
   registering a post-save signal on User and creating an ``AUTH_PROFILE_MODEL``
   instance. A management command for existing applications called

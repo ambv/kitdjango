@@ -42,3 +42,51 @@ class TestHelpers(TestCase):
         self.assertEqual(cut("", length=12, trailing=" ..."), "")
         self.assertEqual(cut("", length=0, trailing=" ..."), "")
         self.assertEqual(cut("123456789", length=-1), "12345678 (...)")
+
+
+class TestModels(TestCase):
+    def test_concurrent_get_or_create(self):
+        from lck.dummy.defaults.models import CurrentlyConcurrent
+        existing = CurrentlyConcurrent(
+            name='existing',
+            field1=0,
+            field2=0,
+            field3=0,
+            field4=0,
+            field5=0,
+            field6=0,
+        )
+        existing.save()
+        self.assertEqual(existing.id, 1)
+        # use all unique fields properly and separate others to `defaults`
+        existing2, created = CurrentlyConcurrent.concurrent_get_or_create(
+            name='existing',
+            field1=0,
+            field2=0,
+            field3=0,
+            field4=0,
+            defaults=dict(
+                field5=0,
+                field6=0,
+            ),
+        )
+        self.assertFalse(created)
+        self.assertEqual(existing, existing2)
+        # try to throw non-unique fields to the arguments list
+        with self.assertRaises(AssertionError):
+            existing2, created = CurrentlyConcurrent.concurrent_get_or_create(
+                name='existing',
+                field1=0,
+                field2=0,
+                field3=0,
+                field4=0,
+                field5=0,
+                field6=0,
+            )
+        # try to not use all unique fields in the arguments list
+        with self.assertRaises(AssertionError):
+            existing2, created = CurrentlyConcurrent.concurrent_get_or_create(
+                name='existing',
+                field1=0,
+                field4=0,
+            )

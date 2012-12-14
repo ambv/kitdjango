@@ -519,6 +519,12 @@ class WithConcurrentGetOrCreate(object):
     concurrent environments. This mixin solves the problem by trying to INSERT
     first and only if it fails, SELECT an existing row.
 
+    This version is also more strict in terms of acceptable arguments.
+    Arguments passed directly to ``concurrent_get_or_create`` should be unique
+    fields or fields forming a ``unique_together`` constraint. Passing other
+    fields will raise an AssertionError. Those fields can be optionally given
+    in the ``defaults`` argument.
+
     Note: inherently incompatible with nested_commit_on_success (will commit
     underlying transactions).
     """
@@ -528,9 +534,29 @@ class WithConcurrentGetOrCreate(object):
         assert (kwargs, 'concurrent_get_or_create() must be passed at least '
                         'one keyword argument')
         defaults = kwargs.pop('defaults', {})
+        required_fields = {f.name for f in cls._meta.fields if f.unique}
+        unique_together = {}
+        for fieldset in cls._meta.unique_together:
+            for field in fieldset:
+                unique_together.setdefault(field, set()).update(fieldset)
+        unique_together = {f: set(fs) for fs in cls._meta.unique_together
+                           for f in fs}
         for f in cls._meta.fields:
             if f.attname in kwargs:
                 kwargs[f.name] = kwargs.pop(f.attname)
+        given_fields = set(kwargs.keys())
+        spurious_fields = given_fields - required_fields
+        not_spurious_actually = set()
+        for field in spurious_fields:
+            if field not in unique_together:
+                continue
+            missing_fields = unique_together[field] - spurious_fields
+            assert not missing_fields, ("Missing unique_together fields: "
+                                        "{}".format(missing_fields))
+            not_spurious_actually.add(field)
+        spurious_fields -= not_spurious_actually
+        assert not spurious_fields, ("Spurious fields given. Move those to "
+                                     "`defaults`: {}".format(spurious_fields))
         try:
             params = dict(kwargs)
             params.update(defaults)
@@ -540,8 +566,9 @@ class WithConcurrentGetOrCreate(object):
             exc_info = sys.exc_info()
             try:
                 return cls.objects.get(**kwargs), False
-            except cls.DoesNotExist:
-                # there is an object with a partial argument match
+            except (cls.DoesNotExist, cls.MultipleObjectsReturned):
+                # DoesNotExist: there's a partial argument match in the DB
+                # MultipleObjectsReturned: not enough unique arguments given
                 raise exc_info[1], None, exc_info[2]
 
 

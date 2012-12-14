@@ -34,6 +34,7 @@ from __future__ import unicode_literals
 from django.db import models as db
 from django.dispatch import receiver
 from lck.django.activitylog.models import MonitoredActivity
+from lck.django.common.models import Named, WithConcurrentGetOrCreate
 from lck.django.profile.models import BasicInfo
 
 
@@ -41,6 +42,18 @@ class Profile(BasicInfo, MonitoredActivity):
     class Meta:
         verbose_name = 'profile'
         verbose_name = 'profiles'
+
+
+class CurrentlyConcurrent(Named, WithConcurrentGetOrCreate):
+    field1 = db.PositiveIntegerField()
+    field2 = db.PositiveIntegerField()
+    field3 = db.PositiveIntegerField()
+    field4 = db.PositiveIntegerField()
+    field5 = db.PositiveIntegerField()
+    field6 = db.PositiveIntegerField()
+
+    class Meta:
+        unique_together = (('field1', 'field2'), ('field3', 'field4'))
 
 
 # workaround for a unit test bug in Django 1.4.x
