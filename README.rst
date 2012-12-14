@@ -96,7 +96,7 @@ Change Log
 
 * ``concurrent_get_or_create`` will now raise AssertionErrors if given either
   too many fields (e.g. not all of which are unique or compose
-  a unique-together constraint) or too few (e.g. do not form a whole
+  a unique-together constraint) or too few (e.g. fields do not form a whole
   unique-together constraint). Non-unique fields should be passed in the
   ``defaults`` keyword argument if needed at object creation time.
 
