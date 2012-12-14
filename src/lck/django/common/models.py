@@ -531,7 +531,7 @@ class WithConcurrentGetOrCreate(object):
     @classmethod
     @nested_commit_on_success
     def concurrent_get_or_create(cls, **kwargs):
-        assert (kwargs, 'concurrent_get_or_create() must be passed at least '
+        assert kwargs, ('concurrent_get_or_create() must be passed at least '
                         'one keyword argument')
         defaults = kwargs.pop('defaults', {})
         required_fields = {f.name for f in cls._meta.fields if f.unique}
