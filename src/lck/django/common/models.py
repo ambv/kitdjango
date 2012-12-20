@@ -63,6 +63,7 @@ from lck.django.common import model_is_user, monkeys, nested_commit_on_success
 EDITOR_TRACKABLE_MODEL = getattr(settings, 'EDITOR_TRACKABLE_MODEL', User)
 MAC_ADDRESS_REGEX = re.compile(r'^([0-9a-fA-F]{2}([:-]?|$)){6}$')
 DEFAULT_SAVE_PRIORITY = getattr(settings, 'DEFAULT_SAVE_PRIORITY', 0)
+DIRTY_MARK = object()
 
 
 class Named(db.Model):
@@ -247,8 +248,36 @@ class TimeTrackable(db.Model):
                     continue
             except (TypeError, ValueError):
                 pass # offset-naive and offset-aware datetimes, etc.
+            if v is DIRTY_MARK:
+                v = new_state.get(k)
             diff.append((k, v))
         return dict(diff)
+
+    def mark_dirty(self, *fields):
+        """Forces `fields` to be marked as dirty to make all machinery checking
+        for dirty fields treat them accordingly."""
+        _dirty_fields = self.dirty_fields
+        for field in fields:
+            if field in _dirty_fields:
+                continue
+            self._field_state[field] = DIRTY_MARK
+
+    def mark_clean(self, *fields, **kwargs):
+        """Removes the forced dirty marks from fields.
+
+        Fields that would be considered dirty anyway stay that way, unless
+        `force` is set to True. In that case a field is unmarked until another
+        change on it happens."""
+        force = kwargs.get('force', False)
+        _dirty_fields = self.dirty_fields
+        _current_state = self._fields_as_dict()
+        for field in fields:
+            if field not in _dirty_fields:
+                continue
+            if self._field_state[field] is DIRTY_MARK:
+                self._field_state[field] = _dirty_fields[field]
+            elif force:
+                self._field_state[field] = _current_state[field]
 
 
 class SavePrioritized(TimeTrackable):
@@ -339,7 +368,7 @@ class SavePrioritized(TimeTrackable):
                 setattr(self, field, orig_value)
         self.update_save_priorities(priorities)
         super(SavePrioritized, self).save(*args, **kwargs)
-        # FIXME: should this restore the values that were changed or not?
+        # FIXME: should this restore the values that were not saved or not?
 
 
 class ImageModel(Titled, Slugged, TimeTrackable):

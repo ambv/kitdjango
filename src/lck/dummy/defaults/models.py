@@ -34,7 +34,11 @@ from __future__ import unicode_literals
 from django.db import models as db
 from django.dispatch import receiver
 from lck.django.activitylog.models import MonitoredActivity
-from lck.django.common.models import Named, WithConcurrentGetOrCreate
+from lck.django.common.models import (
+    Named,
+    TimeTrackable,
+    WithConcurrentGetOrCreate,
+)
 from lck.django.profile.models import BasicInfo
 
 
@@ -55,6 +59,9 @@ class CurrentlyConcurrent(Named, WithConcurrentGetOrCreate):
     class Meta:
         unique_together = (('field1', 'field2'), ('field3', 'field4'))
 
+
+class TimeConscious(Named, TimeTrackable):
+    pass
 
 # workaround for a unit test bug in Django 1.4.x
 

@@ -28,7 +28,9 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from django.conf import settings
 from django.test import TestCase
+from django.utils.unittest import skipUnless
 
 
 class TestHelpers(TestCase):
@@ -44,7 +46,55 @@ class TestHelpers(TestCase):
         self.assertEqual(cut("123456789", length=-1), "12345678 (...)")
 
 
+@skipUnless("lck.dummy.defaults" in settings.INSTALLED_APPS,
+            "Requires lck.dummy.defaults to be installed.")
 class TestModels(TestCase):
+    def test_dirty_fields(self):
+        from lck.dummy.defaults.models import TimeConscious
+        tc1 = TimeConscious(name='tc1')
+        last_modified = tc1.modified
+        self.assertFalse(tc1.dirty_fields, "object initialized")
+        self.assertFalse(tc1.cache_version)
+        tc1.save()
+        self.assertEqual(tc1.modified, last_modified)
+        self.assertFalse(tc1.dirty_fields, "object saved")
+        tc1.cache_version = 23
+        self.assertIn('cache_version', tc1.dirty_fields,
+                      "insignificant fields")
+        tc1.name = 'TC1'
+        self.assertIn('name', tc1.dirty_fields, "significant fields")
+        tc1.save()
+        self.assertNotEqual(tc1.modified, last_modified)
+        last_modified = tc1.modified
+        self.assertFalse(tc1.dirty_fields, "object saved")
+        tc1.mark_dirty('name')
+        self.assertIn('name', tc1.dirty_fields, "forced dirty")
+        self.assertEqual(tc1.dirty_fields['name'], tc1.name)
+        tc1.save()
+        self.assertNotEqual(tc1.modified, last_modified)
+        last_modified = tc1.modified
+        self.assertFalse(tc1.dirty_fields, "object saved")
+        tc1.mark_dirty('name')
+        self.assertIn('name', tc1.dirty_fields, "forced dirty")
+        self.assertEqual(tc1.dirty_fields['name'], tc1.name)
+        tc1.mark_clean('name')
+        self.assertFalse(tc1.dirty_fields, "cleaned forced dirty")
+        tc1.save()
+        self.assertEqual(tc1.modified, last_modified)
+        self.assertFalse(tc1.dirty_fields, "object saved")
+        tc1.name = 'tc1'
+        self.assertIn('name', tc1.dirty_fields, "significant fields")
+        tc1.mark_clean('name')
+        self.assertIn('name', tc1.dirty_fields, "clean on a changed field")
+        tc1.mark_clean('name', force=True)
+        self.assertNotIn('name', tc1.dirty_fields,
+                         "forced clean on a changed field")
+        tc1.save()
+        self.assertEqual(tc1.modified, last_modified)
+        tc2 = TimeConscious.objects.get(pk=tc1.pk)
+        self.assertEqual(tc2.name, 'tc1', "saved anyway")
+
+
     def test_concurrent_get_or_create(self):
         from lck.dummy.defaults.models import CurrentlyConcurrent
         existing = CurrentlyConcurrent(
