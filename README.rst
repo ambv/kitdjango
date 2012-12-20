@@ -91,6 +91,12 @@ so we're using the ``test`` profile (which loads overrides from
 Change Log
 ----------
 
+0.8.4
+~~~~~
+
+* ``TimeTrackable`` models can now force marking fields as dirty with
+  ``mark_dirty()`` and ``mark_clean`` methods
+
 0.8.3
 ~~~~~
 
