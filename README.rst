@@ -95,7 +95,7 @@ Change Log
 ~~~~~
 
 * ``TimeTrackable`` models can now force marking fields as dirty with
-  ``mark_dirty()`` and ``mark_clean`` methods
+  ``mark_dirty()`` and ``mark_clean()`` methods
 
 0.8.3
 ~~~~~
