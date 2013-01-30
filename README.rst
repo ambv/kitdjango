@@ -91,6 +91,14 @@ so we're using the ``test`` profile (which loads overrides from
 Change Log
 ----------
 
+0.8.5
+~~~~~
+
+* ``whois`` management command introduced to help find users by session ID
+
+* using ``User`` attributes proxied from a ``Profile`` instance no longer
+  causes a query for each call
+
 0.8.4
 ~~~~~
 
