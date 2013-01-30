@@ -40,8 +40,19 @@ class TestModels(TestCase):
         from django.contrib.auth.models import User
         from lck.dummy.defaults.models import Profile
 
-        u = User(username='pinky', email='pinky@brain.com')
+        u = User(username='pinky', email='pinky@brain.com',
+                 first_name='Pinky', last_name='Mouse')
         with self.assertRaises(Profile.DoesNotExist):
             u.get_profile()
         u.save()
         self.assertEqual(u.username, u.get_profile().nick)
+
+    def test_profile_attribute_passing(self):
+        self.test_creation()
+        from lck.dummy.defaults.models import Profile
+        p = Profile.objects.all()[0]
+        with self.assertNumQueries(1):
+            self.assertEqual(p.nick, 'pinky')
+            self.assertEqual(p.email, 'pinky@brain.com')
+            self.assertEqual(p.get_full_name(), 'Pinky Mouse')
+            self.assertFalse(p.is_anonymous())

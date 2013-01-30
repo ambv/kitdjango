@@ -98,7 +98,13 @@ class BasicInfo(db.Model):
         try:
             return super(BasicInfo, self).__getattr__(name)
         except AttributeError:
-            return getattr(User.objects.get(id=self.__dict__['user_id']), name)
+            user = None
+            if '_user_cache' in self.__dict__:
+                user = self.__dict__['_user_cache']
+            if not user:
+                user = User.objects.get(id=self.__dict__['user_id'])
+                self.__dict__['_user_cache'] = user
+            return getattr(user, name)
 
     def age(self):
         """age() -> numeric_age"""
