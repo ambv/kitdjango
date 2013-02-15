@@ -91,6 +91,12 @@ so we're using the ``test`` profile (which loads overrides from
 Change Log
 ----------
 
+0.8.6
+~~~~~
+
+* minor performance updates in ``activitylog`` middleware. Now behaves better
+  in low-memory + slow I/O environments.
+
 0.8.5
 ~~~~~
 
