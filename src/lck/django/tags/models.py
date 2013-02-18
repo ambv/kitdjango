@@ -50,6 +50,7 @@ from lck.django.common.models import Named, Localized, TimeTrackable
 from lck.django.tags.helpers import parse_tag_input
 from lck.lang import unset
 
+
 TAG_AUTHOR_MODEL = getattr(settings, 'TAG_AUTHOR_MODEL', User)
 
 
@@ -71,6 +72,7 @@ def _tag_get_user(author, default=unset):
         "a `user` or `profile` attribute of this type."
         "".format(author_model))
 
+
 def _tag_get_language(language, default=unset):
     if isinstance(language, int):
         return language
@@ -80,6 +82,7 @@ def _tag_get_language(language, default=unset):
         return default
     raise ValueError("The given language is neither an int nor "
         "a `Choice`.")
+
 
 def _tag_get_instance(instance, default=unset):
     if isinstance(instance, int):
@@ -285,6 +288,10 @@ class TagStemManager(db.Manager):
     """A regular manager but with a couple additional methods for easier
     stems discovery."""
 
+    def __init__(self):
+        super(TagStemManager, self).__init__()
+        self.stem_relname = Tag.stem.field.rel.related_name
+
     def get_dictionary(self, model=None, content_type=None, stem=None,
         stems=None, official=False, author=None, language=None):
         """Returns a dictionary of all tagged objects with values being
@@ -348,20 +355,19 @@ class TagStemManager(db.Manager):
         `official` tags and tags by a specific `author`. The QuerySet can be
         further filtered for instance to sort by `name` or `-tag_count`.
         """
-        author = _tag_get_user(author, default=None)
-        language = _tag_get_language(language, default=None)
-        instance = _tag_get_instance(instance, default=None)
+        author = _tag_get_user(author) if author else None
+        language = _tag_get_language(language) if language else None
+        instance = _tag_get_instance(instance) if instance else None
         ct = ContentType.objects.get_for_model(model)
-        relname = Tag._meta.get_field_by_name('stem')[0].rel.related_name
-        kwargs = {"{}__content_type".format(relname): ct}
+        kwargs = {"{}__content_type".format(self.stem_relname): ct}
         if instance is not None:
-            kwargs["{}__object_id".format(relname)] = instance
+            kwargs["{}__object_id".format(self.stem_relname)] = instance
         if official:
-            kwargs["{}__official".format(relname)] = True
+            kwargs["{}__official".format(self.stem_relname)] = True
         if author is not None:
-            kwargs["{}__author".format(relname)] = author
+            kwargs["{}__author".format(self.stem_relname)] = author
         if language is not None:
-            kwargs["{}__language".format(relname)] = language
+            kwargs["{}__language".format(self.stem_relname)] = language
         return self.filter(**kwargs).distinct()
 
     @staticmethod
