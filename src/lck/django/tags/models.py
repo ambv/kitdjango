@@ -290,7 +290,13 @@ class TagStemManager(db.Manager):
 
     def __init__(self):
         super(TagStemManager, self).__init__()
-        self.stem_relname = Tag.stem.field.rel.related_name
+        self._stem_relname = None
+
+    @property
+    def stem_relname(self):
+        if not self._stem_relname:
+            self._stem_relname = Tag.stem.field.rel.related_name
+        return self._stem_relname
 
     def get_dictionary(self, model=None, content_type=None, stem=None,
         stems=None, official=False, author=None, language=None):
@@ -359,15 +365,16 @@ class TagStemManager(db.Manager):
         language = _tag_get_language(language) if language else None
         instance = _tag_get_instance(instance) if instance else None
         ct = ContentType.objects.get_for_model(model)
-        kwargs = {"{}__content_type".format(self.stem_relname): ct}
+        stem_relname = self.stem_relname
+        kwargs = {"{}__content_type".format(stem_relname): ct}
         if instance is not None:
-            kwargs["{}__object_id".format(self.stem_relname)] = instance
+            kwargs["{}__object_id".format(stem_relname)] = instance
         if official:
-            kwargs["{}__official".format(self.stem_relname)] = True
+            kwargs["{}__official".format(stem_relname)] = True
         if author is not None:
-            kwargs["{}__author".format(self.stem_relname)] = author
+            kwargs["{}__author".format(stem_relname)] = author
         if language is not None:
-            kwargs["{}__language".format(self.stem_relname)] = language
+            kwargs["{}__language".format(stem_relname)] = language
         return self.filter(**kwargs).distinct()
 
     @staticmethod

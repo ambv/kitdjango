@@ -91,6 +91,14 @@ so we're using the ``test`` profile (which loads overrides from
 Change Log
 ----------
 
+0.8.7
+~~~~~
+
+* ``activitylog`` now sports new async modes with built-in support for RQ or
+  Celery workers
+
+* minor performance updates in ``tags`` models
+
 0.8.6
 ~~~~~
 

@@ -26,10 +26,11 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from datetime import datetime, timedelta
+from datetime import datetime
 from time import time
 
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
@@ -44,6 +45,7 @@ from lck.django.activitylog.models import UserAgent, IP, ProfileIP,\
     ProfileUserAgent, Backlink, ACTIVITYLOG_PROFILE_MODEL
 from lck.django.common import model_is_user, remote_addr
 
+class OptionBag(object): pass
 _backlink_url_max_length = Backlink._meta.get_field_by_name(
     'url')[0].max_length
 _backlink_referrer_max_length = Backlink._meta.get_field_by_name(
@@ -54,6 +56,85 @@ BACKLINKS_LOCAL_SITES = getattr(
 CURRENTLY_ONLINE_INTERVAL = getattr(
     settings, 'CURRENTLY_ONLINE_INTERVAL', 120,
 )
+ACTIVITYLOG_MODE = getattr(
+    settings, 'ACTIVITYLOG_MODE', 'sync',
+)
+ACTIVITYLOG_TASK_EXPIRATION = getattr(
+    settings, 'ACTIVITYLOG_TASK_EXPIRATION', 30,
+)
+if ACTIVITYLOG_MODE == 'sync':
+    def maybe_async(function):
+        result = OptionBag()
+        result.delay = function
+        return result
+    ip_get_or_create = IP.concurrent_get_or_create
+    ua_get_or_create = UserAgent.concurrent_get_or_create
+    pip_get_or_create = ProfileIP.concurrent_get_or_create
+    pua_get_or_create = ProfileUserAgent.concurrent_get_or_create
+    bl_get_or_create = Backlink.concurrent_get_or_create
+elif ACTIVITYLOG_MODE == 'rq':
+    from django_rq import job
+    maybe_async = job(
+        'activitylog',
+        timeout=ACTIVITYLOG_TASK_EXPIRATION,
+        result_ttl=ACTIVITYLOG_TASK_EXPIRATION,
+    )
+    ip_get_or_create = IP.objects.get_or_create
+    ua_get_or_create = UserAgent.objects.get_or_create
+    pip_get_or_create = ProfileIP.objects.get_or_create
+    pua_get_or_create = ProfileUserAgent.objects.get_or_create
+    bl_get_or_create = Backlink.objects.get_or_create
+elif ACTIVITYLOG_MODE == 'celery':
+    import celery
+    maybe_async = celery.task(
+        expires=ACTIVITYLOG_TASK_EXPIRATION,
+    )
+    ip_get_or_create = IP.objects.get_or_create
+    ua_get_or_create = UserAgent.objects.get_or_create
+    pip_get_or_create = ProfileIP.objects.get_or_create
+    pua_get_or_create = ProfileUserAgent.objects.get_or_create
+    bl_get_or_create = Backlink.objects.get_or_create
+
+
+@maybe_async
+def update_activity(user_id, address, agent, _now_dt):
+    ip, _ = ip_get_or_create(address=address)
+    if agent:
+        agent, _ = ua_get_or_create(name=agent)
+    else:
+        agent = None
+    if user_id:
+        profile = User.objects.get(pk=user_id)
+        if not model_is_user(ACTIVITYLOG_PROFILE_MODEL):
+            profile = profile.get_profile()
+        last_active = profile.last_active
+        if not last_active or CURRENTLY_ONLINE_INTERVAL <= 3 * (_now_dt -
+                last_active).seconds:
+            # we're not using save() to bypass signals etc.
+            profile.__class__.objects.filter(pk=profile.pk).update(
+                last_active=_now_dt)
+        pip, _ = pip_get_or_create(ip=ip, profile=profile)
+        ProfileIP.objects.filter(pk=pip.pk).update(modified=_now_dt)
+        if agent:
+            pua, _ = pua_get_or_create(agent=agent, profile=profile)
+            ProfileUserAgent.objects.filter(pk=pua.pk).update(
+                modified=_now_dt,
+            )
+    return ip, agent
+
+
+@maybe_async
+def update_backlinks(path_info, referrer, current_site):
+    backlink, backlink_created = bl_get_or_create(
+        site=current_site,
+        url=path_info[:_backlink_url_max_length],
+        referrer=referrer[:_backlink_referrer_max_length],
+    )
+    if not backlink_created:
+        # we're not using save() to bypass signals etc.
+        Backlink.objects.filter(id=backlink.id).update(
+            modified=now(), visits=db.F('visits') + 1,
+        )
 
 
 class ActivityMiddleware(object):
@@ -62,20 +143,7 @@ class ActivityMiddleware(object):
     (one third of the seconds specified ``CURRENTLY_ONLINE_INTERVAL`` setting).
     """
 
-    def update_backlinks(self, request, current_site):
-        backlink, backlink_created = Backlink.concurrent_get_or_create(
-            site=current_site,
-            url=request.META['PATH_INFO'][:_backlink_url_max_length],
-            referrer=request.META['HTTP_REFERER'][:_backlink_referrer_max_length])
-        if not backlink_created:
-            # we're not using save() to bypass signals etc.
-            Backlink.objects.filter(id=backlink.id).update(
-                modified=now(), visits=db.F('visits') + 1,
-            )
-
     def process_request(self, request):
-        # FIXME: don't use concurrent_get_or_create for bl, pip and pua to
-        # maximize performance
         _now_dt = now()
         _now_ts = int(time())
         delta = _now_ts - CURRENTLY_ONLINE_INTERVAL
@@ -86,60 +154,38 @@ class ActivityMiddleware(object):
         if request.user.is_authenticated():
             users_online[request.user.id] = _now_ts
             users_touched = True
-            if model_is_user(ACTIVITYLOG_PROFILE_MODEL):
-                profile = request.user
-            else:
-                profile = request.user.get_profile()
+            user_id = request.user.id
         else:
             guest_sid = request.COOKIES.get(settings.SESSION_COOKIE_NAME)
             if guest_sid:
                 guests_online[guest_sid] = _now_ts
                 guests_touched = True
-            profile = None
-        for user_id in users_online.keys():
+            user_id = None
+        for uid in users_online.keys():
             try:
-                is_stale_key = users_online[user_id] < delta
+                is_stale_key = users_online[uid] < delta
             except TypeError:
                 is_stale_key = True
             if is_stale_key:
                 users_touched = True
-                del users_online[user_id]
+                del users_online[uid]
         if users_touched:
             cache.set('users_online', users_online, 60 * 60 * 24)
-        for guest_id in guests_online.keys():
+        for gid in guests_online.keys():
             try:
-                is_stale_key = guests_online[guest_id] < delta
+                is_stale_key = guests_online[gid] < delta
             except TypeError:
                 is_stale_key = True
             if is_stale_key:
                 guests_touched = True
-                del guests_online[guest_id]
+                del guests_online[gid]
         if guests_touched:
             cache.set('guests_online', guests_online, 60 * 60 * 24)
-        ip, _ = IP.concurrent_get_or_create(address=remote_addr(request))
-        if 'HTTP_USER_AGENT' in request.META:
-            agent, _ = UserAgent.concurrent_get_or_create(name=request.META[
-                'HTTP_USER_AGENT'])
-        else:
-            agent = None
-        if profile:
-            last_active = profile.last_active
-            if not last_active or CURRENTLY_ONLINE_INTERVAL <= 3 * (_now_dt -
-                    last_active).seconds:
-                # we're not using save() to bypass signals etc.
-                profile.__class__.objects.filter(pk=profile.pk).update(
-                    last_active=_now_dt)
-            pip, _ = ProfileIP.concurrent_get_or_create(ip=ip, profile=profile)
-            ProfileIP.objects.filter(pk=pip.pk).update(modified=_now_dt)
-            if agent:
-                pua, _ = ProfileUserAgent.concurrent_get_or_create(
-                    agent=agent, profile=profile,
-                )
-                ProfileUserAgent.objects.filter(pk=pua.pk).update(
-                    modified=_now_dt,
-                )
-        request.ip = ip
-        request.agent = agent
+        address = remote_addr(request)
+        agent = request.META.get('HTTP_USER_AGENT')
+        request.activity = update_activity.delay(
+            user_id, address, agent, _now_dt,
+        )
 
     if BACKLINKS_LOCAL_SITES == 'current':
         def process_response(self, request, response):
@@ -149,7 +195,11 @@ class ActivityMiddleware(object):
                 if response.status_code // 100 == 2 and not \
                     (ref == current_site.domain or ref.startswith(
                         current_site.domain + '/')):
-                    self.update_backlinks(request, current_site)
+                    update_backlinks.delay(
+                        request.META['PATH_INFO'],
+                        request.META['HTTP_REFERER'],
+                        current_site,
+                    )
             except (IndexError, UnicodeDecodeError):
                 pass
             return response
@@ -165,7 +215,11 @@ class ActivityMiddleware(object):
                         if site.id == settings.SITE_ID:
                             current_site = site
                     else:
-                        self.update_backlinks(request, current_site)
+                        update_backlinks.delay(
+                            request.META['PATH_INFO'],
+                            request.META['HTTP_REFERER'],
+                            current_site,
+                        )
             except (IndexError, UnicodeDecodeError):
                 pass
             return response
