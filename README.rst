@@ -91,6 +91,14 @@ so we're using the ``test`` profile (which loads overrides from
 Change Log
 ----------
 
+0.8.8
+~~~~~
+
+* ``activitylog`` now properly encloses database updates in transactions
+
+* ``activitylog`` on RQ and Celery now properly handles non-null constraints on
+  models
+
 0.8.7
 ~~~~~
 
