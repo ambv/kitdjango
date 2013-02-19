@@ -107,9 +107,12 @@ class UserAgent(TimeTrackable, WithConcurrentGetOrCreate):
         return self.name
 
     @classmethod
-    def concurrent_get_or_create(cls, name):
+    def concurrent_get_or_create(cls, name, fast_mode=False):
         hash = cls.hash_for_name(name)
-        ua, created = super(UserAgent, cls).concurrent_get_or_create(hash=hash)
+        if fast_mode:
+            ua, created = cls.objects.get_or_create(hash=hash)
+        else:
+            ua, created = super(UserAgent, cls).concurrent_get_or_create(hash=hash)
         if created:
             ua.name = name
             ua.save()
@@ -142,6 +145,12 @@ class IP(TimeTrackable, WithConcurrentGetOrCreate):
 
     def __unicode__(self):
         return "{} ({})".format(self.hostname, self.address)
+
+    @classmethod
+    def concurrent_get_or_create(cls, address, fast_mode=False):
+        if fast_mode:
+            return cls.objects.get_or_create(address=address)
+        return super(IP, cls).concurrent_get_or_create(address=address)
 
     def save(self, *args, **kwargs):
         if not self.address:
@@ -217,18 +226,21 @@ class Backlink(TimeTrackable, WithConcurrentGetOrCreate):
         return self.url
 
     @classmethod
-    def concurrent_get_or_create(cls, site, url, referrer):
+    def concurrent_get_or_create(cls, site, url, referrer, fast_mode=False):
         hash = cls.hash_for_triple(site, url, referrer)
-        ua, created = super(Backlink, cls).concurrent_get_or_create(hash=hash)
+        if fast_mode:
+            bl, created = cls.objects.get_or_create(hash=hash)
+        else:
+            bl, created = super(Backlink, cls).concurrent_get_or_create(hash=hash)
         if created:
-            ua.site = site
-            ua.url = url
-            ua.referrer = referrer
-            ua.save()
-        elif ua.site != site or ua.url != url or ua.referrer != referrer:
+            bl.site = site
+            bl.url = url
+            bl.referrer = referrer
+            bl.save()
+        elif bl.site != site or bl.url != url or bl.referrer != referrer:
             LOG.error(_("Backlink not added, Adler32 conflict with existing "
                 "ID {}. URL=[[{}]]; REF=[[{}]].").format(hash, url, referrer))
-        return ua, created
+        return bl, created
 
     @classmethod
     def hash_for_triple(cls, site, url, referrer):
@@ -254,6 +266,12 @@ class ProfileIP(M2M):
     def __unicode__(self):
         return "{} ({})".format(self.ip, self.profile)
 
+    @classmethod
+    def concurrent_get_or_create(cls, ip, profile, fast_mode=False):
+        if fast_mode:
+            return cls.objects.get_or_create(ip=ip, profile=profile)
+        return super(IP, cls).concurrent_get_or_create(ip=ip, profile=profile)
+
 
 class ProfileUserAgent(M2M):
     agent = db.ForeignKey(UserAgent, verbose_name=_("user agent"))
@@ -265,3 +283,9 @@ class ProfileUserAgent(M2M):
 
     def __unicode__(self):
         return "{} ({})".format(self.agent, self.profile)
+
+    @classmethod
+    def concurrent_get_or_create(cls, agent, profile, fast_mode=False):
+        if fast_mode:
+            return cls.objects.get_or_create(agent=agent, profile=profile)
+        return super(IP, cls).concurrent_get_or_create(agent=agent, profile=profile)

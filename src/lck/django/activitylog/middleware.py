@@ -68,11 +68,7 @@ if ACTIVITYLOG_MODE == 'sync':
         result = OptionBag()
         result.delay = function
         return result
-    ip_get_or_create = IP.concurrent_get_or_create
-    ua_get_or_create = UserAgent.concurrent_get_or_create
-    pip_get_or_create = ProfileIP.concurrent_get_or_create
-    pua_get_or_create = ProfileUserAgent.concurrent_get_or_create
-    bl_get_or_create = Backlink.concurrent_get_or_create
+    serial_execution = False
 elif ACTIVITYLOG_MODE == 'rq':
     from django_rq import job
     maybe_async = job(
@@ -80,29 +76,25 @@ elif ACTIVITYLOG_MODE == 'rq':
         timeout=ACTIVITYLOG_TASK_EXPIRATION,
         result_ttl=ACTIVITYLOG_TASK_EXPIRATION,
     )
-    ip_get_or_create = IP.objects.get_or_create
-    ua_get_or_create = UserAgent.objects.get_or_create
-    pip_get_or_create = ProfileIP.objects.get_or_create
-    pua_get_or_create = ProfileUserAgent.objects.get_or_create
-    bl_get_or_create = Backlink.objects.get_or_create
+    serial_execution = True
 elif ACTIVITYLOG_MODE == 'celery':
     import celery
     maybe_async = celery.task(
         expires=ACTIVITYLOG_TASK_EXPIRATION,
     )
-    ip_get_or_create = IP.objects.get_or_create
-    ua_get_or_create = UserAgent.objects.get_or_create
-    pip_get_or_create = ProfileIP.objects.get_or_create
-    pua_get_or_create = ProfileUserAgent.objects.get_or_create
-    bl_get_or_create = Backlink.objects.get_or_create
+    serial_execution = True
 
 
 @maybe_async
 @nested_commit_on_success
 def update_activity(user_id, address, agent, _now_dt):
-    ip, _ = ip_get_or_create(address=address)
+    ip, _ = IP.concurrent_get_or_create(
+        address=address, fast_mode=serial_execution,
+    )
     if agent:
-        agent, _ = ua_get_or_create(name=agent)
+        agent, _ = UserAgent.concurrent_get_or_create(
+            name=agent, fast_mode=serial_execution,
+        )
     else:
         agent = None
     if user_id:
@@ -115,10 +107,14 @@ def update_activity(user_id, address, agent, _now_dt):
             # we're not using save() to bypass signals etc.
             profile.__class__.objects.filter(pk=profile.pk).update(
                 last_active=_now_dt)
-        pip, _ = pip_get_or_create(ip=ip, profile=profile)
+        pip, _ = ProfileIP.concurrent_get_or_create(
+            ip=ip, profile=profile, fast_mode=serial_execution,
+        )
         ProfileIP.objects.filter(pk=pip.pk).update(modified=_now_dt)
         if agent:
-            pua, _ = pua_get_or_create(agent=agent, profile=profile)
+            pua, _ = ProfileUserAgent.concurrent_get_or_create(
+                agent=agent, profile=profile, fast_mode=serial_execution,
+            )
             ProfileUserAgent.objects.filter(pk=pua.pk).update(
                 modified=_now_dt,
             )
@@ -128,10 +124,11 @@ def update_activity(user_id, address, agent, _now_dt):
 @maybe_async
 @nested_commit_on_success
 def update_backlinks(path_info, referrer, current_site):
-    backlink, backlink_created = bl_get_or_create(
+    backlink, backlink_created = Backlink.concurrent_get_or_create(
         site=current_site,
         url=path_info[:_backlink_url_max_length],
         referrer=referrer[:_backlink_referrer_max_length],
+        fast_mode=serial_execution,
     )
     if not backlink_created:
         # we're not using save() to bypass signals etc.
