@@ -43,7 +43,8 @@ except ImportError:
 
 from lck.django.activitylog.models import UserAgent, IP, ProfileIP,\
     ProfileUserAgent, Backlink, ACTIVITYLOG_PROFILE_MODEL
-from lck.django.common import model_is_user, remote_addr
+from lck.django.common import model_is_user, remote_addr,\
+    nested_commit_on_success
 
 class OptionBag(object): pass
 _backlink_url_max_length = Backlink._meta.get_field_by_name(
@@ -97,6 +98,7 @@ elif ACTIVITYLOG_MODE == 'celery':
 
 
 @maybe_async
+@nested_commit_on_success
 def update_activity(user_id, address, agent, _now_dt):
     ip, _ = ip_get_or_create(address=address)
     if agent:
@@ -124,6 +126,7 @@ def update_activity(user_id, address, agent, _now_dt):
 
 
 @maybe_async
+@nested_commit_on_success
 def update_backlinks(path_info, referrer, current_site):
     backlink, backlink_created = bl_get_or_create(
         site=current_site,
