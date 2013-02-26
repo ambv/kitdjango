@@ -42,17 +42,21 @@ from django.utils import translation
 
 INSTRUMENTATION_DIR = getattr(settings, 'INSTRUMENTATION_DIR', '.')
 INSTRUMENTATION_RULE = getattr(settings, 'INSTRUMENTATION_RULE',
-    lambda request: 'instrumentation' in request.session)
+    lambda request: False)
 
 
 class TimingMiddleware(object):
     """Adds timing information as an HTTP header (named ``X-Slo``) and
     optionally at the end of the body if it ends with ``<!--STATS-->``.
 
-    For the measurements to be most realistic, this middleware should be the
-    first on the list. See:
+    For the measurements to be most realistic, this middleware should be as
+    soon on the list as possible. See:
 
     https://docs.djangoproject.com/en/dev/topics/http/middleware/
+
+    NOTE: If your INSTRUMENTATION_RULE requires session access (also
+    indirectly, as in using request.user), this middleware has to come up
+    after SessionMiddleware.
 
     NOTE: If you use any compression middleware (e.g. GZip), the request body
     will not be updated. Timing information is still available in the HTTP
@@ -179,12 +183,12 @@ class BasicAuthMiddleware(object):
 
 class SessionAwareLanguageMiddleware(object):
     """If the request is provided with a ?lang GET argument, change
-    the language accordingly."""
+    the language accordingly.
+
+    Note: ensure this middleware comes after SessionMiddleware and before
+    LocaleMiddleware.
+    """
 
     def process_request(self, request):
         if 'lang' in request.GET:
-            request.session['_language_code'] = request.GET['lang']
-        if '_language_code' in request.session:
-            request.LANG = request.session['_language_code']
-            translation.activate(request.LANG)
-            request.LANGUAGE_CODE = request.LANG
+            request.session['django_language'] = request.GET['lang']

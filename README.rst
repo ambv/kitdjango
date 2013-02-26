@@ -99,6 +99,15 @@ Change Log
 * ``activitylog`` on RQ and Celery now properly handles non-null constraints on
   models
 
+* ``SessionAwareLanguageMiddleware`` simplified, now simply sets the language
+  argument in the session. This requires changing middleware order: this
+  middleware should come after ``SessionMiddleware`` and before
+  ``LocaleMiddleware``.
+
+* The default ``INSTRUMENTATION_RULE`` is now simply ``lambda request: False``
+  which makes ``TimingMiddleware`` behave better with front-end caches (if
+  session is not accessed, ``Vary: Cookie`` is not set).
+
 0.8.7
 ~~~~~
 
