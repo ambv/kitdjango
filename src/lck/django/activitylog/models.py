@@ -270,7 +270,9 @@ class ProfileIP(M2M):
     def concurrent_get_or_create(cls, ip, profile, fast_mode=False):
         if fast_mode:
             return cls.objects.get_or_create(ip=ip, profile=profile)
-        return super(IP, cls).concurrent_get_or_create(ip=ip, profile=profile)
+        return super(ProfileIP, cls).concurrent_get_or_create(
+            ip=ip, profile=profile,
+        )
 
 
 class ProfileUserAgent(M2M):
@@ -288,4 +290,6 @@ class ProfileUserAgent(M2M):
     def concurrent_get_or_create(cls, agent, profile, fast_mode=False):
         if fast_mode:
             return cls.objects.get_or_create(agent=agent, profile=profile)
-        return super(IP, cls).concurrent_get_or_create(agent=agent, profile=profile)
+        return super(ProfileUserAgent, cls).concurrent_get_or_create(
+            agent=agent, profile=profile,
+        )

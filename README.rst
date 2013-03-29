@@ -91,6 +91,15 @@ so we're using the ``test`` profile (which loads overrides from
 Change Log
 ----------
 
+0.8.9
+~~~~~
+
+* fixed a regression from 0.8.8 in synchronous ``activitylog`` models
+
+* ``dj.choices`` requirement bumped to 0.9.2 (support for Python 2.6 - 3.3)
+
+* ``dj.chain`` requirement bumped to 0.9.2 (support for Python 2.7 - 3.3)
+
 0.8.8
 ~~~~~
 
