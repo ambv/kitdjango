@@ -11,9 +11,23 @@ TAG_AUTHOR_MODEL = getattr(settings, 'TAG_AUTHOR_MODEL',
     getattr(settings, 'AUTH_PROFILE_MODULE', 'auth.User'))
 apm_key = TAG_AUTHOR_MODEL.lower()
 apm_app = TAG_AUTHOR_MODEL.split('.')[0]
+try:
+    initial_migration = settings.TAG_AUTHOR_INITIAL_MIGRATION
+except AttributeError:
+    initial_migration = '0001_initial.py'
+    if apm_key == 'auth.user':
+        initial_migration = None
+if initial_migration:
+    depends_on = (
+            (apm_app, initial_migration),
+    )
+else:
+    depends_on = None
 
 
 class Migration(SchemaMigration):
+
+    depends_on = depends_on
 
     def forwards(self, orm):
         # Adding model 'TagStem'

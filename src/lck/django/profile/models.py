@@ -240,7 +240,9 @@ def create_a_user_profile_ignoring_dberrors(user):
             profile, new = Profile.objects.get_or_create(user=user)
             profile.save()   # to trigger nick update etc.
         except DatabaseError:
-            pass   # no such table yet, first syncdb
+            # no such table yet, first syncdb
+            from django.db import transaction
+            transaction.rollback_unless_managed()
     return profile
 
 

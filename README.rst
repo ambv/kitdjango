@@ -91,6 +91,22 @@ so we're using the ``test`` profile (which loads overrides from
 Change Log
 ----------
 
+0.8.10
+~~~~~~
+
+* ``profile`` now properly rolls back a failed transaction in
+  ``create_a_user_profile_ignoring_dberrors()`` (fixes initial syncdb's
+  superuser creation on PostgreSQL)
+
+* introduced automatic resolution of dependencies for initial migration.  If
+  you use ``activitylog``, ``badges``, ``score`` or ``tags``, unless you're
+  using the plain ``auth.User``, their initial migrations depend on your
+  profile module being ready. Migrations currently depend on the initial
+  migration of your respective ``ACTIVITYLOG_PROFILE_MODEL``,
+  ``EDITOR_TRACKABLE_MODEL``, ``SCORE_VOTER_MODEL`` or ``TAG_AUTHOR_MODEL``. If
+  those migrations should depend on a different migration or none, new settings
+  have been added.
+
 0.8.9
 ~~~~~
 
