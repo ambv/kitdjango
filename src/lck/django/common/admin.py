@@ -108,7 +108,10 @@ class ForeignKeySearchInput(ForeignKeyRawIdWidget):
 
     def label_for_value(self, value):
         key = self.rel.get_related_field().name
-        obj = self.rel.to._default_manager.get(**{key: value})
+        try:
+            obj = self.rel.to._default_manager.get(**{key: value})
+        except (ValueError, self.rel.to.DoesNotExist):
+            return ''
         return truncate_words(obj, 14)
 
     def __init__(self, rel, search_fields, admin_site, attrs=None, hide_id=False, instant_lookup=False):
