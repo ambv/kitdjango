@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright (C) 2011 by Łukasz Langa
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
@@ -200,7 +200,7 @@ def remote_addr(request):
     ``INTERNAL_IPS`` list in `settings.py`, by default these are 127.0.0.1,
     ::1 and "localhost"."""
     result = request.META['REMOTE_ADDR']
-    if result in INTERNAL_IPS:
+    if not result or result in INTERNAL_IPS:
         try:
             result = request.META['HTTP_X_FORWARDED_FOR'].split(',')[0].strip()
         except (KeyError, IndexError):
